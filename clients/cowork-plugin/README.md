@@ -1,6 +1,6 @@
 # Entra MCP demo plugin for Copilot Cowork
 
-[Repository overview](../README.md) | [MCP server](../server/README.md)
+[Repository overview](../../README.md) | [MCP server](../../server/README.md)
 
 This learning demo is a **Microsoft 365 Copilot Cowork plugin**, not a Copilot Chat declarative agent or a GitHub Copilot CLI plugin. One skill calls **both** `whoami` and `echo` through the existing Entra-protected MCP server.
 
@@ -11,7 +11,7 @@ The Microsoft 365 app package uses manifest **v1.29**, one `agentSkills` entry, 
 ## Prerequisites
 
 - An eligible Microsoft 365 work tenant with **Copilot Cowork** available and permission to install custom apps/plugins. Tenant policies, admin approval, licensing, and rollout availability can prevent installation. This package does not enable Cowork.
-- An externally reachable HTTPS deployment of [the server](../server/docs/azure-deployment.md), using TLS 1.2+ and a valid delegated API scope.
+- An externally reachable HTTPS deployment of [the server](../../server/docs/azure-deployment.md), using TLS 1.2+ and a valid delegated API scope.
 - Permission to configure an Entra calling client, grant the necessary consent, and register OAuth credentials in the Microsoft Enterprise token store.
 - Node.js **24+** and npm for packaging from source. For a downloaded ZIP, standard ZIP tools suffice after editing its manifest.
 
@@ -19,7 +19,7 @@ Follow Microsoft's [Cowork plugin guide](https://learn.microsoft.com/en-us/micro
 
 ## 1. Prepare the server
 
-Follow [server setup](../server/README.md) first. Run all server npm, Docker, and azd commands from **`server/`**, not this folder.
+Follow [server setup](../../server/README.md) first. Run all server npm, Docker, and azd commands from **`server/`**, not this folder.
 
 For an Azure deployment, retrieve the endpoint from your selected environment:
 
@@ -32,7 +32,7 @@ azd env get-value ENTRA_AUDIENCE
 
 These commands assume you start at the repository root. `MCP_ENDPOINT` includes `/mcp`; it must be an HTTPS URL accessible to Microsoft 365. `PUBLIC_BASE_URL` must match the external base URL. For a local demo, use a public HTTPS tunnel and configure that external base URL; localhost alone is not reachable from Cowork.
 
-Use the API's actual **full exposed scope**, normally `api://<api-app-id>/mcp.invoke`. Do not infer it by blindly appending to an audience list: the server supports multiple audiences, and custom Application ID URIs are possible. Its current metadata has a [documented scope-format limitation](../server/docs/operations.md#oauth-client-integration); explicitly configure the OAuth endpoints and full scope below.
+Use the API's actual **full exposed scope**, normally `api://<api-app-id>/mcp.invoke`. Do not infer it by blindly appending to an audience list: the server supports multiple audiences, and custom Application ID URIs are possible. Its current metadata has a [documented scope-format limitation](../../server/docs/operations.md#oauth-client-integration); explicitly configure the OAuth endpoints and full scope below.
 
 Keep issuer, audience, and delegated-scope enforcement unchanged. A Graph token, ID token, or app-only token is not a substitute for this API's delegated access token.
 
@@ -71,7 +71,7 @@ See the official [Cowork connector authentication](https://learn.microsoft.com/e
 
 ## 3. Customize the manifest
 
-Edit `plugin/appPackage/manifest.json`, or the root `manifest.json` after extracting a release ZIP:
+Edit `clients/cowork-plugin/appPackage/manifest.json`, or the root `manifest.json` after extracting a release ZIP:
 
 | Field | Replace with |
 | --- | --- |
@@ -93,7 +93,7 @@ The icons are original, simple demo assets. There are no production legal polici
 From the repository root:
 
 ```bash
-cd plugin
+cd clients/cowork-plugin
 npm ci
 npm test
 npm run package -- --configured
@@ -109,7 +109,7 @@ To intentionally build an unconfigured template instead:
 
 ```bash
 npm run package
-npm run package -- --tag releases/plugin/v1.2.3
+npm run package -- --tag releases/cowork-plugin/v1.2.3
 ```
 
 These produce `build/entra-mcp-cowork-plugin-template-<version>.zip`. The same packaging entry point is used in CI. It validates against the [pinned official schema](schema/README.md), skill/connector shape, icon dimensions, and a strict four-file allow-list. It does not contact Microsoft 365, Entra, or the server. Configured mode is a placeholder check, **not proof that authentication works**.
@@ -143,7 +143,7 @@ Set-Location ./configured-plugin
 Compress-Archive -Path manifest.json,color.png,outline.png,skills -DestinationPath ../entra-mcp-cowork-plugin-configured-1.2.3.zip
 ```
 
-Use a new destination ZIP to avoid retaining obsolete entries. Do not ZIP the containing directory or add OAuth credentials. To run the repository's offline validator on a customized download, copy those four files into a source checkout's `plugin/appPackage/` (preserving the skill subfolder) and use the source packaging command.
+Use a new destination ZIP to avoid retaining obsolete entries. Do not ZIP the containing directory or add OAuth credentials. To run the repository's offline validator on a customized download, copy those four files into a source checkout's `clients/cowork-plugin/appPackage/` (preserving the skill subfolder) and use the source packaging command.
 
 ## 5. Install and try it
 
@@ -154,7 +154,7 @@ atk auth login
 atk install --file-path ./build/entra-mcp-cowork-plugin-configured-1.0.0.zip --scope Personal
 ```
 
-Run this from `plugin/` for a source build; substitute your actual configured ZIP path for a download. Save the returned TitleId/AppId to manage updates or removal. Tenant policy may require an administrator to upload/approve the app instead. Admin-center upload can list it in **Cowork > Sources & Skills > Plugins > Discover**; targeted sharing uses the separate supported sharing flow.
+Run this from `clients/cowork-plugin/` for a source build; substitute your actual configured ZIP path for a download. Save the returned TitleId/AppId to manage updates or removal. Tenant policy may require an administrator to upload/approve the app instead. Admin-center upload can list it in **Cowork > Sources & Skills > Plugins > Discover**; targeted sharing uses the separate supported sharing flow.
 
 Enable the plugin in Cowork, complete the connector's sign-in/consent, and try:
 
@@ -182,11 +182,11 @@ The single skill calls `whoami` with `{}`, then `echo` with your message. It rep
 From the repository root, after committing the desired files:
 
 ```bash
-git tag releases/plugin/v1.2.3
-git push origin releases/plugin/v1.2.3
+git tag releases/cowork-plugin/v1.2.3
+git push origin releases/cowork-plugin/v1.2.3
 ```
 
-[The workflow](../.github/workflows/release-plugin.yml) accepts only canonical `releases/plugin/vX.Y.Z` tags (no leading zeros, prereleases, or build suffixes). It runs plugin tests and validation, stamps `1.2.3` into the packaged manifest **in memory**, and publishes `entra-mcp-cowork-plugin-template-1.2.3.zip` in a GitHub Release for that tag. It does not edit the checked-in template, plugin package metadata, or server version.
+[The workflow](../../.github/workflows/release-plugin.yml) accepts only canonical `releases/cowork-plugin/vX.Y.Z` tags (no leading zeros, prereleases, or build suffixes). It runs plugin tests and validation, stamps `1.2.3` into the packaged manifest **in memory**, and publishes `entra-mcp-cowork-plugin-template-1.2.3.zip` in a GitHub Release for that tag. It does not edit the checked-in template, plugin package metadata, or server version.
 
 Publishing uses the built-in GitHub token with `contents: write` only in the release job. No Azure/Entra secrets or deployment-specific repository variables are needed. GitHub Actions must be allowed to create repository releases. An existing release causes publication to fail rather than silently replacing its assets.
 

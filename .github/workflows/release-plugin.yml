@@ -3,7 +3,7 @@ name: Release Copilot Cowork plugin
 on:
   push:
     tags:
-      - releases/plugin/v*
+      - releases/cowork-plugin/v*
 
 permissions:
   contents: read
@@ -25,30 +25,30 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: plugin/package-lock.json
+          cache-dependency-path: clients/cowork-plugin/package-lock.json
       - name: Install packaging dependencies
-        working-directory: plugin
+        working-directory: clients/cowork-plugin
         run: npm ci --ignore-scripts
       - name: Validate the complete release tag
         id: version
-        working-directory: plugin
+        working-directory: clients/cowork-plugin
         env:
           PLUGIN_TAG: ${{ github.ref_name }}
         run: |
           VERSION=$(node --input-type=module -e 'import { versionFromTag } from "./scripts/package.mjs"; console.log(versionFromTag(process.env.PLUGIN_TAG));')
           printf 'version=%s\n' "$VERSION" >> "$GITHUB_OUTPUT"
       - name: Test packaging
-        working-directory: plugin
+        working-directory: clients/cowork-plugin
         run: npm test
       - name: Build configuration template
-        working-directory: plugin
+        working-directory: clients/cowork-plugin
         env:
           PLUGIN_TAG: ${{ github.ref_name }}
         run: npm run package -- --tag "$PLUGIN_TAG"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: plugin-template
-          path: plugin/build/entra-mcp-cowork-plugin-template-${{ steps.version.outputs.version }}.zip
+          path: clients/cowork-plugin/build/entra-mcp-cowork-plugin-template-${{ steps.version.outputs.version }}.zip
           if-no-files-found: error
           compression-level: 0
 
@@ -75,7 +75,7 @@ jobs:
             registration reference, and developer/privacy/terms placeholders in manifest.json,
             then repackage and install into an eligible tenant.
 
-            Setup: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/plugin/README.md
+            Setup: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/clients/cowork-plugin/README.md
 
             One skill calls both whoami and echo on the Entra-protected MCP server.
             No credentials are included. This release does not deploy Azure resources,

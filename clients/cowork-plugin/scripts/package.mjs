@@ -22,9 +22,9 @@ addFormats(ajv);
 const validateSchema = ajv.compile(schema);
 
 export function versionFromTag(tag) {
-  const prefix = "releases/plugin/v";
+  const prefix = "releases/cowork-plugin/v";
   if (!tag.startsWith(prefix) || !versionPattern.test(tag.slice(prefix.length))) {
-    throw new Error("Expected a tag in the form releases/plugin/vX.Y.Z (no prerelease or leading zeros).");
+    throw new Error("Expected a tag in the form releases/cowork-plugin/vX.Y.Z (no prerelease or leading zeros).");
   }
   return tag.slice(prefix.length);
 }

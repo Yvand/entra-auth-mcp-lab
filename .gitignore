@@ -6,4 +6,4 @@ dist/
 !**/.azure/deployment-plan.md
 *.log
 coverage/
-plugin/build/
+clients/cowork-plugin/build/

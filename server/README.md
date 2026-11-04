@@ -1,6 +1,6 @@
 # entra-oauth-mcp-server
 
-[Repository overview](../README.md) | [Copilot Cowork demo plugin](../plugin/README.md)
+[Repository overview](../README.md) | [Copilot Cowork demo plugin](../clients/cowork-plugin/README.md)
 
 Run the commands in this guide and its linked documentation from **`server/`** (`cd server` from the repository root).
 

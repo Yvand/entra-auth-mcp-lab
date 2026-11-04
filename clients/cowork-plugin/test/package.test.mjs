@@ -29,18 +29,19 @@ async function saveManifest(directory, manifest) {
 
 test("release tag extracts the canonical numeric version", () => {
   for (const version of ["0.0.0", "1.2.3", "10.20.300"]) {
-    assert.equal(versionFromTag(`releases/plugin/v${version}`), version);
+    assert.equal(versionFromTag(`releases/cowork-plugin/v${version}`), version);
   }
 });
 
 test("malformed and unrelated tags are rejected before packaging", () => {
   for (const tag of [
-    "", "v1.2.3", "releases/server/v1.2.3", "releases/plugin/v1.2",
-    "releases/plugin/v1.2.3.4", "releases/plugin/v1.2.3-beta",
-    "releases/plugin/v1.2.3+build", "releases/plugin/v01.2.3",
-    "releases/plugin/v1.02.3", "releases/plugin/v1.2.03",
-    "releases/plugin/v-1.2.3", "releases/plugin/v1.2.3\n",
-    "releases/plugin/v1.2.3/extra", "releases/plugin/v$(echo unsafe)",
+    "", "v1.2.3", "releases/server/v1.2.3", "releases/plugin/v1.2.3",
+    "releases/cowork-plugin/v1.2", "releases/cowork-plugin/v1.2.3.4",
+    "releases/cowork-plugin/v1.2.3-beta", "releases/cowork-plugin/v1.2.3+build",
+    "releases/cowork-plugin/v01.2.3", "releases/cowork-plugin/v1.02.3",
+    "releases/cowork-plugin/v1.2.03", "releases/cowork-plugin/v-1.2.3",
+    "releases/cowork-plugin/v1.2.3\n", "releases/cowork-plugin/v1.2.3/extra",
+    "releases/cowork-plugin/v$(echo unsafe)",
   ]) {
     assert.throws(() => versionFromTag(tag), /Expected a tag/);
   }
@@ -63,9 +64,9 @@ test("ZIP has only root manifest, icons, and one skill calling both tools", asyn
 
 test("release version changes the ZIP manifest only and is reproducible", async () => {
   const original = await readFile(manifestUrl);
-  const serverUrl = new URL("../../server/package.json", import.meta.url);
+  const serverUrl = new URL("../../../server/package.json", import.meta.url);
   const serverOriginal = await readFile(serverUrl);
-  const version = versionFromTag("releases/plugin/v1.2.3");
+  const version = versionFromTag("releases/cowork-plugin/v1.2.3");
   const result = await buildPackage({ version });
   const entries = unzipSync(result.bytes);
   const packaged = JSON.parse(strFromU8(entries["manifest.json"]));
@@ -207,10 +208,11 @@ test("pinned schema retains the reviewed checksum", async () => {
 
 test("CLI rejects malformed tags, unreplaced placeholders, and conflicting options", () => {
   for (const args of [
-    ["--tag", "releases/plugin/v1.2.3-rc"],
+    ["--tag", "releases/plugin/v1.2.3"],
+    ["--tag", "releases/cowork-plugin/v1.2.3-rc"],
     ["--configured"],
-    ["--tag", "releases/plugin/v1.2.3", "--version", "1.2.3"],
-    ["--tag", "releases/plugin/v1.2.3", "--configured"],
+    ["--tag", "releases/cowork-plugin/v1.2.3", "--version", "1.2.3"],
+    ["--tag", "releases/cowork-plugin/v1.2.3", "--configured"],
   ]) {
     const result = spawnSync(process.execPath, ["scripts/package.mjs", ...args], {
       cwd: fileURLToPath(new URL("../", import.meta.url)),
@@ -225,7 +227,7 @@ test("CLI rejects malformed tags, unreplaced placeholders, and conflicting optio
 test("CLI produces the release asset with version-matched manifest", async () => {
   const output = new URL("../build/entra-mcp-cowork-plugin-template-9.8.7.zip", import.meta.url);
   const result = spawnSync(process.execPath, [
-    "scripts/package.mjs", "--tag", "releases/plugin/v9.8.7",
+    "scripts/package.mjs", "--tag", "releases/cowork-plugin/v9.8.7",
   ], {
     cwd: fileURLToPath(new URL("../", import.meta.url)),
     encoding: "utf8",

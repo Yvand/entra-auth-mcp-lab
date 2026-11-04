@@ -2,7 +2,7 @@
 
 ## Local setup and validation
 
-Use the root README for navigation, `server/README.md` and `server/docs/` for server setup, and `plugin/README.md` for the Copilot Cowork plugin. Run the following commands from `server/` (`cd server` from the repository root). See `server/docs/entra-app-registrations.md` for Entra setup, `server/docs/local-development.md` for environment configuration, and `server/docs/testing.md` for offline versus live tests.
+Use the root README for navigation, `server/README.md` and `server/docs/` for server setup, and `clients/cowork-plugin/README.md` for the Copilot Cowork plugin. Run the following commands from `server/` (`cd server` from the repository root). See `server/docs/entra-app-registrations.md` for Entra setup, `server/docs/local-development.md` for environment configuration, and `server/docs/testing.md` for offline versus live tests.
 
 - Install dependencies: `npm install`
 - Create local env from the sample: `cp .env.example .env`
@@ -51,6 +51,6 @@ Offline automated tests provide their own configuration and local signing keys; 
 
 ## Copilot Cowork plugin
 
-`plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep manual Copilot Web-client/vault setup separate from the server's generated desktop client.
+`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep manual Copilot Web-client/vault setup separate from the server's generated desktop client.
 
-Run `npm ci`, `npm test`, and `npm run package` from `plugin/` for offline validation and template packaging. Use `npm run package -- --configured` only after replacing placeholders. `.github/workflows/release-plugin.yml` releases template ZIPs for strict `releases/plugin/vX.Y.Z` tags; versions are stamped in memory, not into the source manifest or server.
+Run `npm ci`, `npm test`, and `npm run package` from `clients/cowork-plugin/` for offline validation and template packaging. Use `npm run package -- --configured` only after replacing placeholders. `.github/workflows/release-plugin.yml` releases template ZIPs for strict `releases/cowork-plugin/vX.Y.Z` tags; versions are stamped in memory, not into the source manifest or server.

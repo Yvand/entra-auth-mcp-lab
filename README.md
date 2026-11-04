@@ -5,7 +5,7 @@ A small learning demo: an Entra-protected MCP server and a **Microsoft 365 Copil
 | Component | Start here |
 | --- | --- |
 | `server/` | [Server overview](server/README.md), [local development](server/docs/local-development.md), [Azure deployment](server/docs/azure-deployment.md) |
-| `plugin/` | [Configure, package, and install the Cowork plugin](plugin/README.md) |
+| `clients/cowork-plugin/` | [Configure, package, and install the Cowork plugin](clients/cowork-plugin/README.md) |
 
 The server and plugin have independent setup and versioning. Run server npm, Docker, and `azd` commands from `server/`, not the repository root. The plugin requires an accessible HTTPS server and a manually configured OAuth registration; a release ZIP is a **configuration template**, not an install-ready deployment.
 
@@ -19,4 +19,4 @@ Then run `azd env list` and select the same environment **from `server/`**, veri
 
 ## Plugin releases
 
-Push a tag such as `releases/plugin/v1.2.3` to publish a GitHub Release containing a versioned plugin template ZIP. See the [plugin release instructions](plugin/README.md#releases). This does not deploy the server, install into a tenant, or publish to the Microsoft 365 store.
+Push a tag such as `releases/cowork-plugin/v1.2.3` to publish a GitHub Release containing a versioned plugin template ZIP. See the [plugin release instructions](clients/cowork-plugin/README.md#releases). This does not deploy the server, install into a tenant, or publish to the Microsoft 365 store.

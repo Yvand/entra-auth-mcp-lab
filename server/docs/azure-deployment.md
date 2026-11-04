@@ -132,7 +132,7 @@ Values are stored in the selected `.azure/<environment>/` state. `azd env set` d
 
 Configure your actual OAuth client with its application ID, the tenant, its registered callback, the requested scope, and `MCP_ENDPOINT`. With the generated registration, the requested scope is `api://<ENTRA_API_APP_ID>/<MCP_REQUIRED_SCOPE>`; with a manual custom URI, use the URI you exposed instead.
 
-For the Microsoft 365 Copilot Cowork demo, follow the [plugin guide](../../plugin/README.md) to configure its separate Web client and token-vault registration. The generated desktop/CLI client is not that registration.
+For the Microsoft 365 Copilot Cowork demo, follow the [plugin guide](../../clients/cowork-plugin/README.md) to configure its separate Web client and token-vault registration. The generated desktop/CLI client is not that registration.
 
 Generated client ID (Bash / PowerShell):
 
