@@ -90,14 +90,12 @@ The icons are original, simple demo assets. There are no production legal polici
 
 ### From source
 
-From the repository root:
+Before customizing the template in step 3, run `npm ci` and `npm test` from `clients/cowork-plugin/`. The tests assert the shipped template placeholders; they are not validation commands for a customized manifest.
 
-```bash
-cd clients/cowork-plugin
-npm ci
-npm test
-npm run package -- --configured
-```
+After customization, package from the repository root:
+
+    cd clients/cowork-plugin
+    npm run package -- --configured
 
 Configured mode refuses the documented endpoint, OAuth-reference, and developer placeholders. It creates `build/entra-mcp-cowork-plugin-configured-1.0.0.zip` with the manifest, icons, and single skill directly at ZIP root. To bump the packaged version without rewriting the source manifest:
 
