@@ -11,7 +11,11 @@ There are two distinct kinds of verification:
 
 `npm test` does **not** target your local development server or Azure endpoint. Run the live checks separately after either deployment.
 
+Just deployed? Go directly to [live verification](#live-verification-local-or-azure). The offline section is for contributors.
+
 ## Offline automated tests
+
+**Goal:** validate source changes without contacting Entra or a deployed server.
 
 From `server/` (`cd server` from the repository root), with Node.js 24+ and npm:
 
@@ -43,6 +47,8 @@ Token tests generate RSA keys and sign tokens locally with `jose`; they do not c
 Start [locally](local-development.md) or finish [azd deployment](azure-deployment.md) first. Use the server **base URL**, not an endpoint already ending in `/mcp`.
 
 ### 1. Select the target and registration values
+
+**Goal:** make every check use the intended server, tenant, and full API scope.
 
 For local use, set these in your test terminal using the values from your registration:
 
@@ -88,9 +94,11 @@ if ($LASTEXITCODE -ne 0) { throw "Cannot read scope name" }
 $REQUESTED_SCOPE = "api://$API_APP_ID/$SCOPE_NAME"
 ```
 
-The construction above assumes one bare API ID and the default `api://` URI. For a custom identifier URI or multiple configured audiences, use the full scope from the actual API registration; do not concatenate a comma-separated audience list. `MCP_CLIENT_ID` is needed by your own OAuth client, but Azure CLI token acquisition uses Azure CLI's own client ID.
+The construction above assumes one bare API ID and the default `api://` URI. For a custom identifier URI or multiple configured audiences, use the full scope from the actual API registration; do not concatenate a comma-separated audience list. Azure CLI token acquisition uses Azure CLI's own client ID; no additional client registration is needed.
 
 ### 2. Check public endpoints and unauthenticated behavior
+
+**Goal:** confirm the server is running and rejects requests without authentication.
 
 Bash:
 
@@ -142,6 +150,8 @@ Metadata's current scope-format limitation is described in [OAuth client integra
 
 ### 3. Acquire a real delegated API token
 
+**Goal:** obtain an access token issued for this API on behalf of your signed-in user.
+
 Azure CLI must be [authorized for the API scope](entra-app-registrations.md#optional-azure-cli-authorization-for-smoke-tests). Sign in to the token-issuing tenant, then request that scope:
 
 ```bash
@@ -161,11 +171,13 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($TOKEN)) {
 }
 ```
 
-If tenant policy blocks Azure CLI, use your registered client's Authorization Code + PKCE flow instead, with its own client ID and callback. Place the resulting **access token** (not an ID token) in the test terminal's `TOKEN` variable. No client implementation is included here. Do not relax audience or scope checks to make the test pass.
+If tenant policy blocks Azure CLI, use another authorized OAuth client's supported token flow. Place the resulting **access token** (not an ID token) in the test terminal's `TOKEN` variable. Do not relax audience or scope checks to make the test pass.
 
 Never print tokens, enable shell tracing for these commands, commit them, or paste them into an external decoder. Azure CLI's cache can retain credentials beyond this terminal session; follow your organization's workstation/sign-out policy.
 
 ### 4. Exercise authenticated MCP requests
+
+**Goal:** confirm both tools run with the validated identity and permission.
 
 Use the same token on **every** request. No session ID is needed.
 

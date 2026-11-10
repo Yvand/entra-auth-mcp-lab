@@ -1,22 +1,30 @@
-# Entra MCP server and Microsoft 365 Copilot plugin
+# Entra MCP server and Copilot Cowork plugin
 
-A small learning demo: an Entra-protected MCP server and a **Microsoft 365 Copilot Cowork plugin** with one skill that calls its `whoami` and `echo` tools.
+A learning demo with an Entra-protected MCP server and a **Microsoft 365 Copilot Cowork plugin**. The plugin calls `whoami` to identify the signed-in user and `echo` to return their message.
 
-| Component | Start here |
+## Recommended: deploy the server, then configure the plugin
+
+1. **[Deploy the server to Azure](server/docs/azure-deployment.md).** Azure Developer CLI (`azd`) deploys the HTTPS endpoint and creates the API and Cowork Web-client registrations. You need an Azure subscription and permission to create registrations and grant consent.
+2. **[Download and configure the Cowork plugin](clients/cowork-plugin/README.md).** Download the ZIP from [GitHub Releases](https://github.com/Yvand/entra-oauth-mcp-server/releases), create a secret on the generated client and register it in the developer portal, then edit and repackage the template with standard ZIP tools.
+
+**The release ZIP is a configuration template, not an install-ready app.** It contains no deployed server or OAuth credentials. The client guide covers the Entra and developer-portal prerequisites before installation.
+
+## Other approaches and reference
+
+### Server
+
+| Goal | Guide |
 | --- | --- |
-| `server/` | [Server overview](server/README.md), [local development](server/docs/local-development.md), [Azure deployment](server/docs/azure-deployment.md) |
-| `clients/cowork-plugin/` | [Configure, package, and install the Cowork plugin](clients/cowork-plugin/README.md) |
+| Deploy with existing Entra registrations | [Alternative Azure setup](server/docs/azure-existing-registrations.md) |
+| Run or develop the server locally | [Local development](server/docs/local-development.md) |
+| Understand the server, configuration, or tests | [Server overview](server/README.md) |
+| Use a checkout from before the server directory move | [Existing-checkout migration](server/docs/existing-checkouts.md) |
 
-The server and plugin have independent setup and versioning. Run server npm, Docker, and `azd` commands from `server/`, not the repository root. The plugin requires an accessible HTTPS server and a manually configured OAuth registration; a release ZIP is a **configuration template**, not an install-ready deployment.
+### Client
 
-## Existing checkouts
+| Goal | Guide |
+| --- | --- |
+| Build the plugin from source | [Source packaging](clients/cowork-plugin/docs/from-source.md) |
+| Publish a plugin template release | [Maintainer release guide](clients/cowork-plugin/docs/releases.md) |
 
-The server previously lived at the repository root. Its tracked files now live in `server/`; existing untracked local configuration is not moved automatically.
-
-Before using an existing environment, stop local server processes and back up your local configuration privately. Move your root `.env` (and any `.env.local`) into `server/`, preserving its values. For an existing azd deployment, move only the intended `.azure/<environment>/` state directory to `server/.azure/<environment>/` and preserve the selected-environment configuration in `.azure/config.json` if present. Inspect destinations first; do not overwrite an existing environment.
-
-Then run `azd env list` and select the same environment **from `server/`**, verifying subscription, resource group, and registration IDs before provisioning or teardown. Do not create a new environment or rename the old one as part of this migration: ownership tags depend on the environment and subscription. Do not delete remote resources or commit local state. Reinstall Node dependencies from `server/` rather than moving an old `node_modules` directory.
-
-## Plugin releases
-
-Push a tag such as `releases/cowork-plugin/v1.2.3` to publish a GitHub Release containing a versioned plugin template ZIP. See the [plugin release instructions](clients/cowork-plugin/README.md#releases). This does not deploy the server, install into a tenant, or publish to the Microsoft 365 store.
+The server and plugin have independent setup and versioning. Run server commands from `server/` and plugin source commands from `clients/cowork-plugin/`; each guide states its starting directory.

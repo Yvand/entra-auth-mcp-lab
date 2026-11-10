@@ -59,7 +59,11 @@ const hookRunners = [
     : []),
 ];
 
-function runHook(runner: (typeof hookRunners)[number], mode: string) {
+function runHook(
+  runner: (typeof hookRunners)[number],
+  mode: string,
+  envOverrides: Record<string, string> = {},
+) {
   const tempDir = mkdtempSync(join(tmpdir(), "entra-cleanup-hook-"));
   const azPath = join(tempDir, "az");
   const callsPath = join(tempDir, "calls.jsonl");
@@ -77,8 +81,9 @@ function runHook(runner: (typeof hookRunners)[number], mode: string) {
         AZ_MODE: mode,
         CREATE_ENTRA_APP_REGISTRATIONS: "true",
         ENTRA_API_APP_ID: "api-app-id",
-        ENTRA_CLIENT_APP_ID: "",
+        ENTRA_COWORK_CLIENT_APP_ID: "",
         ENTRA_APP_OWNERSHIP_TAG: ownershipTag,
+        ...envOverrides,
       },
     });
     return {
@@ -95,6 +100,19 @@ function runHook(runner: (typeof hookRunners)[number], mode: string) {
 }
 
 describe.each(hookRunners)("$name Entra cleanup hook", (runner) => {
+  it("cleans up the Cowork client using its generated app ID", () => {
+    const result = runHook(runner, "active", {
+      ENTRA_API_APP_ID: "",
+      ENTRA_COWORK_CLIENT_APP_ID: "cowork-app-id",
+    });
+    expect(result.status).toBe(0);
+
+    const calls = result.calls.map((args) => args.join(" "));
+    expect(calls).toContain("ad sp delete --id cowork-app-id");
+    expect(calls).toContain("ad app delete --id cowork-app-id");
+    expect(calls).not.toContain("ad app delete --id api-app-id");
+  });
+
   it("purges the owned service principal before its application", () => {
     const result = runHook(runner, "active");
     expect(result.status).toBe(0);

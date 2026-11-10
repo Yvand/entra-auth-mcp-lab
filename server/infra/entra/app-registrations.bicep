@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
-// Creates the API and PKCE desktop/CLI registrations documented in
-// docs/entra-app-registrations.md, using the Microsoft Graph Bicep extension.
+// Creates the API and Cowork Web-client registrations using the Microsoft Graph
+// Bicep extension. See docs/entra-app-registrations.md for ID/scope reference.
 // See docs/azure-deployment.md for the azd-managed registration workflow.
 //
 // This file is a module invoked from infra/main.bicep (guarded by the
@@ -20,11 +20,11 @@ param environmentName string
 @description('Display name for the API app registration (this server).')
 param apiDisplayName string = 'simple-mcp-server-api'
 
-@description('Display name for the public-client (desktop/CLI, PKCE) app registration.')
-param clientDisplayName string = 'simple-mcp-server-client'
+@description('Display name for the Cowork Web-client app registration.')
+param clientDisplayName string = 'simple-mcp-server-client-cowork'
 
-@description('Redirect URI registered on the public client for the Authorization Code + PKCE flow.')
-param redirectUri string = 'http://localhost:3000/callback'
+@description('Web redirect URI for the Cowork authorization code flow. The default is the Microsoft Teams OAuth callback.')
+param redirectUri string = 'https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect'
 
 @description('Delegated scope name exposed by the API and required by the server (MCP_REQUIRED_SCOPE).')
 param scopeName string = 'mcp.invoke'
@@ -81,10 +81,12 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
   tags: [ownershipTag]
   displayName: clientDisplayName
   signInAudience: 'AzureADMyOrg'
-  // Public client (Authorization Code + PKCE, no secret). See
-  // docs/entra-app-registrations.md for desktop versus SPA platform setup.
-  isFallbackPublicClient: true
+  isFallbackPublicClient: false
+  // Clear the former desktop platform when updating an existing registration.
   publicClient: {
+    redirectUris: []
+  }
+  web: {
     redirectUris: [redirectUri]
   }
   requiredResourceAccess: [
@@ -116,7 +118,7 @@ resource clientServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
 //
 // This second resource is also where the default Application ID URI gets set: `apiApp`
 // can't reference its own `appId` to build `api://<appId>` at creation time, so (matching
-// the scripts in docs/entra-app-registrations.md, which default to `api://<api-app-id>`) the
+// the scripts in docs/entra-app-registration-scripts.md, which default to `api://<api-app-id>`) the
 // default is computed here instead, once `apiApp.appId` is known.
 resource apiAppAuthorizeClient 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: apiUniqueName

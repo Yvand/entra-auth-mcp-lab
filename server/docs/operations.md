@@ -1,6 +1,85 @@
 # Operations and cleanup
 
-[Project overview](../README.md) | [App registrations](entra-app-registrations.md) | [Local development](local-development.md) | [Azure deployment](azure-deployment.md) | [Testing](testing.md)
+[Server overview](../README.md) | [Recommended Azure setup](azure-deployment.md) | [Existing registrations](azure-existing-registrations.md) | [Testing](testing.md)
+
+This is reference material for an already configured server. New users should start with the [Azure walkthrough](azure-deployment.md).
+
+## Azure deployment reference
+
+The [azd service definition](../azure.yaml) uses ACR remote builds (`docker.remoteBuild: true`). Local Docker is not required for this build path; a local-build fallback needs Docker/Podman. Node.js/npm are needed only for local development/tests.
+
+| Resource | Configuration |
+| --- | --- |
+| Resource group | `rg-<azd-environment>` |
+| Container App | External HTTPS ingress; 0.5 vCPU/1 GiB; min 0/max 3 replicas |
+| Container Apps environment | Consumption hosting |
+| Container Registry | Basic; admin credentials disabled |
+| Log Analytics workspace | PerGB2018; 30-day retention; 1 GB/day ingestion cap |
+| User-assigned managed identity | Registry-scoped `AcrPull` for the Container App |
+
+No database, Key Vault, or Application Insights is deployed. Scale-to-zero reduces idle compute usage but does not remove registry/logging charges. Cold starts are expected.
+
+`azd up` provisions infrastructure, then builds/deploys the application. The Container App initially uses a public placeholder image; its health probes can fail until application deployment finishes. A provision-only placeholder is not a running MCP server.
+
+The deployment sets `HOST=0.0.0.0`, `PORT=3000`, and derives `PUBLIC_BASE_URL` from the HTTPS ingress FQDN. For a custom domain, set `PUBLIC_BASE_URL` before re-provisioning; domain/TLS configuration is a separate platform task.
+
+### Automatic registration settings
+
+`CREATE_ENTRA_APP_REGISTRATIONS` defaults to `true` in both Bicep and the azd parameter mapping. The module creates single-tenant API/Cowork Web-client applications and service principals, grants the Web client tenant-wide delegated consent, and preauthorizes it. API tokens use v2 and the default identifier URI is `api://<api-app-id>`. Tenant/audience inputs are ignored in this mode.
+
+Optional overrides are set with `azd env set <name> <value>` before provisioning:
+
+| Setting | Default/purpose |
+| --- | --- |
+| `MCP_REQUIRED_SCOPE` | `mcp.invoke`; short scope exposed and enforced by the API |
+| `ENTRA_API_DISPLAY_NAME` | `simple-mcp-server-api` |
+| `ENTRA_CLIENT_DISPLAY_NAME` | `simple-mcp-server-client-cowork`; custom display names remain supported |
+| `ENTRA_CLIENT_REDIRECT_URI` | `https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect`; the Cowork Web callback, not a localhost/API URL |
+| `ENTRA_AUTHORIZE_AZURE_CLI_CLIENT` | `true`; set `false` to disable Azure CLI preauthorization |
+| `ENTRA_AZURE_CLI_APP_ID` | `04b07795-8ddb-461a-bbee-02f9e1bf7b46`; Azure CLI's well-known app ID |
+
+The generated client has a **Web** platform with public client flows disabled. It uses authorization code flow with PKCE enabled in the developer portal. Bicep does not create or manage its secret: follow [shared OAuth setup](../../clients/cowork-plugin/docs/oauth-setup.md) to create one and register the client in the portal.
+
+Graph `uniqueName` and ownership tags depend on subscription and azd environment; repeated provisions target the same objects. Display names alone do not identify ownership. Do not rename an environment and assume its existing registrations move with it.
+
+### Deployment values
+
+Run `azd env get-value <name>` from `server/` for individual values. `azd env get-values` lists state, but does not export shell variables; do not execute its output as a script.
+
+| Value | Meaning |
+| --- | --- |
+| `CREATE_ENTRA_APP_REGISTRATIONS` | Effective creation mode, persisted after provisioning for the cleanup hooks |
+| `ENTRA_TENANT_ID`, `ENTRA_AUDIENCE` | Effective server tenant and audience; manual inputs in `false` mode |
+| `MCP_REQUIRED_SCOPE` | Effective short scope, persisted after provisioning |
+| `ENTRA_API_APP_ID`, `ENTRA_COWORK_CLIENT_APP_ID` | Generated API/Cowork Web-client IDs; empty in `false` mode |
+| `ENTRA_APP_OWNERSHIP_TAG` | Generated cleanup ownership marker; empty in `false` mode |
+| `SERVICE_MCP_URI` | Public base URL, without `/mcp` |
+| `MCP_ENDPOINT` | Full client endpoint including `/mcp` |
+| `MCP_PROTECTED_RESOURCE_METADATA` | Full metadata URL |
+
+## Update an Azure deployment
+
+**Goal:** apply changes to an existing deployment. Select the intended azd environment and run commands from `server/`.
+
+For source/image changes:
+
+```bash
+azd deploy
+```
+
+For infrastructure-backed settings, change the relevant value and re-provision; for example:
+
+```bash
+azd env set PUBLIC_BASE_URL "https://<your-custom-domain>"
+azd provision
+azd deploy
+```
+
+Changing an azd value alone does not update the Container App. Re-provisioning preserves its existing image; deploy refreshes the image. `azd up` can also run both phases.
+
+An explicit `CREATE_ENTRA_APP_REGISTRATIONS=false` stays effective. **An unset value now resolves to `true` on the next provision.** For an older environment with independently managed registrations, explicitly set `false` before provisioning.
+
+Changing this flag does not migrate or delete registrations; switching to `false` also disables automatic Entra cleanup. Plan identity/ownership changes separately rather than toggling it to troubleshoot.
 
 ## Server configuration
 
@@ -17,7 +96,7 @@
 | `HOST` | `127.0.0.1` | Listener address; container deployment sets `0.0.0.0` |
 | `PUBLIC_BASE_URL` | `http://<HOST>:<PORT>` | Public resource/metadata/challenge base URL, without `/mcp`; trailing slashes are removed |
 
-`ENTRA_CLIENT_APP_ID` is an **azd-generated output**, not a runtime server setting. `MCP_CLIENT_ID` and `REQUESTED_SCOPE` in the guides are client/test conventions, not settings read by the server. For automatic registration creation, the deployment module derives tenant/audience and uses `MCP_REQUIRED_SCOPE` when exposing the API scope.
+`ENTRA_COWORK_CLIENT_APP_ID` is an **azd-generated output**, not a runtime server setting. `REQUESTED_SCOPE` in the guides is a test convention, not a setting read by the server. For automatic registration creation, the deployment module derives tenant/audience and uses `MCP_REQUIRED_SCOPE` when exposing the API scope.
 
 ## HTTP endpoints
 
@@ -32,7 +111,7 @@ Authenticate before sending MCP JSON. Missing/invalid tokens return 401 and a di
 
 ## OAuth client integration
 
-Configure a real client with its own application ID, the Entra tenant authority, registered callback URI, **full exposed scope**, and MCP endpoint. Use Authorization Code + PKCE for the public-client setup; the API does not handle OAuth callbacks or issue tokens. Register the client's callback, not the API URL merely because the API is remote.
+Configure Cowork with its Web-client application ID, the Entra tenant authority, registered callback URI, **full exposed scope**, and MCP endpoint using the [shared OAuth setup](../../clients/cowork-plugin/docs/oauth-setup.md). The API does not handle OAuth callbacks or issue tokens. Register the client's callback, not the API URL merely because the API is remote.
 
 Protected-resource metadata advertises the public base URL and tenant authority. **Current limitation:** `scopes_supported` is constructed as `<first configured audience>/<required scope>` in [src/app.ts](../src/app.ts). With the normal bare-GUID audience this is not the full `api://<api-app-id>/mcp.invoke` scope. It also does not represent all audience values or a custom Application ID URI.
 
@@ -45,7 +124,7 @@ Use the scope from **Expose an API** explicitly; do not promise discovery-only c
 - `whoami` exposes only allow-listed claims, not raw tokens, groups, or arbitrary payload fields. Names/usernames/IDs may still be personal data.
 - Keep issuer/JWKS overrides under trusted configuration control. Never expand audiences to include unrelated APIs to bypass authentication failures.
 - Use HTTPS for externally reachable deployments; Azure ingress terminates TLS. Configure `PUBLIC_BASE_URL` correctly when using a reverse proxy/custom domain.
-- Never put tokens or secrets in source, shell history, screenshots, or third-party token decoders. The validator/public-client setup needs no client secrets. Follow tenant policy for consent and least-privilege deployment access.
+- Never put tokens or secrets in source, shell history, screenshots, or third-party token decoders. The API validator needs no secret; the Cowork Web client's secret belongs in the token store, not server configuration. Follow tenant policy for consent and least-privilege deployment access.
 
 ## Troubleshooting
 
@@ -104,6 +183,8 @@ azd down
 
 **The Entra hook runs before teardown confirmation.** Generated registrations may already be permanently purged even if you cancel the confirmation or Azure deletion fails. Set `ENTRA_PURGE_ON_DOWN=false` before invoking `azd down` if you need to retain them.
 
+The generated client is the one Cowork uses: deleting it prevents future sign-in/token refresh and may interrupt existing use. The hook does not remove its developer-portal OAuth registration or installed Microsoft 365 plugin; manage those separately.
+
 Review `azd` confirmation prompts; do not bypass them without verifying the deletion scope. `azd down` removes the Azure resources, including the registry and its images. It is not enough to stop the Container App if you want to remove all deployed resources.
 
 #### Generated registrations: predown cleanup
@@ -114,6 +195,8 @@ The Graph Bicep extension does not delete registrations on Azure teardown. This 
 - Use generated API/client IDs and `ENTRA_APP_OWNERSHIP_TAG`; refuse missing/mismatched ownership.
 - Delete and permanently purge the owned service principal before its application, for both registrations.
 - Refuse cleanup if ownership cannot be verified; cancellation or failure of subsequent Azure teardown does not undo a purge.
+
+Provisioning persists the effective creation mode, so the default `true` path satisfies this gate without a separate `azd env set`. An unset flag before a successful provision still causes the hooks to skip cleanup.
 
 Azure CLI and sufficient Entra privileges are required. Hook warnings do **not** fail `azd down`; read the final API/client summary. Successful Azure deletion does not prove every Entra object was purged. Older untagged registrations are intentionally not cleaned up.
 
@@ -127,7 +210,7 @@ This applies to local registrations, the Azure `false` path, and deliberate manu
 
 **Portal:** In the correct tenant, inspect each **App registration** by application ID and each corresponding **Enterprise application** (service principal). Delete only the intended objects. Check the respective **Deleted applications** views where available; permanent deletion of retained soft-deleted objects may require Microsoft Graph and suitable directory privileges.
 
-**CLI:** Sign in with `az login --tenant "<registration-tenant-id>"`. For each of the API and client, look up both IDs first. The following Bash example processes **one registration at a time** and stops on failure:
+**CLI:** Sign in with `az login --tenant "<registration-tenant-id>"`. For the API and any independently managed Cowork client, look up both IDs first. The following Bash example processes **one registration at a time** and stops on failure:
 
 ```bash
 set -euo pipefail
@@ -142,7 +225,7 @@ az ad sp delete --id "$APP_ID"
 az ad app delete --id "$APP_ID"
 ```
 
-If lookup reports an absent service principal, inspect whether it is already soft-deleted or was never created, and omit only its active-delete step. Do not suppress other lookup/permission failures. For partial-script failures, there may be only one application or no service principal.
+If lookup reports an absent service principal, inspect whether it is already soft-deleted or was never created, and omit only its active-delete step. Do not suppress other lookup/permission failures.
 
 Deleting an application is soft deletion, not proof of permanent removal. To inspect retained objects, query Graph using the application ID (substitute the literal ID below for each registration):
 
@@ -160,9 +243,9 @@ az rest --method DELETE --uri "https://graph.microsoft.com/v1.0/directory/delete
 az rest --method DELETE --uri "https://graph.microsoft.com/v1.0/directory/deletedItems/<application-object-id>"
 ```
 
-For PowerShell, run each Azure CLI command on one line or use PowerShell backtick continuations, not Bash backslashes. Check `$LASTEXITCODE` after each command or use the `Invoke-Az` wrapper from the [registration guide](entra-app-registrations.md#powershell).
+For PowerShell, run each Azure CLI command on one line or use PowerShell backtick continuations, not Bash backslashes. Check `$LASTEXITCODE` after each command and stop if it is nonzero.
 
-Repeat deliberately for the other registration. Do not purge the Microsoft Azure CLI first-party application: optional preauthorization did not make you its owner.
+Repeat deliberately for each independently managed registration you intend to remove. Do not purge the Microsoft Azure CLI first-party application: optional preauthorization did not make you its owner.
 
 ### Verify cleanup and remove local state
 
