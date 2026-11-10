@@ -81,6 +81,10 @@ jobs:
             No credentials are included. This release does not deploy Azure resources,
             install tenant apps, or publish to the Microsoft 365 store.
         run: |
+          if gh release view "$PLUGIN_TAG" >/dev/null 2>&1; then
+            printf 'A release already exists for %s\n' "$PLUGIN_TAG" >&2
+            exit 1
+          fi
           gh release create "$PLUGIN_TAG" \
             "release/entra-mcp-cowork-plugin-template-${PLUGIN_VERSION}.zip" \
             --draft \
