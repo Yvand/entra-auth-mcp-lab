@@ -100,11 +100,11 @@ export async function buildPackage({
   validateIcon(entries["color.png"], 192, "color.png");
   validateIcon(entries["outline.png"], 32, "outline.png");
   if (configured) {
-    const serialized = JSON.stringify({ ...manifest, developer: undefined });
+    const serialized = JSON.stringify(manifest);
     const host = endpoint.hostname;
     if (serialized.includes("REPLACE_")
       || /(^|\.)example\.(com|net|org)$/.test(host) || host.endsWith(".invalid")) {
-      throw new Error("Replace non-developer manifest placeholders and reserved-domain MCP endpoints before configured packaging.");
+      throw new Error("Replace manifest placeholders and reserved-domain MCP endpoints before configured packaging.");
     }
   }
   entries["manifest.json"] = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`);

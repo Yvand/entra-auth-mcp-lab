@@ -21,8 +21,6 @@
 
 Save valid JSON. Keep `OAuthPluginVault`, manifest/schema version **1.29**, the connector ID, and skill folder/name unchanged. This template has one skill and one remote connector; Cowork discovers tools dynamically, so no static tool catalog is needed.
 
-The source packager schema-validates developer fields but does not check them for placeholders or reserved domains. The repository URL is a demo default, not a dedicated privacy policy or terms document.
-
 ## 2. Choose a stable app identity
 
 **Goal:** allow installed copies to be updated rather than treated as unrelated apps.
