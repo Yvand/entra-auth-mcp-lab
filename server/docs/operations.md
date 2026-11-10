@@ -82,26 +82,6 @@ An explicit `CREATE_ENTRA_APP_REGISTRATIONS=false` stays effective. **An unset v
 
 Changing this flag does not migrate or delete registrations; switching to `false` also disables automatic Entra cleanup. Plan identity/ownership changes separately rather than toggling it to troubleshoot.
 
-### Convert an existing generated client to Cowork
-
-**Goal:** update the previously generated desktop/CLI registration in place, keeping its app ID and ownership. This intentionally retires its public-client configuration; any external desktop client using it needs a separate registration.
-
-From `server/`, select the existing environment with `azd env select "<environment>"` and confirm `CREATE_ENTRA_APP_REGISTRATIONS` is `true`. Record `ENTRA_CLIENT_APP_ID` with `azd env get-value ENTRA_CLIENT_APP_ID` before provisioning.
-
-Update any saved legacy callback/name overrides; changing template defaults alone does not replace azd environment values:
-
-```bash
-azd env set ENTRA_CLIENT_REDIRECT_URI "https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect"
-azd env set ENTRA_CLIENT_DISPLAY_NAME simple-mcp-server-client-cowork
-azd provision
-```
-
-Keep a deliberate custom display name if preferred. Do not rename the azd environment or change the Graph identity key: provisioning uses the same registration.
-
-Read `ENTRA_CLIENT_APP_ID` again and confirm it is unchanged. In Entra, check the **Web** callback above, an empty Mobile/desktop redirect list, and **Allow public client flows** disabled. Existing API permission/consent and ownership remain configured.
-
-Then complete [secret creation and developer-portal registration](../../clients/cowork-plugin/docs/oauth-setup.md#2-create-the-client-secret). A matching existing portal registration can be reused; update its client credentials if needed. Re-provisioning does not create a portal entry or client secret.
-
 ## Server configuration
 
 [.env.example](../.env.example) is the local template; [src/config.ts](../src/config.ts) defines runtime behavior. Run server and `azd` commands from `server/`. For Azure, set mapped values with `azd env set` and **re-provision**; `server/.env` does not configure the Container App.

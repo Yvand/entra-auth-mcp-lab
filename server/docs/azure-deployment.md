@@ -44,8 +44,6 @@ The two tools have separate sign-ins. Use the tenant associated with your subscr
 
 If reusing an environment that explicitly sets `CREATE_ENTRA_APP_REGISTRATIONS=false`, it keeps that setting. Do not switch a deployed environment's identity setup just to follow this guide; use the [existing-registration path](azure-existing-registrations.md).
 
-For an older automatically generated desktop client, follow the [in-place Cowork conversion](operations.md#convert-an-existing-generated-client-to-cowork) before re-provisioning.
-
 ## 3. Deploy the server and registrations
 
 **Goal:** create the API registration, its Cowork Web client, and the running HTTPS server in one workflow.

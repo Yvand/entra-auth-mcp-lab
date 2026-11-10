@@ -20,6 +20,4 @@ From `server/`, run `azd env list` and select the same environment. Verify the s
 
 Automatic registration creation now defaults to `true`. If this environment uses independently managed registrations and has no explicit creation flag, set `azd env set CREATE_ENTRA_APP_REGISTRATIONS false` before provisioning. An existing explicit `false` remains effective.
 
-If it uses an older generated desktop/CLI registration, follow the [in-place Cowork conversion](operations.md#convert-an-existing-generated-client-to-cowork) before provisioning. Moving local state alone does not update its platform or saved callback.
-
 Do not delete remote resources or commit local state as part of this move. For local development, reinstall dependencies from `server/` rather than moving an old `node_modules` directory.

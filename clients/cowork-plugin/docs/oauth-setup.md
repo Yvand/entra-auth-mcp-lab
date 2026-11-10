@@ -26,7 +26,7 @@ Configure the endpoints and full scope explicitly below: this server's metadata 
 
 In the API's tenant, open [Entra admin center](https://entra.microsoft.com) > **App registrations > All applications**, and find the app by the recorded **`ENTRA_CLIENT_APP_ID`**. Its default display name is `simple-mcp-server-client-cowork`.
 
-Confirm its **Application (client) ID** matches that value and its Web callback/API permission are already configured by Bicep. It is not the API registration. If this is an older generated desktop app, complete the [in-place conversion](../../../server/docs/operations.md#convert-an-existing-generated-client-to-cowork) first.
+Confirm its **Application (client) ID** matches that value and its Web callback/API permission are already configured by Bicep. It is not the API registration.
 
 The Web callback receives Microsoft's authorization response, not an MCP request. Do not replace it with the API endpoint or a localhost URL.
 
