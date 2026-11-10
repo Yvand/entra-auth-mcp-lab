@@ -10,7 +10,7 @@ You need Git, azd, Azure CLI, and Azure provisioning/role-assignment permissions
 
 Also prepare an API registration issuing v2 access tokens and exposing the delegated scope. Reuse an existing API or follow [portal API registration](entra-app-registrations.md#1-register-the-api). You need registration/consent permissions only for the directory changes you perform.
 
-Choose the calling client for your use: Cowork needs an existing or [manually created Web client](../../clients/cowork-plugin/docs/manual-web-client.md); independently implemented desktop clients can use the separate [portal or scripted local alternatives](entra-app-registrations.md#manual-portal-setup). Azure CLI smoke tests use Azure CLI's own registration.
+For Cowork, use an existing or [manually created Web client](../../clients/cowork-plugin/docs/manual-web-client.md). Smoke tests use Azure CLI's own registration; no additional client registration is needed.
 
 ## 1. Select the deployment environment
 
@@ -31,13 +31,7 @@ azd env set MCP_REQUIRED_SCOPE mcp.invoke
 
 Replace the IDs and use your actual short scope name. `ENTRA_AUDIENCE` is the bare API app ID for v2 tokens, not the calling-client ID or full requested scope. The placeholder GUID defaults are not usable. Editing local `.env` does not configure Azure.
 
-Optionally retain your independently managed calling-client ID for your own tests:
-
-```bash
-azd env set MCP_CLIENT_ID "<calling-client-application-id>"
-```
-
-`MCP_CLIENT_ID` is bookkeeping only, not a server input. Do not store it in `ENTRA_CLIENT_APP_ID`: deployment emits empty generated API/client/ownership outputs in this mode. This does not delete your existing registrations.
+Deployment emits empty generated API/client/ownership outputs in this mode. Keep your independently managed Cowork client ID separately, rather than storing it in the generated `ENTRA_CLIENT_APP_ID` output. This does not delete your existing registrations.
 
 ## 3. Deploy and collect the endpoint
 
@@ -56,4 +50,4 @@ Keep the HTTPS endpoint, your tenant ID, and the **full scope from Expose an API
 
 Follow [live verification](testing.md#live-verification-local-or-azure). Azure CLI must be [separately preauthorized](entra-app-registrations.md#optional-azure-cli-authorization-for-smoke-tests), or use your real client's token flow.
 
-Then follow the [Cowork plugin guide](../../clients/cowork-plugin/README.md) with your existing or manually created Web-client ID. `ENTRA_CLIENT_APP_ID` is empty in this `false` mode; do not substitute a desktop-client ID. Use [operations](operations.md#update-an-azure-deployment) for updates and [Azure teardown](operations.md#azure-teardown) to remove Azure resources. The hook does not delete independently managed Entra registrations; manage them [separately](operations.md#independently-managed-registrations).
+Then follow the [Cowork plugin guide](../../clients/cowork-plugin/README.md) with your existing or manually created Web-client ID. `ENTRA_CLIENT_APP_ID` is empty in this `false` mode. Use [operations](operations.md#update-an-azure-deployment) for updates and [Azure teardown](operations.md#azure-teardown) to remove Azure resources. The hook does not delete independently managed Entra registrations; manage them [separately](operations.md#independently-managed-registrations).

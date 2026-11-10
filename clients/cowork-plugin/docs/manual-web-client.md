@@ -9,7 +9,7 @@
 - An API registration exposing the [full delegated scope](../../../server/docs/entra-app-registrations.md#understand-the-values), plus a reachable HTTPS MCP server.
 - Permission in the API's tenant to register/configure an application and arrange delegated consent.
 
-A desktop/CLI registration from the local setup examples is not the Web client described here. Reuse an existing suitable Web client if available; otherwise create one below.
+Reuse an existing suitable Web client if available; otherwise create one below.
 
 ## 1. Register the Web application
 
@@ -24,7 +24,7 @@ A desktop/CLI registration from the local setup examples is not the Web client d
    https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect
    ```
 
-The callback receives the authorization response for Microsoft 365. Do not substitute the MCP URL or a desktop loopback URI. Keep **Allow public client flows** disabled.
+The callback receives the authorization response for Microsoft 365. Do not substitute the MCP URL. Keep **Allow public client flows** disabled.
 
 ## 2. Grant delegated API access
 

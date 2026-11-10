@@ -38,7 +38,7 @@ Optional overrides are set with `azd env set <name> <value>` before provisioning
 | `ENTRA_AUTHORIZE_AZURE_CLI_CLIENT` | `true`; set `false` to disable Azure CLI preauthorization |
 | `ENTRA_AZURE_CLI_APP_ID` | `04b07795-8ddb-461a-bbee-02f9e1bf7b46`; Azure CLI's well-known app ID |
 
-The generated client has a **Web** platform, disabled public-client fallback, and no public-client redirect URIs. It uses authorization code flow with PKCE enabled in the developer portal. Bicep does not create or manage its secret: follow [shared OAuth setup](../../clients/cowork-plugin/docs/oauth-setup.md) to create one and register the client in the portal.
+The generated client has a **Web** platform with public client flows disabled. It uses authorization code flow with PKCE enabled in the developer portal. Bicep does not create or manage its secret: follow [shared OAuth setup](../../clients/cowork-plugin/docs/oauth-setup.md) to create one and register the client in the portal.
 
 Graph `uniqueName` and ownership tags depend on subscription and azd environment; repeated provisions target the same objects. Display names alone do not identify ownership. Do not rename an environment and assume its existing registrations move with it.
 
@@ -53,7 +53,6 @@ Run `azd env get-value <name>` from `server/` for individual values. `azd env ge
 | `MCP_REQUIRED_SCOPE` | Effective short scope, persisted after provisioning |
 | `ENTRA_API_APP_ID`, `ENTRA_CLIENT_APP_ID` | Generated API/Cowork Web-client IDs; empty in `false` mode |
 | `ENTRA_APP_OWNERSHIP_TAG` | Generated cleanup ownership marker; empty in `false` mode |
-| `MCP_CLIENT_ID` | Optional external-client bookkeeping; never read by the server |
 | `SERVICE_MCP_URI` | Public base URL, without `/mcp` |
 | `MCP_ENDPOINT` | Full client endpoint including `/mcp` |
 | `MCP_PROTECTED_RESOURCE_METADATA` | Full metadata URL |
@@ -97,7 +96,7 @@ Changing this flag does not migrate or delete registrations; switching to `false
 | `HOST` | `127.0.0.1` | Listener address; container deployment sets `0.0.0.0` |
 | `PUBLIC_BASE_URL` | `http://<HOST>:<PORT>` | Public resource/metadata/challenge base URL, without `/mcp`; trailing slashes are removed |
 
-`ENTRA_CLIENT_APP_ID` is an **azd-generated output**, not a runtime server setting. `MCP_CLIENT_ID` and `REQUESTED_SCOPE` in the guides are client/test conventions, not settings read by the server. For automatic registration creation, the deployment module derives tenant/audience and uses `MCP_REQUIRED_SCOPE` when exposing the API scope.
+`ENTRA_CLIENT_APP_ID` is an **azd-generated output**, not a runtime server setting. `REQUESTED_SCOPE` in the guides is a test convention, not a setting read by the server. For automatic registration creation, the deployment module derives tenant/audience and uses `MCP_REQUIRED_SCOPE` when exposing the API scope.
 
 ## HTTP endpoints
 
@@ -112,7 +111,7 @@ Authenticate before sending MCP JSON. Missing/invalid tokens return 401 and a di
 
 ## OAuth client integration
 
-Configure a client with its application ID, the Entra tenant authority, registered callback URI, **full exposed scope**, and MCP endpoint. Cowork uses the generated Web client plus [manual secret/token-store setup](../../clients/cowork-plugin/docs/oauth-setup.md); independent desktop clients use Authorization Code + PKCE without a secret. The API does not handle OAuth callbacks or issue tokens. Register the client's callback, not the API URL merely because the API is remote.
+Configure Cowork with its Web-client application ID, the Entra tenant authority, registered callback URI, **full exposed scope**, and MCP endpoint using the [shared OAuth setup](../../clients/cowork-plugin/docs/oauth-setup.md). The API does not handle OAuth callbacks or issue tokens. Register the client's callback, not the API URL merely because the API is remote.
 
 Protected-resource metadata advertises the public base URL and tenant authority. **Current limitation:** `scopes_supported` is constructed as `<first configured audience>/<required scope>` in [src/app.ts](../src/app.ts). With the normal bare-GUID audience this is not the full `api://<api-app-id>/mcp.invoke` scope. It also does not represent all audience values or a custom Application ID URI.
 
@@ -211,7 +210,7 @@ This applies to local registrations, the Azure `false` path, and deliberate manu
 
 **Portal:** In the correct tenant, inspect each **App registration** by application ID and each corresponding **Enterprise application** (service principal). Delete only the intended objects. Check the respective **Deleted applications** views where available; permanent deletion of retained soft-deleted objects may require Microsoft Graph and suitable directory privileges.
 
-**CLI:** Sign in with `az login --tenant "<registration-tenant-id>"`. For each of the API and client, look up both IDs first. The following Bash example processes **one registration at a time** and stops on failure:
+**CLI:** Sign in with `az login --tenant "<registration-tenant-id>"`. For the API and any independently managed Cowork client, look up both IDs first. The following Bash example processes **one registration at a time** and stops on failure:
 
 ```bash
 set -euo pipefail
@@ -226,7 +225,7 @@ az ad sp delete --id "$APP_ID"
 az ad app delete --id "$APP_ID"
 ```
 
-If lookup reports an absent service principal, inspect whether it is already soft-deleted or was never created, and omit only its active-delete step. Do not suppress other lookup/permission failures. For partial-script failures, there may be only one application or no service principal.
+If lookup reports an absent service principal, inspect whether it is already soft-deleted or was never created, and omit only its active-delete step. Do not suppress other lookup/permission failures.
 
 Deleting an application is soft deletion, not proof of permanent removal. To inspect retained objects, query Graph using the application ID (substitute the literal ID below for each registration):
 
@@ -244,9 +243,9 @@ az rest --method DELETE --uri "https://graph.microsoft.com/v1.0/directory/delete
 az rest --method DELETE --uri "https://graph.microsoft.com/v1.0/directory/deletedItems/<application-object-id>"
 ```
 
-For PowerShell, run each Azure CLI command on one line or use PowerShell backtick continuations, not Bash backslashes. Check `$LASTEXITCODE` after each command or use the `Invoke-Az` wrapper from the [registration scripts](entra-app-registration-scripts.md#powershell).
+For PowerShell, run each Azure CLI command on one line or use PowerShell backtick continuations, not Bash backslashes. Check `$LASTEXITCODE` after each command and stop if it is nonzero.
 
-Repeat deliberately for the other registration. Do not purge the Microsoft Azure CLI first-party application: optional preauthorization did not make you its owner.
+Repeat deliberately for each independently managed registration you intend to remove. Do not purge the Microsoft Azure CLI first-party application: optional preauthorization did not make you its owner.
 
 ### Verify cleanup and remove local state
 

@@ -94,7 +94,7 @@ if ($LASTEXITCODE -ne 0) { throw "Cannot read scope name" }
 $REQUESTED_SCOPE = "api://$API_APP_ID/$SCOPE_NAME"
 ```
 
-The construction above assumes one bare API ID and the default `api://` URI. For a custom identifier URI or multiple configured audiences, use the full scope from the actual API registration; do not concatenate a comma-separated audience list. `MCP_CLIENT_ID` is needed by your own OAuth client, but Azure CLI token acquisition uses Azure CLI's own client ID.
+The construction above assumes one bare API ID and the default `api://` URI. For a custom identifier URI or multiple configured audiences, use the full scope from the actual API registration; do not concatenate a comma-separated audience list. Azure CLI token acquisition uses Azure CLI's own client ID; no additional client registration is needed.
 
 ### 2. Check public endpoints and unauthenticated behavior
 
@@ -171,7 +171,7 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($TOKEN)) {
 }
 ```
 
-If tenant policy blocks Azure CLI, use an independently implemented client's supported token flow instead. A desktop/CLI PKCE fallback needs a [separate public-client registration](entra-app-registrations.md#manual-portal-setup), not the generated Cowork Web client. Place the resulting **access token** (not an ID token) in the test terminal's `TOKEN` variable. No client implementation is included here. Do not relax audience or scope checks to make the test pass.
+If tenant policy blocks Azure CLI, use another authorized OAuth client's supported token flow. Place the resulting **access token** (not an ID token) in the test terminal's `TOKEN` variable. Do not relax audience or scope checks to make the test pass.
 
 Never print tokens, enable shell tracing for these commands, commit them, or paste them into an external decoder. Azure CLI's cache can retain credentials beyond this terminal session; follow your organization's workstation/sign-out policy.
 

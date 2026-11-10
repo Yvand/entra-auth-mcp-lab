@@ -19,7 +19,7 @@ After deployment, follow the [Cowork plugin guide](../clients/cowork-plugin/READ
 
 - **[Azure with existing registrations](docs/azure-existing-registrations.md):** explicitly set `CREATE_ENTRA_APP_REGISTRATIONS=false` and supply the tenant and API audience.
 - **[Local development](docs/local-development.md):** run with Node.js or a local container, without azd.
-- **[Manual Entra registrations](docs/entra-app-registrations.md#manual-portal-setup)** or **[registration scripts](docs/entra-app-registration-scripts.md):** for those alternative paths, not a prerequisite for the recommended Azure deployment.
+- **[Manual API registration](docs/entra-app-registrations.md#manual-portal-setup):** for those alternative paths, not a prerequisite for the recommended Azure deployment.
 
 ## Reference and development
 

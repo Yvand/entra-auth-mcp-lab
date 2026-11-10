@@ -2,7 +2,7 @@
 
 ## Local setup and validation
 
-Use the root README for navigation. The recommended paths are `server/docs/azure-deployment.md` (automatic Entra registrations) and `clients/cowork-plugin/README.md` (configure a downloaded release template with ZIP tools). Alternatives live in `server/docs/azure-existing-registrations.md`, `server/docs/local-development.md`, and `clients/cowork-plugin/docs/from-source.md`. Run the following development commands from `server/` (`cd server` from the repository root). See `server/docs/entra-app-registrations.md` for ID/scope and portal reference, `server/docs/entra-app-registration-scripts.md` for scripted registration, and `server/docs/testing.md` for offline versus live tests.
+Use the root README for navigation. The recommended paths are `server/docs/azure-deployment.md` (automatic Entra registrations) and `clients/cowork-plugin/README.md` (configure a downloaded release template with ZIP tools). Alternatives live in `server/docs/azure-existing-registrations.md`, `server/docs/local-development.md`, and `clients/cowork-plugin/docs/from-source.md`. Run the following development commands from `server/` (`cd server` from the repository root). See `server/docs/entra-app-registrations.md` for ID/scope and portal reference, and `server/docs/testing.md` for offline versus live tests.
 
 - Install dependencies: `npm install`
 - Create local env from the sample: `cp .env.example .env`
@@ -52,6 +52,6 @@ Offline automated tests provide their own configuration and local signing keys; 
 
 ## Copilot Cowork plugin
 
-`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep shared OAuth, manifest, and installation instructions in `clients/cowork-plugin/docs/`. Automatic Azure deployment creates the Cowork Web client (`simple-mcp-server-client-cowork` by default); reuse `ENTRA_CLIENT_APP_ID` and keep secret creation/developer-portal registration manual. Preserve its stable Graph identity key and cleanup ownership. Desktop/CLI registration examples are separate local alternatives.
+`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep shared OAuth, manifest, and installation instructions in `clients/cowork-plugin/docs/`. Automatic Azure deployment creates the Cowork Web client (`simple-mcp-server-client-cowork` by default); reuse `ENTRA_CLIENT_APP_ID` and keep secret creation/developer-portal registration manual. Preserve its stable Graph identity key and cleanup ownership. Local and Azure live checks use Azure CLI's own registration, authorized for the API scope; no additional client registration is needed.
 
 Run `npm ci`, `npm test`, and `npm run package` from `clients/cowork-plugin/` for offline validation and template packaging. Use `npm run package -- --configured` only after replacing placeholders. `.github/workflows/release-plugin.yml` releases template ZIPs for strict `releases/cowork-plugin/vX.Y.Z` tags; versions are stamped in memory, not into the source manifest or server.
