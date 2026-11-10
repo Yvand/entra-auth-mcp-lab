@@ -237,7 +237,7 @@ main() {
   fi
 
   cleanup_app "API app" "${ENTRA_API_APP_ID:-}" "${ENTRA_APP_OWNERSHIP_TAG:-}"
-  cleanup_app "client app" "${ENTRA_CLIENT_APP_ID:-}" "${ENTRA_APP_OWNERSHIP_TAG:-}"
+  cleanup_app "client app" "${ENTRA_COWORK_CLIENT_APP_ID:-}" "${ENTRA_APP_OWNERSHIP_TAG:-}"
 
   log "Summary:"
   log "  - API app: ${API_RESULT}"

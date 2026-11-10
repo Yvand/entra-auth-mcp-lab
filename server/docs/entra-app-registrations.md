@@ -15,7 +15,7 @@ Manual setup is for [local development](local-development.md) or [Azure with exi
 | API Application ID URI | Identifies the exposed API; normally `api://<api-app-id>` |
 | Delegated scope name | `MCP_REQUIRED_SCOPE`, normally `mcp.invoke` |
 | Full requested scope | Application ID URI plus scope name: `api://<api-app-id>/mcp.invoke`; requested by the client |
-| Cowork client's Application (client) ID | Client OAuth configuration, not the server's audience; `ENTRA_CLIENT_APP_ID` is the generated Cowork client |
+| Cowork client's Application (client) ID | Client OAuth configuration, not the server's audience; `ENTRA_COWORK_CLIENT_APP_ID` is the generated Cowork client |
 | Developer-portal OAuth registration ID | Auth config ID placed in manifest `authorization.referenceId`; not an Entra application ID |
 | Application/service-principal object ID | Directory administration and purge identifier, not a token audience |
 

@@ -64,12 +64,12 @@ Wait for both provisioning and application deployment to finish. A provision-onl
 azd env get-value MCP_ENDPOINT
 azd env get-value ENTRA_TENANT_ID
 azd env get-value ENTRA_API_APP_ID
-azd env get-value ENTRA_CLIENT_APP_ID
+azd env get-value ENTRA_COWORK_CLIENT_APP_ID
 ```
 
 Record the HTTPS endpoint (including `/mcp`), tenant ID, API app ID, and Cowork client ID. The full requested scope is **`api://<ENTRA_API_APP_ID>/mcp.invoke`** for this default setup.
 
-`ENTRA_CLIENT_APP_ID` identifies the generated **Cowork Web client**, not the API or the later developer-portal OAuth registration. Use it when creating the client's secret and filling in the portal's **Client ID** field. See the [ID/scope reference](entra-app-registrations.md#understand-the-values) if needed.
+`ENTRA_COWORK_CLIENT_APP_ID` identifies the generated **Cowork Web client**, not the API or the later developer-portal OAuth registration. Use it when creating the client's secret and filling in the portal's **Client ID** field. See the [ID/scope reference](entra-app-registrations.md#understand-the-values) if needed.
 
 azd saves deployment values in the selected `.azure/<environment>/` state, including the effective creation flag used by cleanup. It does not export them into your terminal.
 

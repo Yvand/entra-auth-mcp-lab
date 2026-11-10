@@ -51,7 +51,7 @@ Run `azd env get-value <name>` from `server/` for individual values. `azd env ge
 | `CREATE_ENTRA_APP_REGISTRATIONS` | Effective creation mode, persisted after provisioning for the cleanup hooks |
 | `ENTRA_TENANT_ID`, `ENTRA_AUDIENCE` | Effective server tenant and audience; manual inputs in `false` mode |
 | `MCP_REQUIRED_SCOPE` | Effective short scope, persisted after provisioning |
-| `ENTRA_API_APP_ID`, `ENTRA_CLIENT_APP_ID` | Generated API/Cowork Web-client IDs; empty in `false` mode |
+| `ENTRA_API_APP_ID`, `ENTRA_COWORK_CLIENT_APP_ID` | Generated API/Cowork Web-client IDs; empty in `false` mode |
 | `ENTRA_APP_OWNERSHIP_TAG` | Generated cleanup ownership marker; empty in `false` mode |
 | `SERVICE_MCP_URI` | Public base URL, without `/mcp` |
 | `MCP_ENDPOINT` | Full client endpoint including `/mcp` |
@@ -96,7 +96,7 @@ Changing this flag does not migrate or delete registrations; switching to `false
 | `HOST` | `127.0.0.1` | Listener address; container deployment sets `0.0.0.0` |
 | `PUBLIC_BASE_URL` | `http://<HOST>:<PORT>` | Public resource/metadata/challenge base URL, without `/mcp`; trailing slashes are removed |
 
-`ENTRA_CLIENT_APP_ID` is an **azd-generated output**, not a runtime server setting. `REQUESTED_SCOPE` in the guides is a test convention, not a setting read by the server. For automatic registration creation, the deployment module derives tenant/audience and uses `MCP_REQUIRED_SCOPE` when exposing the API scope.
+`ENTRA_COWORK_CLIENT_APP_ID` is an **azd-generated output**, not a runtime server setting. `REQUESTED_SCOPE` in the guides is a test convention, not a setting read by the server. For automatic registration creation, the deployment module derives tenant/audience and uses `MCP_REQUIRED_SCOPE` when exposing the API scope.
 
 ## HTTP endpoints
 

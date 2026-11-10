@@ -2,7 +2,7 @@
 
 [Recommended plugin setup](../README.md) | [Shared OAuth setup](oauth-setup.md)
 
-**Goal:** prepare a Cowork Web client when you use a local server or externally managed registrations and do not have a generated one. **Skip this guide for the recommended automatic Azure deployment**: reuse its `ENTRA_CLIENT_APP_ID`.
+**Goal:** prepare a Cowork Web client when you use a local server or externally managed registrations and do not have a generated one. **Skip this guide for the recommended automatic Azure deployment**: reuse its `ENTRA_COWORK_CLIENT_APP_ID`.
 
 ## Prerequisites
 
@@ -36,4 +36,4 @@ In **API permissions > Add a permission**, find your API under **My APIs** or se
 
 **Goal:** store the client's credentials and OAuth endpoints outside the plugin.
 
-Return to **[Create the client secret](oauth-setup.md#2-create-the-client-secret)** and continue through developer-portal registration. Use your recorded Web-client ID wherever that guide refers to `ENTRA_CLIENT_APP_ID`; no generated output is available in the Azure `false` path.
+Return to **[Create the client secret](oauth-setup.md#2-create-the-client-secret)** and continue through developer-portal registration. Use your recorded Web-client ID wherever that guide refers to `ENTRA_COWORK_CLIENT_APP_ID`; no generated output is available in the Azure `false` path.

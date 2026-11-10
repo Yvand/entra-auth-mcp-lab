@@ -27,7 +27,7 @@ The commands below use `1.2.3` as an example; substitute your downloaded version
 
 **Goal:** identify the server and permission this plugin will use.
 
-Record the **HTTPS MCP endpoint**, **tenant ID**, **full requested scope**, and **Cowork client ID** (`ENTRA_CLIENT_APP_ID`) from [server deployment step 4](../../server/docs/azure-deployment.md#4-collect-the-client-connection-values). With an independently managed API, use the actual scope shown in **Expose an API** and your existing or [manually created Web client](docs/manual-web-client.md).
+Record the **HTTPS MCP endpoint**, **tenant ID**, **full requested scope**, and **Cowork client ID** (`ENTRA_COWORK_CLIENT_APP_ID`) from [server deployment step 4](../../server/docs/azure-deployment.md#4-collect-the-client-connection-values). With an independently managed API, use the actual scope shown in **Expose an API** and your existing or [manually created Web client](docs/manual-web-client.md).
 
 ## 3. Complete the OAuth prerequisites
 
@@ -35,7 +35,7 @@ Record the **HTTPS MCP endpoint**, **tenant ID**, **full requested scope**, and 
 
 Follow **[Set up the Cowork OAuth client](docs/oauth-setup.md)**. Reuse the generated **Web client** (named `simple-mcp-server-client-cowork` by default), create its secret manually, and register it in the **Teams developer portal**. Bicep has already configured its callback and API permission/consent; do not create a second app.
 
-Return here with the resulting **OAuth client registration ID** (auth config ID). This is not the API ID or `ENTRA_CLIENT_APP_ID`: only the portal's auth config ID goes in the manifest.
+Return here with the resulting **OAuth client registration ID** (auth config ID). This is not the API ID or `ENTRA_COWORK_CLIENT_APP_ID`: only the portal's auth config ID goes in the manifest.
 
 ## 4. Extract and customize the template
 

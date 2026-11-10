@@ -7,7 +7,7 @@
 ## Prerequisites
 
 - A deployed HTTPS server and the connection values below.
-- The generated Cowork client ID (`ENTRA_CLIENT_APP_ID`) and permission in its tenant to manage that app/create a secret.
+- The generated Cowork client ID (`ENTRA_COWORK_CLIENT_APP_ID`) and permission in its tenant to manage that app/create a secret.
 - Access to **Tools > OAuth client registration** in the [Teams developer portal](https://dev.teams.microsoft.com/tools).
 
 The [recommended Azure deployment](../../../server/docs/azure-deployment.md) creates both the API and this Web client, including its API permission/consent. Do not register another app. Without a generated client, reuse a suitable existing Web client or follow the separate [manual Web-client procedure](manual-web-client.md) before step 2.
@@ -24,7 +24,7 @@ Configure the endpoints and full scope explicitly below: this server's metadata 
 
 **Goal:** locate the app Microsoft 365 will use, without creating a duplicate.
 
-In the API's tenant, open [Entra admin center](https://entra.microsoft.com) > **App registrations > All applications**, and find the app by the recorded **`ENTRA_CLIENT_APP_ID`**. Its default display name is `simple-mcp-server-client-cowork`.
+In the API's tenant, open [Entra admin center](https://entra.microsoft.com) > **App registrations > All applications**, and find the app by the recorded **`ENTRA_COWORK_CLIENT_APP_ID`**. Its default display name is `simple-mcp-server-client-cowork`.
 
 Confirm its **Application (client) ID** matches that value and its Web callback/API permission are already configured by Bicep. It is not the API registration.
 
@@ -48,7 +48,7 @@ Open [Teams developer portal](https://dev.teams.microsoft.com/tools) and select 
 | --- | --- |
 | Registration name | A recognizable name for this setup |
 | Base URL | Your actual HTTPS MCP endpoint, matching the manifest connector URL; follow the portal's URL-matching requirements |
-| Client ID | The Cowork Web-client ID (`ENTRA_CLIENT_APP_ID` for automatic deployment), not the API ID |
+| Client ID | The Cowork Web-client ID (`ENTRA_COWORK_CLIENT_APP_ID` for automatic deployment), not the API ID |
 | Client secret | That Web client's secret **Value** |
 | Authorization endpoint | `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/authorize` |
 | Token endpoint | `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token` |

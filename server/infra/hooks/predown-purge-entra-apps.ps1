@@ -222,7 +222,7 @@ function Main {
         'client app' = 'skipped (no app id)'
     }
     Remove-EntraAppAndPurge -Label 'API app' -AppId $env:ENTRA_API_APP_ID -OwnershipTag $env:ENTRA_APP_OWNERSHIP_TAG
-    Remove-EntraAppAndPurge -Label 'client app' -AppId $env:ENTRA_CLIENT_APP_ID -OwnershipTag $env:ENTRA_APP_OWNERSHIP_TAG
+    Remove-EntraAppAndPurge -Label 'client app' -AppId $env:ENTRA_COWORK_CLIENT_APP_ID -OwnershipTag $env:ENTRA_APP_OWNERSHIP_TAG
 
     Write-Log "Summary:"
     foreach ($label in @('API app', 'client app')) {
