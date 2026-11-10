@@ -4,7 +4,7 @@
 
 **Goal:** download a template, connect it to your Entra-protected MCP server, and install it in **Microsoft 365 Copilot Cowork**. Its single skill calls both `whoami` and `echo`. This is not a Copilot Chat declarative agent or a GitHub Copilot CLI plugin.
 
-**The release ZIP is a configuration template, not an install-ready app.** You must replace its endpoint, OAuth registration reference, and developer details, then create a new ZIP. No server or credentials are included.
+**The release ZIP is a configuration template, not an install-ready app.** You must replace its endpoint and OAuth registration reference, then create a new ZIP. No server or credentials are included.
 
 ## Prerequisites
 
@@ -39,7 +39,7 @@ Return here with the resulting **OAuth client registration ID** (auth config ID)
 
 ## 4. Extract and customize the template
 
-**Goal:** replace the template values with your endpoint, OAuth registration ID, and publisher details.
+**Goal:** set your endpoint and OAuth registration ID, and review the supplied publisher details.
 
 From the folder containing the downloaded ZIP, extract it. Bash:
 

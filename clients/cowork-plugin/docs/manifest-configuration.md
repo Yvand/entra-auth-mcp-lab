@@ -4,22 +4,24 @@
 
 **Goal:** turn the shipped template into a package for your endpoint and tenant setup. Use this same checklist for a downloaded `manifest.json` or `appPackage/manifest.json` in a source checkout.
 
-**Prerequisites:** HTTPS MCP endpoint, [OAuth registration ID](oauth-setup.md), publisher details, and real privacy/terms URLs.
+**Prerequisites:** HTTPS MCP endpoint and [OAuth registration ID](oauth-setup.md). Developer details have demo defaults; customizing them is optional for demo packaging.
 
 ## 1. Replace the connection and developer fields
 
-**Goal:** connect the package to your server and identify its publisher. Edit the existing fields; do not add OAuth credentials.
+**Goal:** connect the package to your server and review its publisher details. Replace the connection fields and optionally customize the developer defaults; do not add OAuth credentials.
 
 | Field | Value |
 | --- | --- |
 | `agentConnectors[0].toolSource.remoteMcpServer.mcpServerUrl` | Your HTTPS endpoint ending in `/mcp`, without credentials, query, or fragment |
 | `agentConnectors[0].toolSource.remoteMcpServer.authorization.referenceId` | OAuth client registration ID from the developer portal, not `ENTRA_COWORK_CLIENT_APP_ID` or the API app ID |
-| `developer.name` | Your developer/publisher name |
-| `developer.websiteUrl` | Your project website; the repository URL is the demo default |
-| `developer.privacyUrl` | Your real privacy information URL, replacing `example.com` |
-| `developer.termsOfUseUrl` | Your real terms URL, replacing `example.com` |
+| `developer.name` | Defaults to `Yvand`; optionally use your developer/publisher name |
+| `developer.websiteUrl` | Defaults to the repository URL; optionally use your project website |
+| `developer.privacyUrl` | Defaults to the repository URL; use appropriate privacy information when sharing independently |
+| `developer.termsOfUseUrl` | Defaults to the repository URL; use appropriate terms when sharing independently |
 
 Save valid JSON. Keep `OAuthPluginVault`, manifest/schema version **1.29**, the connector ID, and skill folder/name unchanged. This template has one skill and one remote connector; Cowork discovers tools dynamically, so no static tool catalog is needed.
+
+The source packager schema-validates developer fields but does not check them for placeholders or reserved domains. The repository URL is a demo default, not a dedicated privacy policy or terms document.
 
 ## 2. Choose a stable app identity
 

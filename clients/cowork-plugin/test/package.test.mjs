@@ -88,22 +88,80 @@ test("configured packaging refuses the shipped placeholders", async () => {
   await assert.rejects(buildPackage({ configured: true }), /Replace.*placeholders/);
 });
 
-test("configured package requires endpoint, OAuth reference, and developer replacements", async () => {
+test("configured package accepts the shipped developer defaults after connection setup", async () => {
   await fixture(async (directory, manifest) => {
     const remote = manifest.agentConnectors[0].toolSource.remoteMcpServer;
     remote.mcpServerUrl = "https://demo.contoso.com/mcp";
     remote.authorization.referenceId = "demo-token-vault-registration";
     await saveManifest(directory, manifest);
-    await assert.rejects(buildPackage({ directory, configured: true }), /placeholders/);
-    manifest.developer.name = "Demo Developer";
-    manifest.developer.privacyUrl = "https://demo.contoso.com/privacy";
-    manifest.developer.termsOfUseUrl = "https://demo.contoso.com/terms";
-    await saveManifest(directory, manifest);
     const result = await buildPackage({ directory, configured: true });
     assert.equal(result.fileName, "entra-mcp-cowork-plugin-configured-1.0.0.zip");
     assert.equal(result.manifest.agentConnectors[0].toolSource.remoteMcpServer.mcpServerUrl,
       "https://demo.contoso.com/mcp");
+    const packaged = JSON.parse(strFromU8(unzipSync(result.bytes)["manifest.json"]));
+    assert.deepEqual(packaged.developer, manifest.developer);
   });
+});
+
+test("configured packaging preserves developer placeholders and reserved-domain URLs", async () => {
+  await fixture(async (directory, manifest) => {
+    const remote = manifest.agentConnectors[0].toolSource.remoteMcpServer;
+    remote.mcpServerUrl = "https://demo.contoso.com/mcp";
+    remote.authorization.referenceId = "demo-token-vault-registration";
+    manifest.developer.name = "REPLACE_WITH_DEVELOPER_NAME";
+    manifest.developer.websiteUrl = "https://example.com/REPLACE_WEBSITE";
+    manifest.developer.privacyUrl = "https://privacy.example.net/REPLACE_PRIVACY";
+    manifest.developer.termsOfUseUrl = "https://demo.invalid/REPLACE_TERMS";
+    await saveManifest(directory, manifest);
+    const result = await buildPackage({ directory, configured: true });
+    const packaged = JSON.parse(strFromU8(unzipSync(result.bytes)["manifest.json"]));
+    assert.deepEqual(packaged.developer, manifest.developer);
+  });
+});
+
+test("configured packaging still rejects reserved-domain MCP endpoints", async () => {
+  for (const host of ["example.com", "mcp.example.com", "example.net", "example.org", "demo.invalid"]) {
+    await fixture(async (directory, manifest) => {
+      const remote = manifest.agentConnectors[0].toolSource.remoteMcpServer;
+      remote.mcpServerUrl = `https://${host}/mcp`;
+      remote.authorization.referenceId = "demo-token-vault-registration";
+      await saveManifest(directory, manifest);
+      await assert.rejects(buildPackage({ directory, configured: true }), /reserved-domain MCP endpoints/);
+    });
+  }
+});
+
+test("configured packaging still rejects placeholders outside developer fields", async () => {
+  for (const mutate of [
+    (m) => { m.agentConnectors[0].toolSource.remoteMcpServer.authorization.referenceId = "REPLACE_OAUTH"; },
+    (m) => { m.description.full = "REPLACE_DESCRIPTION"; },
+  ]) {
+    await fixture(async (directory, manifest) => {
+      const remote = manifest.agentConnectors[0].toolSource.remoteMcpServer;
+      remote.mcpServerUrl = "https://demo.contoso.com/mcp";
+      remote.authorization.referenceId = "demo-token-vault-registration";
+      mutate(manifest);
+      await saveManifest(directory, manifest);
+      await assert.rejects(buildPackage({ directory, configured: true }), /non-developer manifest placeholders/);
+    });
+  }
+});
+
+test("configured packaging retains developer schema validation", async () => {
+  for (const mutate of [
+    (m) => { delete m.developer.name; },
+    (m) => { m.developer.name = 42; },
+    (m) => { m.developer.privacyUrl = "not-a-url"; },
+  ]) {
+    await fixture(async (directory, manifest) => {
+      const remote = manifest.agentConnectors[0].toolSource.remoteMcpServer;
+      remote.mcpServerUrl = "https://demo.contoso.com/mcp";
+      remote.authorization.referenceId = "demo-token-vault-registration";
+      mutate(manifest);
+      await saveManifest(directory, manifest);
+      await assert.rejects(buildPackage({ directory, configured: true }), /Invalid manifest/);
+    });
+  }
 });
 
 test("official schema rejects unknown and malformed manifest fields", async () => {
