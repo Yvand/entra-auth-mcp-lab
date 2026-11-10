@@ -88,16 +88,11 @@ test("configured packaging refuses the shipped placeholders", async () => {
   await assert.rejects(buildPackage({ configured: true }), /Replace.*placeholders/);
 });
 
-test("configured package requires endpoint, OAuth reference, and developer replacements", async () => {
+test("configured package accepts configured connection values", async () => {
   await fixture(async (directory, manifest) => {
     const remote = manifest.agentConnectors[0].toolSource.remoteMcpServer;
     remote.mcpServerUrl = "https://demo.contoso.com/mcp";
     remote.authorization.referenceId = "demo-token-vault-registration";
-    await saveManifest(directory, manifest);
-    await assert.rejects(buildPackage({ directory, configured: true }), /placeholders/);
-    manifest.developer.name = "Demo Developer";
-    manifest.developer.privacyUrl = "https://demo.contoso.com/privacy";
-    manifest.developer.termsOfUseUrl = "https://demo.contoso.com/terms";
     await saveManifest(directory, manifest);
     const result = await buildPackage({ directory, configured: true });
     assert.equal(result.fileName, "entra-mcp-cowork-plugin-configured-1.0.0.zip");

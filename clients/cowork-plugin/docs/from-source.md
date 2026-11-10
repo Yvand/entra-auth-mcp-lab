@@ -30,7 +30,7 @@ Follow [OAuth setup](oauth-setup.md) if not already done: reuse the generated We
 
 ## 3. Customize the manifest
 
-**Goal:** replace deployment/publisher placeholders without changing the skill and connector structure.
+**Goal:** replace connection placeholders and optionally customize the developer defaults without changing the skill and connector structure.
 
 Edit **`appPackage/manifest.json`** using the shared [manifest checklist](manifest-configuration.md), including a stable tenant-app GUID and appropriate version.
 
@@ -48,7 +48,7 @@ This creates `build/entra-mcp-cowork-plugin-configured-<manifest-version>.zip`. 
 npm run package -- --configured --version 1.0.1
 ```
 
-The packager checks the [pinned official schema](../schema/README.md), skill/connector shape, icon dimensions, and [four-file allow-list](manifest-configuration.md#3-check-the-package-layout). Configured mode also rejects documented endpoint, OAuth-reference, and developer placeholders. It does not contact Microsoft 365, Entra, or the server and does not prove authentication works.
+The packager checks the [pinned official schema](../schema/README.md), skill/connector shape, icon dimensions, and [four-file allow-list](manifest-configuration.md#3-check-the-package-layout). Configured mode also rejects `REPLACE_` markers and reserved-domain MCP endpoints (`example.com`, `example.net`, `example.org`, their subdomains, and `.invalid` hosts). It does not contact Microsoft 365, Entra, or the server and does not prove authentication works.
 
 To validate an edited download with this tool, put its four files in a checkout's `appPackage/`, preserving the skill subfolder, then run configured packaging. Use a disposable checkout if you need to preserve the original template.
 

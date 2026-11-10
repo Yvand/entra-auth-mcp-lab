@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "id": "62c65ced-35ae-47c3-af55-1753d48a701b",
   "developer": {
-    "name": "REPLACE_WITH_DEVELOPER_NAME",
+    "name": "Yvand",
     "websiteUrl": "https://github.com/Yvand/entra-oauth-mcp-server",
-    "privacyUrl": "https://example.com/privacy",
-    "termsOfUseUrl": "https://example.com/terms"
+    "privacyUrl": "https://github.com/Yvand/entra-oauth-mcp-server",
+    "termsOfUseUrl": "https://github.com/Yvand/entra-oauth-mcp-server"
   },
   "name": {
     "short": "Entra MCP Demo",
@@ -15,7 +15,7 @@
   },
   "description": {
     "short": "Learn delegated MCP authentication with identity and echo tools.",
-    "full": "A learning demo with one skill that calls whoami and echo on an Entra-protected remote MCP server. Configure the server endpoint, OAuth registration reference, and developer details before installation. Requires Microsoft 365 Copilot Cowork."
+    "full": "A learning demo with one skill that calls whoami and echo on an Entra-protected remote MCP server."
   },
   "icons": {
     "color": "color.png",

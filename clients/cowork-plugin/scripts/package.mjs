@@ -101,14 +101,10 @@ export async function buildPackage({
   validateIcon(entries["outline.png"], 32, "outline.png");
   if (configured) {
     const serialized = JSON.stringify(manifest);
+    const host = endpoint.hostname;
     if (serialized.includes("REPLACE_")
-      || [remote.mcpServerUrl, ...Object.values(manifest.developer).filter(
-        (value) => typeof value === "string" && value.startsWith("https://"),
-      )].some((value) => {
-        const host = new URL(value).hostname;
-        return /(^|\.)example\.(com|net|org)$/.test(host) || host.endsWith(".invalid");
-      })) {
-      throw new Error("Replace endpoint, OAuth reference, and developer placeholders before configured packaging.");
+      || /(^|\.)example\.(com|net|org)$/.test(host) || host.endsWith(".invalid")) {
+      throw new Error("Replace manifest placeholders and reserved-domain MCP endpoints before configured packaging.");
     }
   }
   entries["manifest.json"] = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`);
