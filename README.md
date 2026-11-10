@@ -11,13 +11,20 @@ A learning demo with an Entra-protected MCP server and a **Microsoft 365 Copilot
 
 ## Other approaches and reference
 
+### Server
+
 | Goal | Guide |
 | --- | --- |
 | Deploy with existing Entra registrations | [Alternative Azure setup](server/docs/azure-existing-registrations.md) |
 | Run or develop the server locally | [Local development](server/docs/local-development.md) |
-| Build the plugin from source | [Source packaging](clients/cowork-plugin/docs/from-source.md) |
 | Understand the server, configuration, or tests | [Server overview](server/README.md) |
-| Publish a plugin template release | [Maintainer release guide](clients/cowork-plugin/docs/releases.md) |
 | Use a checkout from before the server directory move | [Existing-checkout migration](server/docs/existing-checkouts.md) |
+
+### Client
+
+| Goal | Guide |
+| --- | --- |
+| Build the plugin from source | [Source packaging](clients/cowork-plugin/docs/from-source.md) |
+| Publish a plugin template release | [Maintainer release guide](clients/cowork-plugin/docs/releases.md) |
 
 The server and plugin have independent setup and versioning. Run server commands from `server/` and plugin source commands from `clients/cowork-plugin/`; each guide states its starting directory.
