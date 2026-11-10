@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.4/schema.json",
+  "schema_version": "v2.4",
+  "name_for_human": "Entra MCP",
+  "description_for_human": "Identify the signed-in user and echo a message.",
+  "namespace": "EntraMcp",
+  "functions": [],
+  "runtimes": [
+    {
+      "type": "RemoteMCPServer",
+      "spec": {
+        "url": "${{MCP_ENDPOINT}}"
+      },
+      "run_for_functions": ["*"],
+      "auth": {
+        "type": "OAuthPluginVault",
+        "reference_id": "${{MCP_AUTH_CONFIG_ID}}"
+      }
+    }
+  ]
+}

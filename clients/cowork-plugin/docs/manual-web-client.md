@@ -2,38 +2,20 @@
 
 [Recommended plugin setup](../README.md) | [Shared OAuth setup](oauth-setup.md)
 
-**Goal:** prepare a Cowork Web client when you use a local server or externally managed registrations and do not have a generated one. **Skip this guide for the recommended automatic Azure deployment**: reuse its `ENTRA_COWORK_CLIENT_APP_ID`.
+**Goal:** prepare a Web client when no generated/suitable client exists. For the recommended Azure path, reuse `ENTRA_COPILOT_CLIENT_APP_ID`; do not create another registration.
 
 ## Prerequisites
 
-- An API registration exposing the [full delegated scope](../../../server/docs/entra-app-registrations.md#understand-the-values), plus a reachable HTTPS MCP server.
-- Permission in the API's tenant to register/configure an application and arrange delegated consent.
-
-Reuse an existing suitable Web client if available; otherwise create one below.
+Use the [shared manual Web-client guide](../../docs/manual-web-client.md#prerequisites) for permission and API prerequisites.
 
 ## 1. Register the Web application
 
-**Goal:** identify the application that Microsoft 365 uses to sign users into your API.
-
-1. In the API's tenant, open [Entra admin center](https://entra.microsoft.com) > **App registrations > New registration**.
-2. Name it, for example, `simple-mcp-server-client-cowork`, choose **Accounts in this organizational directory only**, and register it.
-3. Record its **Application (client) ID**, separately from the API ID.
-4. Open **Authentication > Add a platform > Web** and add this exact callback:
-
-   ```text
-   https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect
-   ```
-
-The callback receives the authorization response for Microsoft 365. Do not substitute the MCP URL. Keep **Allow public client flows** disabled.
+Follow [register the Web application](../../docs/manual-web-client.md#1-register-the-web-application). Both demos use the same Teams callback and can reuse this client.
 
 ## 2. Grant delegated API access
 
-**Goal:** allow the Web client to request the API's scope on behalf of a user.
-
-In **API permissions > Add a permission**, find your API under **My APIs** or search its app ID under **APIs my organization uses**. Choose **Delegated permissions** and add `mcp.invoke` (or your actual scope). Grant admin consent where required or ask an authorized administrator.
+Follow [grant delegated API access](../../docs/manual-web-client.md#2-grant-delegated-api-access). Consent for the API scope is required.
 
 ## 3. Complete the shared OAuth procedure
 
-**Goal:** store the client's credentials and OAuth endpoints outside the plugin.
-
-Return to **[Create the client secret](oauth-setup.md#2-create-the-client-secret)** and continue through developer-portal registration. Use your recorded Web-client ID wherever that guide refers to `ENTRA_COWORK_CLIENT_APP_ID`; no generated output is available in the Azure `false` path.
+Return to [Cowork OAuth setup](oauth-setup.md#2-create-the-client-secret), using your independently managed Web-client ID.

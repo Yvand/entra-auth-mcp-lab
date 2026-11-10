@@ -1,0 +1,98 @@
+name: Release Copilot declarative agent
+
+on:
+  push:
+    tags:
+      - releases/declarative-agent/v*
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-agent-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: clients/declarative-agent/package-lock.json
+      - name: Install packaging dependencies
+        working-directory: clients/declarative-agent
+        run: npm ci --ignore-scripts
+      - name: Validate the complete release tag
+        id: version
+        working-directory: clients/declarative-agent
+        env:
+          AGENT_TAG: ${{ github.ref_name }}
+        run: |
+          VERSION=$(node --input-type=module -e 'import { versionFromTag } from "./scripts/package.mjs"; console.log(versionFromTag(process.env.AGENT_TAG));')
+          printf 'version=%s\n' "$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Test packaging
+        working-directory: clients/declarative-agent
+        run: npm test
+      - name: Build configuration template
+        working-directory: clients/declarative-agent
+        env:
+          AGENT_TAG: ${{ github.ref_name }}
+        run: npm run package -- --tag "$AGENT_TAG"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: agent-template
+          path: clients/declarative-agent/build/entra-mcp-declarative-agent-template-${{ steps.version.outputs.version }}.zip
+          if-no-files-found: error
+          compression-level: 0
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: agent-template
+          path: release
+      - name: Create draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          AGENT_TAG: ${{ github.ref_name }}
+          AGENT_VERSION: ${{ needs.package.outputs.version }}
+          RELEASE_NOTES: |
+            Microsoft 365 Copilot declarative-agent configuration template.
+
+            For demo users who want to configure and upload an agent without cloning
+            the repository or using Agents Toolkit. Developers can use the ATK source
+            project in clients/declarative-agent.
+
+            This ZIP is NOT install-ready. Set your own app GUID, HTTPS MCP endpoint,
+            OAuthPluginVault auth config ID, and publisher/privacy/terms details,
+            then repackage and install into an eligible tenant.
+
+            Setup: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/clients/declarative-agent/README.md
+
+            The agent calls whoami and echo on the existing Entra-protected MCP server.
+            No credentials, ATK executable, or running server are included. This release
+            does not deploy Azure resources, register OAuth, install tenant apps, or
+            publish to the Microsoft 365 store.
+        run: |
+          if gh release view "$AGENT_TAG" >/dev/null 2>&1; then
+            printf 'A release already exists for %s\n' "$AGENT_TAG" >&2
+            exit 1
+          fi
+          gh release create "$AGENT_TAG" \
+            "release/entra-mcp-declarative-agent-template-${AGENT_VERSION}.zip" \
+            --draft \
+            --verify-tag \
+            --title "Copilot declarative agent ${AGENT_VERSION} (configuration template)" \
+            --notes "$RELEASE_NOTES"

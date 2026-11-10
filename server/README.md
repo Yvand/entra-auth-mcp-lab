@@ -1,6 +1,6 @@
 # Entra-protected MCP server
 
-[Repository overview](../README.md) | [Cowork plugin](../clients/cowork-plugin/README.md)
+[Repository overview](../README.md) | [Cowork plugin](../clients/cowork-plugin/README.md) | [Declarative agent](../clients/declarative-agent/README.md)
 
 A small TypeScript [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that validates Microsoft Entra **delegated access tokens** before running tools. It uses Express and stateless Streamable HTTP; clients send a bearer token on every `POST /mcp`.
 
@@ -13,7 +13,7 @@ A small TypeScript [Model Context Protocol (MCP)](https://modelcontextprotocol.i
 
 **[Follow the Azure deployment walkthrough](docs/azure-deployment.md).** It creates the HTTPS server and Entra registrations with `azd up`. `CREATE_ENTRA_APP_REGISTRATIONS` defaults to `true`, so you do not need to register the API manually.
 
-After deployment, follow the [Cowork plugin guide](../clients/cowork-plugin/README.md). Reuse the generated **Cowork Web client** (`simple-mcp-server-client-cowork` by default); manually create its secret and register it in the developer portal. No second Entra client registration is needed.
+After deployment, choose the [Cowork plugin](../clients/cowork-plugin/README.md) or [Copilot Chat declarative agent](../clients/declarative-agent/README.md). Reuse the generated **Copilot Web client** (`simple-mcp-server-client-copilot` by default), identified by `ENTRA_COPILOT_CLIENT_APP_ID`; manually create its secret and client-specific portal auth configs using [shared OAuth setup](../clients/docs/oauth-setup.md). No second Entra client registration is needed.
 
 ## Alternative setup paths
 
@@ -30,7 +30,6 @@ Run server npm, Docker, and azd commands from **`server/`**.
 | IDs, scopes, registration permissions, client types | [Entra app registrations](docs/entra-app-registrations.md) |
 | Offline tests and authenticated live checks | [Testing](docs/testing.md) |
 | Configuration, endpoints, updates, troubleshooting, cleanup | [Operations](docs/operations.md) |
-| Moving configuration from an older checkout | [Existing-checkout migration](docs/existing-checkouts.md) |
 
 The API validates tokens; it does not sign users in, issue tokens, or handle OAuth callbacks. It needs no client secret, database, or MCP session state. App-only tokens cannot replace the required delegated scope.
 

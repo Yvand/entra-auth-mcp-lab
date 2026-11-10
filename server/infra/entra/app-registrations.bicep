@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-// Creates the API and Cowork Web-client registrations using the Microsoft Graph
+// Creates the API and shared Copilot Web-client registrations using the Microsoft Graph
 // Bicep extension. See docs/entra-app-registrations.md for ID/scope reference.
 // See docs/azure-deployment.md for the azd-managed registration workflow.
 //
@@ -20,10 +20,10 @@ param environmentName string
 @description('Display name for the API app registration (this server).')
 param apiDisplayName string = 'simple-mcp-server-api'
 
-@description('Display name for the Cowork Web-client app registration.')
-param clientDisplayName string = 'simple-mcp-server-client-cowork'
+@description('Display name for the shared Copilot Web-client app registration.')
+param clientDisplayName string = 'simple-mcp-server-client-copilot'
 
-@description('Web redirect URI for the Cowork authorization code flow. The default is the Microsoft Teams OAuth callback.')
+@description('Web redirect URI for the Copilot authorization code flow. The default is the Microsoft Teams OAuth callback.')
 param redirectUri string = 'https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect'
 
 @description('Delegated scope name exposed by the API and required by the server (MCP_REQUIRED_SCOPE).')
