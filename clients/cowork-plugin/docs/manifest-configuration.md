@@ -14,10 +14,8 @@
 | --- | --- |
 | `agentConnectors[0].toolSource.remoteMcpServer.mcpServerUrl` | Your HTTPS endpoint ending in `/mcp`, without credentials, query, or fragment |
 | `agentConnectors[0].toolSource.remoteMcpServer.authorization.referenceId` | OAuth client registration ID from the developer portal, not `ENTRA_COWORK_CLIENT_APP_ID` or the API app ID |
-| `developer.name` | Defaults to `Yvand`; optionally use your developer/publisher name |
-| `developer.websiteUrl` | Defaults to the repository URL; optionally use your project website |
-| `developer.privacyUrl` | Defaults to the repository URL; use appropriate privacy information when sharing independently |
-| `developer.termsOfUseUrl` | Defaults to the repository URL; use appropriate terms when sharing independently |
+
+**Note:** You may optionally update the manifest's `developer` section with your own publisher details.
 
 Save valid JSON. Keep `OAuthPluginVault`, manifest/schema version **1.29**, the connector ID, and skill folder/name unchanged. This template has one skill and one remote connector; Cowork discovers tools dynamically, so no static tool catalog is needed.
 
