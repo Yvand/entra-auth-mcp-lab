@@ -2,7 +2,7 @@
 
 ## Local setup and validation
 
-Use the root README for navigation, `server/README.md` and `server/docs/` for server setup, and `clients/cowork-plugin/README.md` for the Copilot Cowork plugin. Run the following commands from `server/` (`cd server` from the repository root). See `server/docs/entra-app-registrations.md` for Entra setup, `server/docs/local-development.md` for environment configuration, and `server/docs/testing.md` for offline versus live tests.
+Use the root README for navigation. The recommended paths are `server/docs/azure-deployment.md` (automatic Entra registrations) and `clients/cowork-plugin/README.md` (configure a downloaded release template with ZIP tools). Alternatives live in `server/docs/azure-existing-registrations.md`, `server/docs/local-development.md`, and `clients/cowork-plugin/docs/from-source.md`. Run the following development commands from `server/` (`cd server` from the repository root). See `server/docs/entra-app-registrations.md` for ID/scope and portal reference, `server/docs/entra-app-registration-scripts.md` for scripted registration, and `server/docs/testing.md` for offline versus live tests.
 
 - Install dependencies: `npm install`
 - Create local env from the sample: `cp .env.example .env`
@@ -36,6 +36,7 @@ The app is intentionally designed around a single, simple pattern: authenticate 
 - The `whoami` tool intentionally exposes only a safe, minimal set of claims (`sub`, `oid`, `tid`, `azp`/`appid`, `preferred_username`/`upn`, `name`, `scp`, etc.) and deliberately drops other payload data.
 - The app uses stateless MCP transport and rejects non-POST methods on `/mcp`; no session state should be introduced without updating both the auth flow and the tests.
 - The `PUBLIC_BASE_URL` value is used in OAuth metadata and `WWW-Authenticate` challenge headers; set it correctly when behind a reverse proxy or non-local hostname.
+- `CREATE_ENTRA_APP_REGISTRATIONS` defaults to `true` in Bicep and azd mapping. Persist its effective value for predown hooks; explicit `false` uses independently managed registrations. Do not treat toggling the flag as a registration migration.
 - Follow the repo's testing style: create local JWT test keys with `jose` for auth validation tests instead of mocking external Entra behavior.
 
 ## Required configuration
@@ -51,6 +52,6 @@ Offline automated tests provide their own configuration and local signing keys; 
 
 ## Copilot Cowork plugin
 
-`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep manual Copilot Web-client/vault setup separate from the server's generated desktop client.
+`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep shared OAuth, manifest, and installation instructions in `clients/cowork-plugin/docs/`; keep manual Copilot Web-client/vault setup separate from the server's generated desktop client.
 
 Run `npm ci`, `npm test`, and `npm run package` from `clients/cowork-plugin/` for offline validation and template packaging. Use `npm run package -- --configured` only after replacing placeholders. `.github/workflows/release-plugin.yml` releases template ZIPs for strict `releases/cowork-plugin/vX.Y.Z` tags; versions are stamped in memory, not into the source manifest or server.

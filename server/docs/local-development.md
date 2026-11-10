@@ -1,18 +1,24 @@
-# Local development
+# Run locally (alternative)
 
 [Project overview](../README.md) | [App registrations](entra-app-registrations.md) | [Testing](testing.md) | [Operations and cleanup](operations.md)
 
-Run the server directly with Node.js **24+** and npm. Local startup does not use `azd` and does not create Entra registrations automatically.
+**Goal:** run and develop the server on your machine, without azd. For an HTTPS endpoint ready for Cowork, prefer the [recommended Azure deployment](azure-deployment.md).
+
+## Prerequisites
+
+- A repository checkout, Node.js **24+**, and npm.
+- An Entra tenant, API registration, and a client able to request its delegated scope; step 1 covers registration if needed.
+- Docker only for the optional container procedure. Offline tests have [separate requirements](testing.md#offline-automated-tests) and need no real registrations.
 
 ## 1. Create or reuse app registrations
 
-Follow either the [manual portal setup](entra-app-registrations.md#manual-portal-setup) or the [Bash/PowerShell scripts](entra-app-registrations.md#scripted-setup). You need an API registration exposing a delegated scope and a client capable of acquiring an access token for it.
+**Goal:** identify the API your local server protects and the permission the client requests.
 
-Record the tenant ID, API application ID, calling-client application ID, and full requested scope. Set the API to issue v2 access tokens. If using Azure CLI for live checks, also read [Azure CLI authorization](entra-app-registrations.md#optional-azure-cli-authorization-for-smoke-tests).
+Reuse existing registrations, or follow [manual portal setup](entra-app-registrations.md#manual-portal-setup) or the separate [Bash/PowerShell scripts](entra-app-registration-scripts.md). Record the [tenant, API ID, client ID, and full scope](entra-app-registrations.md#understand-the-values). If using Azure CLI for live checks, also complete [CLI authorization](entra-app-registrations.md#optional-azure-cli-authorization-for-smoke-tests).
 
 ## 2. Configure the server
 
-From `server/` (`cd server` from the repository root):
+**Goal:** configure token validation for your API. From `server/` (`cd server` from the repository root):
 
 ```bash
 npm install
@@ -32,27 +38,15 @@ PUBLIC_BASE_URL=http://127.0.0.1:3000
 
 Replace the placeholders with real values; the zero GUIDs in the sample are not usable registration settings. `ENTRA_AUDIENCE` is the **API ID**, not the caller's client ID and not the `api://` URI.
 
-The server requires tenant and audience values; the short required scope defaults to `mcp.invoke`. Use the same scope name you exposed. The calling-client ID and full requested scope belong in your OAuth client's configuration, not the server's configuration.
-
-If you keep those client values in environment variables, set them in the terminal running your client. These names are bookkeeping conventions; configure your chosen client to use them explicitly.
-
-```bash
-export MCP_CLIENT_ID="<calling-client-application-id>"
-export REQUESTED_SCOPE="api://<api-application-client-id>/mcp.invoke"
-```
-
-```powershell
-$env:MCP_CLIENT_ID = "<calling-client-application-id>"
-$env:REQUESTED_SCOPE = "api://<api-application-client-id>/mcp.invoke"
-```
+Use the short scope you exposed. The calling-client ID and full scope belong in your OAuth client's configuration, not `.env`.
 
 `dotenv` loads `.env` when the server starts. Existing process environment variables take precedence, so check for stale exported values if behavior differs from the file. `.env` is git-ignored; do not commit it or put access tokens in it.
 
-Optional `ENTRA_ISSUER` and `ENTRA_JWKS_URI` override tenant-derived URLs. Normally leave them unset. `PUBLIC_BASE_URL` controls the URL advertised in OAuth metadata/challenges; use the externally visible HTTPS URL when behind a proxy. See the [configuration reference](operations.md#server-configuration).
+Leave issuer/JWKS overrides unset normally; see the [configuration reference](operations.md#server-configuration) for advanced settings.
 
 ## 3. Start the server
 
-Watch mode:
+**Goal:** keep the server running while you exercise it from a second terminal. For watch mode:
 
 ```bash
 npm run dev
@@ -65,13 +59,21 @@ npm run build
 npm start
 ```
 
-The default listener is `http://127.0.0.1:3000`. Keep this terminal running and use a second terminal for [live verification](testing.md#live-verification-local-or-azure). A successful health check alone does not prove token validation works.
+The default listener is `http://127.0.0.1:3000`. Keep this terminal running while you continue to step 4.
 
 Keep `HOST=127.0.0.1` for loopback-only development. Binding to `0.0.0.0` exposes the listener on all interfaces; configure network access and TLS appropriately before making it reachable remotely.
 
-## Optional local container
+## 4. Verify and stop
 
-Docker is required only for this path, not direct Node.js startup:
+**Goal:** check real authentication and cleanly end the local run.
+
+Use the [live verification steps](testing.md#live-verification-local-or-azure) from a second terminal. Automated tests are a [separate offline procedure](testing.md#offline-automated-tests).
+
+Stop foreground watch/production startup with **Ctrl+C**. Entra registrations remain until you deliberately [remove them](operations.md#independently-managed-registrations).
+
+## Alternative: local container
+
+**Goal:** run the same server in Docker instead of Node.js directly. Complete steps 1 and 2, then use these commands from `server/` instead of step 3:
 
 ```bash
 docker build -t entra-oauth-mcp-server:local .
@@ -82,8 +84,4 @@ docker run --rm --name entra-oauth-mcp-local \
 
 Run the same Docker command on PowerShell as one line (Bash backslashes are not PowerShell continuations). The explicit `HOST` override is necessary because the copied `.env` uses loopback, which would otherwise bind only inside the container. The host port remains loopback-only. The image runs as a non-root user.
 
-## Test and stop
-
-[Automated tests](testing.md#offline-automated-tests) do not require this running server, a real `.env`, or Entra access. For live checks, keep the server running and use a real API token.
-
-Stop foreground watch/production startup with **Ctrl+C**. For a container, use `docker stop entra-oauth-mcp-local`; `--rm` removes the stopped container, not its image. Entra registrations remain until you deliberately [remove them](operations.md#independently-managed-registrations).
+Verify using step 4. To stop, use `docker stop entra-oauth-mcp-local`; `--rm` removes the stopped container, not its image or Entra registrations.

@@ -18,7 +18,7 @@
       "value": "${MCP_REQUIRED_SCOPE=mcp.invoke}"
     },
     "createEntraAppRegistrations": {
-      "value": "${CREATE_ENTRA_APP_REGISTRATIONS=false}"
+      "value": "${CREATE_ENTRA_APP_REGISTRATIONS=true}"
     },
     "entraApiDisplayName": {
       "value": "${ENTRA_API_DISPLAY_NAME=simple-mcp-server-api}"

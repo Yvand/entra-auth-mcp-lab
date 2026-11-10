@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
-// Creates the API and PKCE desktop/CLI registrations documented in
-// docs/entra-app-registrations.md, using the Microsoft Graph Bicep extension.
+// Creates the API and PKCE desktop/CLI registrations using the Microsoft Graph
+// Bicep extension. See docs/entra-app-registrations.md for ID/scope reference.
 // See docs/azure-deployment.md for the azd-managed registration workflow.
 //
 // This file is a module invoked from infra/main.bicep (guarded by the
@@ -116,7 +116,7 @@ resource clientServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
 //
 // This second resource is also where the default Application ID URI gets set: `apiApp`
 // can't reference its own `appId` to build `api://<appId>` at creation time, so (matching
-// the scripts in docs/entra-app-registrations.md, which default to `api://<api-app-id>`) the
+// the scripts in docs/entra-app-registration-scripts.md, which default to `api://<api-app-id>`) the
 // default is computed here instead, once `apiApp.appId` is known.
 resource apiAppAuthorizeClient 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: apiUniqueName

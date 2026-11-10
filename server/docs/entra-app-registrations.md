@@ -1,8 +1,10 @@
 # Entra app registrations
 
-[Project overview](../README.md) | [Local development](local-development.md) | [Azure deployment](azure-deployment.md)
+[Server overview](../README.md) | [Registration scripts](entra-app-registration-scripts.md)
 
-Use this guide for local development and Azure deployments with `CREATE_ENTRA_APP_REGISTRATIONS=false`. With `true`, [azd creates the registrations](azure-deployment.md#create_entra_app_registrationstrue) instead; do not create an extra pair first.
+This is the shared reference for IDs, permissions, and manual registration. **The [recommended Azure deployment](azure-deployment.md) creates the API automatically**; do not create a second API first.
+
+Manual setup is for [local development](local-development.md) or [Azure with existing registrations](azure-existing-registrations.md). Cowork has a separate [Web-client procedure](../../clients/cowork-plugin/docs/oauth-setup.md).
 
 ## Understand the values
 
@@ -12,170 +14,61 @@ Use this guide for local development and Azure deployments with `CREATE_ENTRA_AP
 | API Application (client) ID | `ENTRA_AUDIENCE` on the server: a bare GUID for Entra v2 access tokens |
 | API Application ID URI | Identifies the exposed API; normally `api://<api-app-id>` |
 | Delegated scope name | `MCP_REQUIRED_SCOPE`, normally `mcp.invoke` |
-| Requested scope | Application ID URI plus scope name: `api://<api-app-id>/mcp.invoke` |
-| Calling client's Application (client) ID | Client OAuth configuration; use `MCP_CLIENT_ID` in the examples, not as a server setting |
-| Application/service-principal object ID | Graph directory object identifier used for administration and permanent purge, not a token audience |
+| Full requested scope | Application ID URI plus scope name: `api://<api-app-id>/mcp.invoke`; requested by the client |
+| Calling client's Application (client) ID | Client OAuth configuration, not the server's audience; examples use `MCP_CLIENT_ID` as bookkeeping |
+| Application/service-principal object ID | Directory administration and purge identifier, not a token audience |
 
-For the default v2 setup, a valid access token has `aud=<api-app-id>`, `iss=https://login.microsoftonline.com/<tenant-id>/v2.0`, and `scp` containing `mcp.invoke`. Requesting `api://<api-app-id>/mcp.invoke` does **not** make the audience `api://<api-app-id>`.
+For the default v2 setup, a valid token has `aud=<api-app-id>`, `iss=https://login.microsoftonline.com/<tenant-id>/v2.0`, and `scp` containing `mcp.invoke`. Requesting `api://<api-app-id>/mcp.invoke` does **not** make the audience `api://<api-app-id>`.
 
-The server accepts comma-separated exact audience values if deliberately needed, but do not add unrelated audiences to work around a bad token. Microsoft Graph tokens target another API and will be rejected.
+The server accepts comma-separated exact audiences when deliberately configured. Do not add unrelated audiences to work around a bad token; Graph tokens target another API.
 
 ## Permissions and client choices
 
-An Entra tenant is required for both local and remote use. Registration rights depend on tenant policy. The scripts below also create service principals and grant tenant-wide delegated consent, requiring appropriate directory privileges, such as Application Administrator or Cloud Application Administrator where allowed. Some consent operations require a higher role or another administrator. An Azure subscription Owner role does not itself grant Entra directory permissions.
+An Entra tenant and permission to register/configure applications are required. Creating service principals and granting tenant-wide consent require suitable directory privileges, such as Application Administrator or Cloud Application Administrator where allowed. Some consent operations require a higher role or another administrator. Azure subscription Owner does not itself grant directory privileges.
 
-The API only validates tokens: it needs **no secret or certificate**. A desktop/CLI **public client** uses Authorization Code + PKCE without a secret. Configure the redirect URI to match your actual OAuth client's callback; the example `http://localhost:3000/callback` is a placeholder. This MCP server does not implement `/callback`; use a separate callback listener/port if your client needs one.
+| Registration | Purpose | Credentials and callback |
+| --- | --- | --- |
+| API | Expose the delegated scope; validate access tokens | No API secret or callback needed |
+| Public desktop/CLI client | Sign a user in with Authorization Code + PKCE | No secret; register the actual client's loopback callback |
+| Cowork Web client | Allow the Microsoft 365 token store to exchange codes | Separate [Web-client and vault setup](../../clients/cowork-plugin/docs/oauth-setup.md) |
 
-For a browser client, register a **Single-page application** platform with its actual callback URI instead of the desktop platform. The scripts and Bicep module configure the desktop/CLI case only. Client implementation and browser CORS requirements are outside this server's setup.
+The scripts and Bicep module create the desktop/CLI case. Their `http://localhost:3000/callback` default is an example, not a route implemented by the MCP server. Use the actual client's listener/port. A browser SPA needs its own platform/callback; browser CORS and client implementation are outside this server's setup.
 
 ## Manual portal setup
 
-### API registration
+**Prerequisites:** Entra portal access, the privileges above, and your client's actual callback URI. For scripted creation instead, use the [separate Bash/PowerShell guide](entra-app-registration-scripts.md).
+
+### 1. Register the API
+
+**Goal:** identify the protected server and expose the delegated permission clients request.
 
 1. In the [Entra admin center](https://entra.microsoft.com), open **App registrations > New registration**. Name it `simple-mcp-server-api` and select **Accounts in this organizational directory only**.
-2. Save its **Application (client) ID** and **Directory (tenant) ID**.
-3. In **Manifest**, set `api.requestedAccessTokenVersion` to `2` and save. The API controls its access-token version; using a v2 authorization endpoint alone is not sufficient.
-4. In **Expose an API**, set the **Application ID URI** to `api://<api-app-id>` (or a supported custom URI).
-5. Add an enabled scope named `mcp.invoke`, with consent display names/descriptions such as "Invoke MCP tools". Choose **Admins and users**, or admins only according to tenant policy. Record the full requested scope.
+2. Record its **Application (client) ID** and **Directory (tenant) ID**.
+3. In **Manifest**, set `api.requestedAccessTokenVersion` to `2` and save. The API controls token version; a v2 authorization URL alone is insufficient.
+4. In **Expose an API**, set the **Application ID URI** to `api://<api-app-id>` or your supported custom URI.
+5. Add an enabled scope named `mcp.invoke`, with consent labels such as "Invoke MCP tools". Choose **Admins and users**, or admins only according to policy. Record the **full scope**.
 
-### Calling-client registration
+### 2. Register the calling client
 
-1. Create a second single-tenant registration named `simple-mcp-server-client`. Save its Application (client) ID separately from the API ID.
-2. In **Authentication > Add a platform**, choose **Mobile and desktop applications** and register the client's actual loopback callback URI. Enable **Allow public client flows** for this public-client setup. Use the SPA platform instead for a browser client.
-3. In **API permissions > Add a permission > My APIs**, select the API registration, choose **Delegated permissions**, and add `mcp.invoke`.
-4. Grant admin consent where required by your tenant policy, or arrange consent with an authorized administrator.
+**Goal:** allow your desktop/CLI application to request that API permission on behalf of a user. For Cowork, follow its [Web-client procedure](../../clients/cowork-plugin/docs/oauth-setup.md) instead of these desktop steps.
 
-Application registrations and enterprise applications (service principals) are distinct. Consent establishes the delegated permission grant between service principals. The scripted setup below creates them explicitly.
+1. Create a second single-tenant registration, `simple-mcp-server-client`, and record its Application (client) ID separately from the API ID.
+2. In **Authentication > Add a platform**, choose **Mobile and desktop applications**, register the actual client's callback, and enable **Allow public client flows** for this setup.
+3. In **API permissions > Add a permission**, find your API under **My APIs** or search its app ID under **APIs my organization uses**. Choose **Delegated permissions** and add `mcp.invoke`.
+4. Grant admin consent where required or ask an authorized administrator.
 
-## Scripted setup
+App registrations and enterprise applications (service principals) are distinct. Consent establishes the delegated grant between service principals; the scripts create both explicitly.
 
-Choose **one** of these equivalent scripts and run it from `server/` or another working directory. Sign in first with `az login --tenant "<tenant-id>"`. Edit display names, redirect URI, and scope before running.
+### 3. Configure your chosen approach
 
-These are creation scripts, **not idempotent upserts**. Rerunning creates another pair with new IDs. If a command fails, stop, inspect the objects already created, and either complete setup deliberately or [clean up that exact pair](operations.md#independently-managed-registrations). Do not assume a failed script rolled back its changes.
+**Goal:** apply the recorded values in the right place.
 
-### Bash
-
-Requires Bash and `uuidgen`. Run in a dedicated Bash process; `set -e` stops it on command failure.
-
-```bash
-set -euo pipefail
-
-apiDisplayName="simple-mcp-server-api"
-clientDisplayName="simple-mcp-server-client"
-redirectUri="http://localhost:3000/callback"
-scopeName="mcp.invoke"
-tenantId=$(az account show --query tenantId -o tsv)
-
-apiAppId=$(az ad app create --display-name "$apiDisplayName" --sign-in-audience AzureADMyOrg --query appId -o tsv)
-printf 'Created API app: %s\n' "$apiAppId"
-apiObjectId=$(az ad app show --id "$apiAppId" --query id -o tsv)
-az ad sp create --id "$apiAppId" >/dev/null
-scopeId=$(uuidgen)
-identifierUri="api://$apiAppId"
-
-apiPatch=$(cat <<JSON
-{
-  "identifierUris": ["$identifierUri"],
-  "api": {
-    "requestedAccessTokenVersion": 2,
-    "oauth2PermissionScopes": [{
-      "id": "$scopeId", "value": "$scopeName", "type": "User", "isEnabled": true,
-      "adminConsentDisplayName": "Invoke MCP tools",
-      "adminConsentDescription": "Invoke MCP tools on behalf of the signed-in user.",
-      "userConsentDisplayName": "Invoke MCP tools",
-      "userConsentDescription": "Invoke MCP tools on your behalf."
-    }]
-  }
-}
-JSON
-)
-az rest --method PATCH --uri "https://graph.microsoft.com/v1.0/applications/$apiObjectId" --body "$apiPatch"
-
-clientAppId=$(az ad app create --display-name "$clientDisplayName" \
-  --sign-in-audience AzureADMyOrg --public-client-redirect-uris "$redirectUri" \
-  --is-fallback-public-client true --query appId -o tsv)
-printf 'Created client app: %s\n' "$clientAppId"
-az ad sp create --id "$clientAppId" >/dev/null
-az ad app permission add --id "$clientAppId" --api "$apiAppId" --api-permissions "$scopeId=Scope"
-az ad app permission admin-consent --id "$clientAppId"
-
-printf '%s\n' "ENTRA_TENANT_ID=$tenantId" "ENTRA_AUDIENCE=$apiAppId" \
-  "MCP_REQUIRED_SCOPE=$scopeName" "MCP_CLIENT_ID=$clientAppId" \
-  "REQUESTED_SCOPE=$identifierUri/$scopeName"
-```
-
-### PowerShell
-
-Use PowerShell 7+. The wrapper checks native Azure CLI exit codes: `$ErrorActionPreference` alone does not make all native command failures terminating. A temporary JSON file avoids native JSON-argument quoting differences.
-
-```powershell
-$ErrorActionPreference = "Stop"
-function Invoke-Az {
-    $output = & az @args
-    if ($LASTEXITCODE -ne 0) { throw "Azure CLI failed: az $($args -join ' ')" }
-    return $output
-}
-
-$apiDisplayName = "simple-mcp-server-api"
-$clientDisplayName = "simple-mcp-server-client"
-$redirectUri = "http://localhost:3000/callback"
-$scopeName = "mcp.invoke"
-$tenantId = Invoke-Az account show --query tenantId -o tsv
-
-$apiAppId = Invoke-Az ad app create --display-name $apiDisplayName --sign-in-audience AzureADMyOrg --query appId -o tsv
-Write-Host "Created API app: $apiAppId"
-$apiObjectId = Invoke-Az ad app show --id $apiAppId --query id -o tsv
-Invoke-Az ad sp create --id $apiAppId | Out-Null
-$scopeId = [guid]::NewGuid().ToString()
-$identifierUri = "api://$apiAppId"
-$apiPatch = @{
-    identifierUris = @($identifierUri)
-    api = @{
-        requestedAccessTokenVersion = 2
-        oauth2PermissionScopes = @(@{
-            id = $scopeId; value = $scopeName; type = "User"; isEnabled = $true
-            adminConsentDisplayName = "Invoke MCP tools"
-            adminConsentDescription = "Invoke MCP tools on behalf of the signed-in user."
-            userConsentDisplayName = "Invoke MCP tools"
-            userConsentDescription = "Invoke MCP tools on your behalf."
-        })
-    }
-} | ConvertTo-Json -Depth 10
-$patchFile = [IO.Path]::GetTempFileName()
-try {
-    [IO.File]::WriteAllText($patchFile, $apiPatch)
-    Invoke-Az rest --method PATCH --uri "https://graph.microsoft.com/v1.0/applications/$apiObjectId" --body "@$patchFile"
-} finally {
-    Remove-Item -LiteralPath $patchFile
-}
-
-$clientAppId = Invoke-Az ad app create --display-name $clientDisplayName `
-    --sign-in-audience AzureADMyOrg --public-client-redirect-uris $redirectUri `
-    --is-fallback-public-client true --query appId -o tsv
-Write-Host "Created client app: $clientAppId"
-Invoke-Az ad sp create --id $clientAppId | Out-Null
-Invoke-Az ad app permission add --id $clientAppId --api $apiAppId --api-permissions "$scopeId=Scope"
-Invoke-Az ad app permission admin-consent --id $clientAppId
-
-Write-Host "ENTRA_TENANT_ID=$tenantId"
-Write-Host "ENTRA_AUDIENCE=$apiAppId"
-Write-Host "MCP_REQUIRED_SCOPE=$scopeName"
-Write-Host "MCP_CLIENT_ID=$clientAppId"
-Write-Host "REQUESTED_SCOPE=$identifierUri/$scopeName"
-```
-
-Allow time for directory changes to propagate before consent or token acquisition; investigate failures rather than creating duplicate apps. The printed values are non-secret configuration, but access tokens must not be saved or shared.
+Return to [local configuration](local-development.md#2-configure-the-server) or [Azure existing-API configuration](azure-existing-registrations.md#2-configure-the-existing-api). Server settings belong in `.env` locally or azd state for Azure; client IDs and full scopes belong in your client configuration.
 
 ## Optional Azure CLI authorization for smoke tests
 
-`az account get-access-token` uses the **Azure CLI's client registration**, not the public client you just created. Granting permissions to your client does not grant them to Azure CLI.
+`az account get-access-token` uses **Azure CLI's own client registration**. Granting your client permission does not grant Azure CLI permission.
 
-If your tenant permits it, open the API registration's **Expose an API > Authorized client applications**, add the Azure CLI application ID `04b07795-8ddb-461a-bbee-02f9e1bf7b46`, and select the exposed scope. This preauthorizes Azure CLI for that scope; it is a deliberate trust/consent choice, not a server setting. Tenant policy may still restrict the flow. The `azd` creation path does this by default unless `ENTRA_AUTHORIZE_AZURE_CLI_CLIENT=false`.
+If allowed, open the API's **Expose an API > Authorized client applications**, add Azure CLI app ID `04b07795-8ddb-461a-bbee-02f9e1bf7b46`, and select the scope. This is a deliberate trust choice; tenant policy can still block the flow. Automatic Azure creation does this by default; set `ENTRA_AUTHORIZE_AZURE_CLI_CLIENT=false` before provisioning to opt out.
 
-If Azure CLI is not permitted, use your actual client's Authorization Code + PKCE flow to acquire the API token. Request the full exposed scope; add `offline_access` only if your client needs refresh tokens. Never use a Graph token as a substitute.
-
-## Apply the values
-
-For local use, follow [local development](local-development.md) and put server values in `.env`. Keep the client ID and requested scope in your OAuth client's configuration.
-
-For Azure, follow the [false registration-creation path](azure-deployment.md#create_entra_app_registrationsfalse-default) and set `azd` environment values explicitly. Copying the local `.env` does not configure the Azure deployment.
+If Azure CLI is not permitted, acquire the access token with your real client's Authorization Code + PKCE flow. Request the full exposed scope; add `offline_access` if refresh tokens are needed. Never substitute a Graph token.

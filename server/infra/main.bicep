@@ -9,7 +9,7 @@ param environmentName string
 @description('Azure region for all resources.')
 param location string
 
-@description('Microsoft Entra directory (tenant) ID used to validate access tokens. Placeholder by default — replace before the server can accept real traffic, or set createEntraAppRegistrations to true to have azd create it for you.')
+@description('Microsoft Entra directory (tenant) ID used to validate access tokens. Ignored with automatic registration creation (the default). Set a real value when createEntraAppRegistrations is false.')
 param entraTenantId string = '00000000-0000-0000-0000-000000000000'
 
 @description('Expected "aud" claim of incoming Entra v2 access tokens: the API application (client) ID as a bare GUID. Comma-separated list allowed. Placeholder by default. Ignored when createEntraAppRegistrations is true.')
@@ -18,8 +18,8 @@ param entraAudience string = '00000000-0000-0000-0000-000000000000'
 @description('Delegated scope a caller must hold to invoke MCP tools.')
 param mcpRequiredScope string = 'mcp.invoke'
 
-@description('When true, azd creates and configures the API and client Entra ID app registrations (see infra/entra/app-registrations.bicep) as part of provisioning, instead of requiring them to be created beforehand. Requires the deploying principal to be allowed to create app registrations and grant tenant-wide admin consent.')
-param createEntraAppRegistrations bool = false
+@description('Create and configure the API and public desktop/CLI Entra app registrations during provisioning (default). Requires permission to create registrations and grant tenant-wide admin consent. Set false to use existing registrations.')
+param createEntraAppRegistrations bool = true
 
 @description('Display name for the API app registration. Only used when createEntraAppRegistrations is true.')
 param entraApiDisplayName string = 'simple-mcp-server-api'
@@ -91,8 +91,8 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-// Optional: create/configure the Entra ID app registrations as part of `azd provision` /
-// `azd up`, instead of requiring them to already exist. No `scope:` needed — Microsoft
+// Create/configure the Entra ID app registrations as part of `azd provision` /
+// `azd up`, unless explicitly disabled. No `scope:` needed — Microsoft
 // Graph objects aren't Azure resources, so the module runs at the same subscription scope
 // as this file, independent of the resource group above.
 module entraAppRegistrations 'entra/app-registrations.bicep' = if (createEntraAppRegistrations) {
@@ -315,6 +315,9 @@ output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_RESOURCE_GROUP string = resourceGroupName
 output ENTRA_TENANT_ID string = effectiveEntraTenantId
 output ENTRA_AUDIENCE string = effectiveEntraAudience
+// Persist the effective mode so predown also handles the defaulted creation path.
+output CREATE_ENTRA_APP_REGISTRATIONS string = createEntraAppRegistrations ? 'true' : 'false'
+output MCP_REQUIRED_SCOPE string = mcpRequiredScope
 output ENTRA_API_APP_ID string = createEntraAppRegistrations ? entraAppRegistrations!.outputs.API_APP_ID : ''
 output ENTRA_CLIENT_APP_ID string = createEntraAppRegistrations ? entraAppRegistrations!.outputs.CLIENT_APP_ID : ''
 output ENTRA_APP_OWNERSHIP_TAG string = createEntraAppRegistrations ? entraAppRegistrations!.outputs.APP_OWNERSHIP_TAG : ''
