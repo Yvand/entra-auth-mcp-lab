@@ -2,13 +2,13 @@
 
 [Registration reference and portal alternative](entra-app-registrations.md) | [Local development](local-development.md) | [Azure with existing registrations](azure-existing-registrations.md)
 
-**Goal:** create an API and public desktop/CLI client for local development or the existing-registration Azure path. Skip this guide for the [recommended Azure deployment](azure-deployment.md), which creates them automatically.
+**Goal:** create an API and public desktop/CLI client for an independently implemented local client, also usable with the existing-registration Azure path. These scripts are a **local-development alternative**, not the Cowork Web-client setup. Skip them for the [recommended Azure deployment](azure-deployment.md), which creates the API and a Cowork Web client instead.
 
 ## Prerequisites
 
 - Azure CLI and an Entra tenant with [registration and consent privileges](entra-app-registrations.md#permissions-and-client-choices).
 - Bash with `uuidgen`, or PowerShell 7+.
-- Your actual desktop/CLI client's callback URI; the example is not a callback implemented by this server. For Cowork, use its [Web-client setup](../../clients/cowork-plugin/docs/oauth-setup.md) instead.
+- Your actual desktop/CLI client's callback URI; the example is not a callback implemented by this server. For Cowork without a generated Web client, use the [manual Web-client alternative](../../clients/cowork-plugin/docs/manual-web-client.md) instead.
 
 ## 1. Sign in and choose a script
 

@@ -52,6 +52,6 @@ Offline automated tests provide their own configuration and local signing keys; 
 
 ## Copilot Cowork plugin
 
-`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep shared OAuth, manifest, and installation instructions in `clients/cowork-plugin/docs/`; keep manual Copilot Web-client/vault setup separate from the server's generated desktop client.
+`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Keep shared OAuth, manifest, and installation instructions in `clients/cowork-plugin/docs/`. Automatic Azure deployment creates the Cowork Web client (`simple-mcp-server-client-cowork` by default); reuse `ENTRA_CLIENT_APP_ID` and keep secret creation/developer-portal registration manual. Preserve its stable Graph identity key and cleanup ownership. Desktop/CLI registration examples are separate local alternatives.
 
 Run `npm ci`, `npm test`, and `npm run package` from `clients/cowork-plugin/` for offline validation and template packaging. Use `npm run package -- --configured` only after replacing placeholders. `.github/workflows/release-plugin.yml` releases template ZIPs for strict `releases/cowork-plugin/vX.Y.Z` tags; versions are stamped in memory, not into the source manifest or server.

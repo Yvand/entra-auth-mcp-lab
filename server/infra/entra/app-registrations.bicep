@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-// Creates the API and PKCE desktop/CLI registrations using the Microsoft Graph
+// Creates the API and Cowork Web-client registrations using the Microsoft Graph
 // Bicep extension. See docs/entra-app-registrations.md for ID/scope reference.
 // See docs/azure-deployment.md for the azd-managed registration workflow.
 //
@@ -20,11 +20,11 @@ param environmentName string
 @description('Display name for the API app registration (this server).')
 param apiDisplayName string = 'simple-mcp-server-api'
 
-@description('Display name for the public-client (desktop/CLI, PKCE) app registration.')
-param clientDisplayName string = 'simple-mcp-server-client'
+@description('Display name for the Cowork Web-client app registration.')
+param clientDisplayName string = 'simple-mcp-server-client-cowork'
 
-@description('Redirect URI registered on the public client for the Authorization Code + PKCE flow.')
-param redirectUri string = 'http://localhost:3000/callback'
+@description('Web redirect URI for the Cowork authorization code flow. The default is the Microsoft Teams OAuth callback.')
+param redirectUri string = 'https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect'
 
 @description('Delegated scope name exposed by the API and required by the server (MCP_REQUIRED_SCOPE).')
 param scopeName string = 'mcp.invoke'
@@ -81,10 +81,12 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
   tags: [ownershipTag]
   displayName: clientDisplayName
   signInAudience: 'AzureADMyOrg'
-  // Public client (Authorization Code + PKCE, no secret). See
-  // docs/entra-app-registrations.md for desktop versus SPA platform setup.
-  isFallbackPublicClient: true
+  isFallbackPublicClient: false
+  // Clear the former desktop platform when updating an existing registration.
   publicClient: {
+    redirectUris: []
+  }
+  web: {
     redirectUris: [redirectUri]
   }
   requiredResourceAccess: [

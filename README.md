@@ -4,8 +4,8 @@ A learning demo with an Entra-protected MCP server and a **Microsoft 365 Copilot
 
 ## Recommended: deploy the server, then configure the plugin
 
-1. **[Deploy the server to Azure](server/docs/azure-deployment.md).** Azure Developer CLI (`azd`) deploys the HTTPS endpoint and creates the Entra app registrations automatically. You need an Azure subscription and permission to create registrations and grant consent.
-2. **[Download and configure the Cowork plugin](clients/cowork-plugin/README.md).** Download the ZIP from [GitHub Releases](https://github.com/Yvand/entra-oauth-mcp-server/releases), configure its dedicated OAuth client, edit the template, and repackage it with standard ZIP tools.
+1. **[Deploy the server to Azure](server/docs/azure-deployment.md).** Azure Developer CLI (`azd`) deploys the HTTPS endpoint and creates the API and Cowork Web-client registrations. You need an Azure subscription and permission to create registrations and grant consent.
+2. **[Download and configure the Cowork plugin](clients/cowork-plugin/README.md).** Download the ZIP from [GitHub Releases](https://github.com/Yvand/entra-oauth-mcp-server/releases), create a secret on the generated client and register it in the developer portal, then edit and repackage the template with standard ZIP tools.
 
 **The release ZIP is a configuration template, not an install-ready app.** It contains no deployed server or OAuth credentials. The client guide covers the Entra and developer-portal prerequisites before installation.
 

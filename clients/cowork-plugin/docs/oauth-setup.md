@@ -2,46 +2,39 @@
 
 [Recommended download walkthrough](../README.md) | [Source packaging](from-source.md)
 
-**Goal:** let Microsoft 365 obtain delegated access tokens for your MCP API. Complete this once for your setup, whether you use a release ZIP or a source build.
+**Goal:** let Microsoft 365 obtain delegated access tokens using the Cowork Web client created by your server deployment. Create its secret and developer-portal registration manually, whether you use a release ZIP or a source build.
 
 ## Prerequisites
 
 - A deployed HTTPS server and the connection values below.
-- Permission in its Entra tenant to register a Web client, create a secret, and arrange delegated API consent.
+- The generated Cowork client ID (`ENTRA_CLIENT_APP_ID`) and permission in its tenant to manage that app/create a secret.
 - Access to **Tools > OAuth client registration** in the [Teams developer portal](https://dev.teams.microsoft.com/tools).
 
-The API registration must already exist. The server's generated desktop/CLI client is not suitable for this Web-client walkthrough; leave it unchanged.
+The [recommended Azure deployment](../../../server/docs/azure-deployment.md) creates both the API and this Web client, including its API permission/consent. Do not register another app. Without a generated client, reuse a suitable existing Web client or follow the separate [manual Web-client procedure](manual-web-client.md) before step 2.
 
 ## Server connection values
 
-Collect the endpoint, tenant ID, and full scope from [Azure deployment step 4](../../../server/docs/azure-deployment.md#4-collect-the-client-connection-values). For a custom API, use the full scope from **Expose an API**, not an audience list.
+Collect the endpoint, tenant ID, full scope, and Cowork client ID from [Azure deployment step 4](../../../server/docs/azure-deployment.md#4-collect-the-client-connection-values). For a custom API, use the full scope from **Expose an API**, not an audience list.
 
 The endpoint must end in `/mcp` and be reachable from Microsoft 365 over HTTPS with TLS 1.2+; localhost alone is not reachable. For an alternative [local server](../../../server/docs/local-development.md), expose it through a public HTTPS tunnel and set `PUBLIC_BASE_URL` to that external base URL. See Microsoft's [local MCP tunnel guidance](https://learn.microsoft.com/en-us/copilot/cowork/cowork-plugin-development#test-a-connector-against-a-local-mcp-server).
 
 Configure the endpoints and full scope explicitly below: this server's metadata has a [scope-format limitation](../../../server/docs/operations.md#oauth-client-integration).
 
-## 1. Register a dedicated Entra Web client
+## 1. Find the generated Cowork Web client
 
-**Goal:** create the OAuth application that Microsoft 365 uses to sign users into the API.
+**Goal:** locate the app Microsoft 365 will use, without creating a duplicate.
 
-1. In the API's tenant, open the [Entra admin center](https://entra.microsoft.com), then **App registrations > New registration**.
-2. Name it, for example, `entra-mcp-cowork-client`. Choose **Accounts in this organizational directory only** and register it.
-3. Record its **Application (client) ID**. This is the Web-client ID, not the API ID.
-4. Open **Authentication > Add a platform > Web** and register this exact callback:
+In the API's tenant, open [Entra admin center](https://entra.microsoft.com) > **App registrations > All applications**, and find the app by the recorded **`ENTRA_CLIENT_APP_ID`**. Its default display name is `simple-mcp-server-client-cowork`.
 
-   ```text
-   https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect
-   ```
+Confirm its **Application (client) ID** matches that value and its Web callback/API permission are already configured by Bicep. It is not the API registration. If this is an older generated desktop app, complete the [in-place conversion](../../../server/docs/operations.md#convert-an-existing-generated-client-to-cowork) first.
 
-The callback receives the authorization response for Microsoft 365. Do not substitute the MCP endpoint or the desktop client's loopback URI.
+The Web callback receives Microsoft's authorization response, not an MCP request. Do not replace it with the API endpoint or a localhost URL.
 
-## 2. Add API permission and a client secret
+## 2. Create the client secret
 
-**Goal:** authorize the client to request the API's delegated scope and let the token store exchange authorization codes.
+**Goal:** let the Microsoft token store exchange authorization codes for this Web client.
 
-1. In **API permissions > Add a permission**, find your MCP API under **My APIs** or search its app ID under **APIs my organization uses**. Select **Delegated permissions** and add `mcp.invoke` (or your actual scope).
-2. Grant admin consent where tenant policy requires it, or ask an authorized administrator to do so.
-3. In **Certificates & secrets > Client secrets**, create a secret. Use its **Value**, not its Secret ID, in step 3's secure credential field.
+On that **Cowork client app**, open **Certificates & secrets > Client secrets > New client secret** and choose an expiry appropriate to your tenant. Use its **Value**, not its Secret ID, in step 3's secure credential field. Bicep does not create, output, or manage this secret. If reusing a setup, use its existing valid secret or rotate it rather than creating one on every re-provision.
 
 The secret belongs to this Web client, never the API registration. Do not put it in `.env`, the manifest, skill, ZIP, or release configuration. Track its expiry and update the token-store registration when rotating it.
 
@@ -55,7 +48,7 @@ Open [Teams developer portal](https://dev.teams.microsoft.com/tools) and select 
 | --- | --- |
 | Registration name | A recognizable name for this setup |
 | Base URL | Your actual HTTPS MCP endpoint, matching the manifest connector URL; follow the portal's URL-matching requirements |
-| Client ID | The dedicated Entra Web-client Application (client) ID |
+| Client ID | The Cowork Web-client ID (`ENTRA_CLIENT_APP_ID` for automatic deployment), not the API ID |
 | Client secret | That Web client's secret **Value** |
 | Authorization endpoint | `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/authorize` |
 | Token endpoint | `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token` |

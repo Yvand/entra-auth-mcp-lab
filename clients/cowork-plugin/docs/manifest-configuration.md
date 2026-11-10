@@ -13,7 +13,7 @@
 | Field | Value |
 | --- | --- |
 | `agentConnectors[0].toolSource.remoteMcpServer.mcpServerUrl` | Your HTTPS endpoint ending in `/mcp`, without credentials, query, or fragment |
-| `agentConnectors[0].toolSource.remoteMcpServer.authorization.referenceId` | OAuth client registration ID from the developer portal, not an Entra application ID |
+| `agentConnectors[0].toolSource.remoteMcpServer.authorization.referenceId` | OAuth client registration ID from the developer portal, not `ENTRA_CLIENT_APP_ID` or the API app ID |
 | `developer.name` | Your developer/publisher name |
 | `developer.websiteUrl` | Your project website; the repository URL is the demo default |
 | `developer.privacyUrl` | Your real privacy information URL, replacing `example.com` |

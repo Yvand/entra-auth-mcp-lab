@@ -18,17 +18,17 @@ param entraAudience string = '00000000-0000-0000-0000-000000000000'
 @description('Delegated scope a caller must hold to invoke MCP tools.')
 param mcpRequiredScope string = 'mcp.invoke'
 
-@description('Create and configure the API and public desktop/CLI Entra app registrations during provisioning (default). Requires permission to create registrations and grant tenant-wide admin consent. Set false to use existing registrations.')
+@description('Create and configure the API and Cowork Web-client Entra app registrations during provisioning (default). Requires permission to create registrations and grant tenant-wide admin consent. Create the client secret and developer-portal OAuth registration manually. Set false to use existing registrations.')
 param createEntraAppRegistrations bool = true
 
 @description('Display name for the API app registration. Only used when createEntraAppRegistrations is true.')
 param entraApiDisplayName string = 'simple-mcp-server-api'
 
-@description('Display name for the public-client (desktop/CLI, PKCE) app registration. Only used when createEntraAppRegistrations is true.')
-param entraClientDisplayName string = 'simple-mcp-server-client'
+@description('Display name for the Cowork Web-client app registration. Only used when createEntraAppRegistrations is true.')
+param entraClientDisplayName string = 'simple-mcp-server-client-cowork'
 
-@description('Redirect URI registered on the public client for the Authorization Code + PKCE flow. Only used when createEntraAppRegistrations is true.')
-param entraClientRedirectUri string = 'http://localhost:3000/callback'
+@description('Web redirect URI for the Cowork authorization code flow. Defaults to the Microsoft Teams OAuth callback. Only used when createEntraAppRegistrations is true.')
+param entraClientRedirectUri string = 'https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect'
 
 @description('Also pre-authorize the well-known Microsoft Azure CLI first-party app for the mcp.invoke scope, so `az` can call the API without a consent prompt. Only used when createEntraAppRegistrations is true.')
 param entraAuthorizeAzureCliClient bool = true

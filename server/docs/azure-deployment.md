@@ -2,7 +2,7 @@
 
 [Server overview](../README.md) | [Existing registrations instead](azure-existing-registrations.md)
 
-**Goal:** deploy an HTTPS MCP server to Azure Container Apps and let Azure Developer CLI (`azd`) create its Entra registrations. This is the default: `CREATE_ENTRA_APP_REGISTRATIONS=true`.
+**Goal:** deploy an HTTPS MCP server to Azure Container Apps and let Azure Developer CLI (`azd`) create its API and Cowork Web-client registrations. This is the default: `CREATE_ENTRA_APP_REGISTRATIONS=true`.
 
 You do **not** need to create the API registration first. Already have registrations to reuse? Follow the [separate existing-registration guide](azure-existing-registrations.md).
 
@@ -44,15 +44,17 @@ The two tools have separate sign-ins. Use the tenant associated with your subscr
 
 If reusing an environment that explicitly sets `CREATE_ENTRA_APP_REGISTRATIONS=false`, it keeps that setting. Do not switch a deployed environment's identity setup just to follow this guide; use the [existing-registration path](azure-existing-registrations.md).
 
+For an older automatically generated desktop client, follow the [in-place Cowork conversion](operations.md#convert-an-existing-generated-client-to-cowork) before re-provisioning.
+
 ## 3. Deploy the server and registrations
 
-**Goal:** create the API registration, a desktop/CLI test client, and the running HTTPS server in one workflow.
+**Goal:** create the API registration, its Cowork Web client, and the running HTTPS server in one workflow.
 
 ```bash
 azd up
 ```
 
-By default, provisioning exposes `mcp.invoke`, grants the generated client consent, and preauthorizes Azure CLI for live checks. It derives the server's tenant and audience automatically; do not fill in `.env` or create another API registration.
+By default, provisioning exposes `mcp.invoke`, configures the generated Web client's Teams callback and delegated consent, and separately preauthorizes Azure CLI for live checks. It derives the server's tenant and audience automatically; do not fill in `.env` or create another API/client pair. Client-secret creation and developer-portal registration remain manual.
 
 Wait for both provisioning and application deployment to finish. A provision-only placeholder image is not the MCP server. [Optional settings](operations.md#automatic-registration-settings), including disabling Azure CLI preauthorization, belong outside this default walkthrough.
 
@@ -64,9 +66,12 @@ Wait for both provisioning and application deployment to finish. A provision-onl
 azd env get-value MCP_ENDPOINT
 azd env get-value ENTRA_TENANT_ID
 azd env get-value ENTRA_API_APP_ID
+azd env get-value ENTRA_CLIENT_APP_ID
 ```
 
-Record the HTTPS endpoint (including `/mcp`), tenant ID, and API app ID. The full requested scope is **`api://<ENTRA_API_APP_ID>/mcp.invoke`** for this default setup. This scope is not the server's audience or a calling-client ID; see the [ID/scope reference](entra-app-registrations.md#understand-the-values) if needed.
+Record the HTTPS endpoint (including `/mcp`), tenant ID, API app ID, and Cowork client ID. The full requested scope is **`api://<ENTRA_API_APP_ID>/mcp.invoke`** for this default setup.
+
+`ENTRA_CLIENT_APP_ID` identifies the generated **Cowork Web client**, not the API or the later developer-portal OAuth registration. Use it when creating the client's secret and filling in the portal's **Client ID** field. See the [ID/scope reference](entra-app-registrations.md#understand-the-values) if needed.
 
 azd saves deployment values in the selected `.azure/<environment>/` state, including the effective creation flag used by cleanup. It does not export them into your terminal.
 
@@ -80,6 +85,6 @@ Follow [live verification](testing.md#live-verification-local-or-azure), using i
 
 **Goal:** configure a client that signs users into this API.
 
-Continue with **[Download and configure the Cowork plugin](../../clients/cowork-plugin/README.md)** using the values from step 4. The plugin needs a separate **Web client** and developer-portal OAuth registration; do not reuse the generated desktop client's loopback callback.
+Continue with **[Download and configure the Cowork plugin](../../clients/cowork-plugin/README.md)** using the values from step 4. Reuse the generated Web client: create its secret manually, then register that client in the developer portal. Do not create a second Entra client.
 
 For later changes, use [update instructions](operations.md#update-an-azure-deployment). When finished, follow [Azure teardown](operations.md#azure-teardown): generated registrations are permanently purged **before** teardown confirmation unless you set the documented opt-out.

@@ -24,10 +24,10 @@
       "value": "${ENTRA_API_DISPLAY_NAME=simple-mcp-server-api}"
     },
     "entraClientDisplayName": {
-      "value": "${ENTRA_CLIENT_DISPLAY_NAME=simple-mcp-server-client}"
+      "value": "${ENTRA_CLIENT_DISPLAY_NAME=simple-mcp-server-client-cowork}"
     },
     "entraClientRedirectUri": {
-      "value": "${ENTRA_CLIENT_REDIRECT_URI=http://localhost:3000/callback}"
+      "value": "${ENTRA_CLIENT_REDIRECT_URI=https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect}"
     },
     "entraAuthorizeAzureCliClient": {
       "value": "${ENTRA_AUTHORIZE_AZURE_CLI_CLIENT=true}"

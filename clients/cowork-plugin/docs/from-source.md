@@ -7,7 +7,7 @@
 ## Prerequisites
 
 - A repository checkout, Node.js **24+**, and npm.
-- For a configured package: the same [server and OAuth prerequisites](oauth-setup.md) as the download path.
+- For a configured package: the same [server and OAuth prerequisites](oauth-setup.md) as the download path, including the generated Cowork client or a suitable manually managed Web client.
 
 Run commands from **`clients/cowork-plugin/`** (`cd clients/cowork-plugin` from the repository root).
 
@@ -26,7 +26,7 @@ Tests assert shipped placeholders; they are not validation commands for a custom
 
 **Goal:** obtain the developer-portal registration ID required by the connector.
 
-Follow [OAuth setup](oauth-setup.md) if not already done. Return with your endpoint and auth config ID.
+Follow [OAuth setup](oauth-setup.md) if not already done: reuse the generated Web client, create its secret, and register it in the developer portal. Return with your endpoint and auth config ID.
 
 ## 3. Customize the manifest
 

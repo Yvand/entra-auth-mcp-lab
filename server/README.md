@@ -13,7 +13,7 @@ A small TypeScript [Model Context Protocol (MCP)](https://modelcontextprotocol.i
 
 **[Follow the Azure deployment walkthrough](docs/azure-deployment.md).** It creates the HTTPS server and Entra registrations with `azd up`. `CREATE_ENTRA_APP_REGISTRATIONS` defaults to `true`, so you do not need to register the API manually.
 
-After deployment, follow the [Cowork plugin guide](../clients/cowork-plugin/README.md). Cowork needs its own Web client and developer-portal OAuth registration; the server's generated desktop/CLI client is not that client.
+After deployment, follow the [Cowork plugin guide](../clients/cowork-plugin/README.md). Reuse the generated **Cowork Web client** (`simple-mcp-server-client-cowork` by default); manually create its secret and register it in the developer portal. No second Entra client registration is needed.
 
 ## Alternative setup paths
 

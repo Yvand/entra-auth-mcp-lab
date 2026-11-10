@@ -53,7 +53,7 @@ Disconnect/sign out and confirm the host asks for authentication again. Offline 
 | --- | --- |
 | Package cannot upload | Cowork availability, custom-app policy, manifest version, ZIP root layout, icons, and unreplaced metadata |
 | Connector is missing | Plugin enabled in Cowork, reachable HTTPS endpoint, tenant approval; not Copilot Chat or mobile |
-| Sign-in/consent fails | Web callback, secret expiry, API delegated permission, full scope, and required consent |
+| Sign-in/consent fails | Portal Client ID matches the Cowork app (`ENTRA_CLIENT_APP_ID` for automatic deployment), Web callback, secret expiry, API delegated permission, full scope, and required consent |
 | Runtime 404 | Endpoint/base-URL matching and **Any Teams app** usage restriction in the OAuth registration |
 | 401 | API access token for this tenant/audience, not a Graph or ID token; see [server troubleshooting](../../../server/docs/operations.md#troubleshooting) |
 | 403 | Token's `scp` includes the server's required delegated scope |

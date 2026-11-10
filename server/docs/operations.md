@@ -25,7 +25,7 @@ The deployment sets `HOST=0.0.0.0`, `PORT=3000`, and derives `PUBLIC_BASE_URL` f
 
 ### Automatic registration settings
 
-`CREATE_ENTRA_APP_REGISTRATIONS` defaults to `true` in both Bicep and the azd parameter mapping. The module creates single-tenant API/client applications and service principals, grants the public client tenant-wide delegated consent, and preauthorizes it. API tokens use v2 and the default identifier URI is `api://<api-app-id>`. Tenant/audience inputs are ignored in this mode.
+`CREATE_ENTRA_APP_REGISTRATIONS` defaults to `true` in both Bicep and the azd parameter mapping. The module creates single-tenant API/Cowork Web-client applications and service principals, grants the Web client tenant-wide delegated consent, and preauthorizes it. API tokens use v2 and the default identifier URI is `api://<api-app-id>`. Tenant/audience inputs are ignored in this mode.
 
 Optional overrides are set with `azd env set <name> <value>` before provisioning:
 
@@ -33,12 +33,12 @@ Optional overrides are set with `azd env set <name> <value>` before provisioning
 | --- | --- |
 | `MCP_REQUIRED_SCOPE` | `mcp.invoke`; short scope exposed and enforced by the API |
 | `ENTRA_API_DISPLAY_NAME` | `simple-mcp-server-api` |
-| `ENTRA_CLIENT_DISPLAY_NAME` | `simple-mcp-server-client` |
-| `ENTRA_CLIENT_REDIRECT_URI` | `http://localhost:3000/callback`; replace with the actual desktop/CLI client's callback |
+| `ENTRA_CLIENT_DISPLAY_NAME` | `simple-mcp-server-client-cowork`; custom display names remain supported |
+| `ENTRA_CLIENT_REDIRECT_URI` | `https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect`; the Cowork Web callback, not a localhost/API URL |
 | `ENTRA_AUTHORIZE_AZURE_CLI_CLIENT` | `true`; set `false` to disable Azure CLI preauthorization |
 | `ENTRA_AZURE_CLI_APP_ID` | `04b07795-8ddb-461a-bbee-02f9e1bf7b46`; Azure CLI's well-known app ID |
 
-The generated public client uses Authorization Code + PKCE, not a Web/SPA platform. The server implements no callback route. Cowork requires its [separate Web client](../../clients/cowork-plugin/docs/oauth-setup.md).
+The generated client has a **Web** platform, disabled public-client fallback, and no public-client redirect URIs. It uses authorization code flow with PKCE enabled in the developer portal. Bicep does not create or manage its secret: follow [shared OAuth setup](../../clients/cowork-plugin/docs/oauth-setup.md) to create one and register the client in the portal.
 
 Graph `uniqueName` and ownership tags depend on subscription and azd environment; repeated provisions target the same objects. Display names alone do not identify ownership. Do not rename an environment and assume its existing registrations move with it.
 
@@ -51,7 +51,7 @@ Run `azd env get-value <name>` from `server/` for individual values. `azd env ge
 | `CREATE_ENTRA_APP_REGISTRATIONS` | Effective creation mode, persisted after provisioning for the cleanup hooks |
 | `ENTRA_TENANT_ID`, `ENTRA_AUDIENCE` | Effective server tenant and audience; manual inputs in `false` mode |
 | `MCP_REQUIRED_SCOPE` | Effective short scope, persisted after provisioning |
-| `ENTRA_API_APP_ID`, `ENTRA_CLIENT_APP_ID` | Generated API/public-client IDs; empty in `false` mode |
+| `ENTRA_API_APP_ID`, `ENTRA_CLIENT_APP_ID` | Generated API/Cowork Web-client IDs; empty in `false` mode |
 | `ENTRA_APP_OWNERSHIP_TAG` | Generated cleanup ownership marker; empty in `false` mode |
 | `MCP_CLIENT_ID` | Optional external-client bookkeeping; never read by the server |
 | `SERVICE_MCP_URI` | Public base URL, without `/mcp` |
@@ -81,6 +81,26 @@ Changing an azd value alone does not update the Container App. Re-provisioning p
 An explicit `CREATE_ENTRA_APP_REGISTRATIONS=false` stays effective. **An unset value now resolves to `true` on the next provision.** For an older environment with independently managed registrations, explicitly set `false` before provisioning.
 
 Changing this flag does not migrate or delete registrations; switching to `false` also disables automatic Entra cleanup. Plan identity/ownership changes separately rather than toggling it to troubleshoot.
+
+### Convert an existing generated client to Cowork
+
+**Goal:** update the previously generated desktop/CLI registration in place, keeping its app ID and ownership. This intentionally retires its public-client configuration; any external desktop client using it needs a separate registration.
+
+From `server/`, select the existing environment with `azd env select "<environment>"` and confirm `CREATE_ENTRA_APP_REGISTRATIONS` is `true`. Record `ENTRA_CLIENT_APP_ID` with `azd env get-value ENTRA_CLIENT_APP_ID` before provisioning.
+
+Update any saved legacy callback/name overrides; changing template defaults alone does not replace azd environment values:
+
+```bash
+azd env set ENTRA_CLIENT_REDIRECT_URI "https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect"
+azd env set ENTRA_CLIENT_DISPLAY_NAME simple-mcp-server-client-cowork
+azd provision
+```
+
+Keep a deliberate custom display name if preferred. Do not rename the azd environment or change the Graph identity key: provisioning uses the same registration.
+
+Read `ENTRA_CLIENT_APP_ID` again and confirm it is unchanged. In Entra, check the **Web** callback above, an empty Mobile/desktop redirect list, and **Allow public client flows** disabled. Existing API permission/consent and ownership remain configured.
+
+Then complete [secret creation and developer-portal registration](../../clients/cowork-plugin/docs/oauth-setup.md#2-create-the-client-secret). A matching existing portal registration can be reused; update its client credentials if needed. Re-provisioning does not create a portal entry or client secret.
 
 ## Server configuration
 
@@ -112,7 +132,7 @@ Authenticate before sending MCP JSON. Missing/invalid tokens return 401 and a di
 
 ## OAuth client integration
 
-Configure a real client with its own application ID, the Entra tenant authority, registered callback URI, **full exposed scope**, and MCP endpoint. Use Authorization Code + PKCE for the public-client setup; the API does not handle OAuth callbacks or issue tokens. Register the client's callback, not the API URL merely because the API is remote.
+Configure a client with its application ID, the Entra tenant authority, registered callback URI, **full exposed scope**, and MCP endpoint. Cowork uses the generated Web client plus [manual secret/token-store setup](../../clients/cowork-plugin/docs/oauth-setup.md); independent desktop clients use Authorization Code + PKCE without a secret. The API does not handle OAuth callbacks or issue tokens. Register the client's callback, not the API URL merely because the API is remote.
 
 Protected-resource metadata advertises the public base URL and tenant authority. **Current limitation:** `scopes_supported` is constructed as `<first configured audience>/<required scope>` in [src/app.ts](../src/app.ts). With the normal bare-GUID audience this is not the full `api://<api-app-id>/mcp.invoke` scope. It also does not represent all audience values or a custom Application ID URI.
 
@@ -125,7 +145,7 @@ Use the scope from **Expose an API** explicitly; do not promise discovery-only c
 - `whoami` exposes only allow-listed claims, not raw tokens, groups, or arbitrary payload fields. Names/usernames/IDs may still be personal data.
 - Keep issuer/JWKS overrides under trusted configuration control. Never expand audiences to include unrelated APIs to bypass authentication failures.
 - Use HTTPS for externally reachable deployments; Azure ingress terminates TLS. Configure `PUBLIC_BASE_URL` correctly when using a reverse proxy/custom domain.
-- Never put tokens or secrets in source, shell history, screenshots, or third-party token decoders. The validator/public-client setup needs no client secrets. Follow tenant policy for consent and least-privilege deployment access.
+- Never put tokens or secrets in source, shell history, screenshots, or third-party token decoders. The API validator needs no secret; the Cowork Web client's secret belongs in the token store, not server configuration. Follow tenant policy for consent and least-privilege deployment access.
 
 ## Troubleshooting
 
@@ -183,6 +203,8 @@ azd down
 ```
 
 **The Entra hook runs before teardown confirmation.** Generated registrations may already be permanently purged even if you cancel the confirmation or Azure deletion fails. Set `ENTRA_PURGE_ON_DOWN=false` before invoking `azd down` if you need to retain them.
+
+The generated client is the one Cowork uses: deleting it prevents future sign-in/token refresh and may interrupt existing use. The hook does not remove its developer-portal OAuth registration or installed Microsoft 365 plugin; manage those separately.
 
 Review `azd` confirmation prompts; do not bypass them without verifying the deletion scope. `azd down` removes the Azure resources, including the registry and its images. It is not enough to stop the Container App if you want to remove all deployed resources.
 

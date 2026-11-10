@@ -171,7 +171,7 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($TOKEN)) {
 }
 ```
 
-If tenant policy blocks Azure CLI, use your registered client's Authorization Code + PKCE flow instead, with its own client ID and callback. Place the resulting **access token** (not an ID token) in the test terminal's `TOKEN` variable. No client implementation is included here. Do not relax audience or scope checks to make the test pass.
+If tenant policy blocks Azure CLI, use an independently implemented client's supported token flow instead. A desktop/CLI PKCE fallback needs a [separate public-client registration](entra-app-registrations.md#manual-portal-setup), not the generated Cowork Web client. Place the resulting **access token** (not an ID token) in the test terminal's `TOKEN` variable. No client implementation is included here. Do not relax audience or scope checks to make the test pass.
 
 Never print tokens, enable shell tracing for these commands, commit them, or paste them into an external decoder. Azure CLI's cache can retain credentials beyond this terminal session; follow your organization's workstation/sign-out policy.
 
