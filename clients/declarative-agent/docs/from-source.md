@@ -67,7 +67,11 @@ atk provision --env dev
 atk install --file-path build/appPackage.dev.zip --scope Personal
 ```
 
-The lifecycle creates the Microsoft 365 app, renders/packages its files, validates the package, updates the app, and extends it to Microsoft 365. The install step personally sideloads that package. Keep the generated app ID and returned installation identifiers.
+This source workflow uses an app entry in **[Teams Developer Portal > Apps](https://dev.teams.microsoft.com/apps)**. On first provision, `teamsApp/create` creates the entry automatically and saves its ID as `TEAMS_APP_ID`, which becomes `manifest.json`: `id`. You do not need to create the entry manually first or use `ENTRA_COPILOT_CLIENT_APP_ID` as its ID.
+
+The lifecycle then renders/packages the files, validates the package, updates the app, and extends it to Microsoft 365. Creating the Developer Portal entry alone does not install or publish the agent; the separate `atk install` step personally sideloads the package. Keep the generated app ID and returned installation identifiers.
+
+By contrast, the [recommended download + admin-upload path](../README.md#choose-the-app-identity-workflow) needs no pre-existing Developer Portal app entry: you generate a GUID in the manifest, and uploading the configured ZIP creates the tenant's app/agent catalog entry using that ID. A Toolkit-built package can also be uploaded by an administrator without changing its manifest ID. Admin upload does not imply creation of a developer-owned entry under Developer Portal > Apps.
 
 This is not `azd provision`: it creates no Azure hosting or additional Entra registrations. The project intentionally has no tenant-wide/store publish lifecycle and no OAuth-registration actions. Use [installation guidance](install-and-test.md) for tenant policy and admin-upload alternatives.
 

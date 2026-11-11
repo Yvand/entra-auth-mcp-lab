@@ -15,6 +15,17 @@
 
 **No clone, Node.js, npm, or Agents Toolkit is needed to configure a download.** Developers who want the ATK project should use the separate [source workflow](docs/from-source.md).
 
+## Choose the app identity workflow
+
+| Path | How the app identity is registered | When to use it |
+| --- | --- | --- |
+| **Recommended download + admin upload** (below) | Generate a GUID and set `manifest.json`: `id`. Uploading the configured ZIP creates the tenant's app/agent catalog entry using that ID; no pre-existing app entry under Teams Developer Portal > Apps or `atk provision` is required. | Install a ready-made package without a developer project or Toolkit. |
+| **[ATK source workflow](docs/from-source.md)** | `atk provision` runs `teamsApp/create` to create an app entry in Teams Developer Portal and saves its ID as `TEAMS_APP_ID` for the manifest. Toolkit creates the entry; you do not need to create it manually first. | Develop, update, and personally test the agent with Toolkit. |
+
+Creating a Developer Portal app entry alone does not install or publish the agent. The paths can be combined: a package developed with Toolkit can later be uploaded by an administrator using the same manifest ID. **Retain the ID for updates**, rather than generating a new one each time.
+
+This app identity is not an Entra app registration or an OAuth auth config. Both paths still require the manual OAuth setup below, including the auth config in the developer portal's **Tools > OAuth client registration**.
+
 ## 1. Download the release template
 
 **Goal:** use the packaged agent rather than build from source.

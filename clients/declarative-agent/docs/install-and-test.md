@@ -16,7 +16,9 @@ See Microsoft's [Copilot extensibility requirements](https://learn.microsoft.com
 
 **Goal:** make the agent available to the intended account.
 
-For the download-only path, ask your administrator to upload the **configured ZIP** through the Microsoft 365 admin center's custom-agent upload flow under **Agents > All agents**, then assign/allow it for the intended test users. Follow the [current deployment guidance](https://learn.microsoft.com/en-us/microsoft-365/copilot/agent-essentials/agent-lifecycle/agent-assign-deploy) if navigation changes.
+For the download-only path, ask your administrator to upload the **configured ZIP** through the Microsoft 365 admin center's custom-agent upload flow under **Agents > All agents > Add agent**, then assign/allow it for the intended test users. Follow Microsoft's [custom-agent upload guidance](https://learn.microsoft.com/en-us/microsoft-agent-365/admin/agent-registry-overview#upload-custom-agent) if navigation changes.
+
+No prior app creation in Teams Developer Portal or `atk provision` is required for this upload. The upload creates the tenant's app/agent catalog entry using the GUID you set in `manifest.json`: `id`; retain that ID for updates. This is separate from the developer-owned app entry created by the [ATK source workflow](from-source.md#3-provision-and-install-for-personal-testing), and does not create an Entra OAuth client or the required OAuth auth config.
 
 ### Alternative: personal testing with ATK CLI
 
