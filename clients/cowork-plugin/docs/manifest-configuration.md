@@ -6,7 +6,7 @@
 
 **Prerequisites:** HTTPS MCP endpoint and [OAuth registration ID](oauth-setup.md). Developer details have demo defaults; customizing them is optional for demo packaging.
 
-## 1. Replace the connection and developer fields
+## 1. Replace the connection fields
 
 **Goal:** connect the package to your server and review its publisher details. Replace the connection fields and optionally customize the developer defaults; do not add OAuth credentials.
 
