@@ -2,7 +2,7 @@
 
 [Server overview](../README.md) | [Existing registrations instead](azure-existing-registrations.md)
 
-**Goal:** deploy an HTTPS MCP server to Azure Container Apps and let Azure Developer CLI (`azd`) create its API and Cowork Web-client registrations. This is the default: `CREATE_ENTRA_APP_REGISTRATIONS=true`.
+**Goal:** deploy an HTTPS MCP server to Azure Container Apps and let Azure Developer CLI (`azd`) create its API and shared Copilot Web-client registrations. This is the default: `CREATE_ENTRA_APP_REGISTRATIONS=true`.
 
 You do **not** need to create the API registration first. Already have registrations to reuse? Follow the [separate existing-registration guide](azure-existing-registrations.md).
 
@@ -46,7 +46,7 @@ If reusing an environment that explicitly sets `CREATE_ENTRA_APP_REGISTRATIONS=f
 
 ## 3. Deploy the server and registrations
 
-**Goal:** create the API registration, its Cowork Web client, and the running HTTPS server in one workflow.
+**Goal:** create the API registration, its shared Copilot Web client, and the running HTTPS server in one workflow.
 
 ```bash
 azd up
@@ -58,18 +58,18 @@ Wait for both provisioning and application deployment to finish. A provision-onl
 
 ## 4. Collect the client connection values
 
-**Goal:** give the plugin the server address and permission it must request.
+**Goal:** give either client the server address and permission it must request.
 
 ```bash
 azd env get-value MCP_ENDPOINT
 azd env get-value ENTRA_TENANT_ID
 azd env get-value ENTRA_API_APP_ID
-azd env get-value ENTRA_COWORK_CLIENT_APP_ID
+azd env get-value ENTRA_COPILOT_CLIENT_APP_ID
 ```
 
-Record the HTTPS endpoint (including `/mcp`), tenant ID, API app ID, and Cowork client ID. The full requested scope is **`api://<ENTRA_API_APP_ID>/mcp.invoke`** for this default setup.
+Record the HTTPS endpoint (including `/mcp`), tenant ID, API app ID, and Copilot Web-client ID. The full requested scope is **`api://<ENTRA_API_APP_ID>/mcp.invoke`** for this default setup.
 
-`ENTRA_COWORK_CLIENT_APP_ID` identifies the generated **Cowork Web client**, not the API or the later developer-portal OAuth registration. Use it when creating the client's secret and filling in the portal's **Client ID** field. See the [ID/scope reference](entra-app-registrations.md#understand-the-values) if needed.
+`ENTRA_COPILOT_CLIENT_APP_ID` identifies the generated **shared Copilot Web client**, not the API, Microsoft 365 app GUID, or later developer-portal auth config. Use it for both demos when creating/reusing the client's secret and filling in the portal's **Client ID** field. See the [ID/scope reference](entra-app-registrations.md#understand-the-values).
 
 azd saves deployment values in the selected `.azure/<environment>/` state, including the effective creation flag used by cleanup. It does not export them into your terminal.
 
@@ -79,10 +79,10 @@ azd saves deployment values in the selected `.azure/<environment>/` state, inclu
 
 Follow [live verification](testing.md#live-verification-local-or-azure), using its Azure value-selection commands. Success means `whoami` returns your identity and `echo` returns your message. Offline tests and `/healthz` alone do not verify deployed authentication.
 
-## 6. Connect Copilot Cowork
+## 6. Connect a Copilot client
 
 **Goal:** configure a client that signs users into this API.
 
-Continue with **[Download and configure the Cowork plugin](../../clients/cowork-plugin/README.md)** using the values from step 4. Reuse the generated Web client: create its secret manually, then register that client in the developer portal. Do not create a second Entra client.
+Choose **[the Cowork plugin](../../clients/cowork-plugin/README.md)** or **[the Copilot Chat declarative agent](../../clients/declarative-agent/README.md)** with the values from step 4. Both reuse the generated Web client and follow [manual OAuth setup](../../clients/docs/oauth-setup.md). Keep their Microsoft 365 app identities and portal auth configs distinct; do not create a second Entra client by default.
 
 For later changes, use [update instructions](operations.md#update-an-azure-deployment). When finished, follow [Azure teardown](operations.md#azure-teardown): generated registrations are permanently purged **before** teardown confirmation unless you set the documented opt-out.

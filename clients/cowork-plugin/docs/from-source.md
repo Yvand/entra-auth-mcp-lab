@@ -7,7 +7,7 @@
 ## Prerequisites
 
 - A repository checkout, Node.js **24+**, and npm.
-- For a configured package: the same [server and OAuth prerequisites](oauth-setup.md) as the download path, including the generated Cowork client or a suitable manually managed Web client.
+- For a configured package: the same [server and OAuth prerequisites](oauth-setup.md) as the download path, including the generated shared Copilot client or a suitable manually managed Web client.
 
 Run commands from **`clients/cowork-plugin/`** (`cd clients/cowork-plugin` from the repository root).
 

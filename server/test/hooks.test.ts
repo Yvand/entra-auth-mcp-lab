@@ -68,6 +68,7 @@ function runHook(
   const azPath = join(tempDir, "az");
   const callsPath = join(tempDir, "calls.jsonl");
   writeFileSync(azPath, azMock);
+  writeFileSync(callsPath, "");
   chmodSync(azPath, 0o755);
 
   try {
@@ -80,8 +81,9 @@ function runHook(
         AZ_CALLS: callsPath,
         AZ_MODE: mode,
         CREATE_ENTRA_APP_REGISTRATIONS: "true",
+        ENTRA_PURGE_ON_DOWN: "true",
         ENTRA_API_APP_ID: "api-app-id",
-        ENTRA_COWORK_CLIENT_APP_ID: "",
+        ENTRA_COPILOT_CLIENT_APP_ID: "",
         ENTRA_APP_OWNERSHIP_TAG: ownershipTag,
         ...envOverrides,
       },
@@ -100,17 +102,39 @@ function runHook(
 }
 
 describe.each(hookRunners)("$name Entra cleanup hook", (runner) => {
-  it("cleans up the Cowork client using its generated app ID", () => {
+  it("cleans up the shared Copilot client using its generated app ID", () => {
     const result = runHook(runner, "active", {
       ENTRA_API_APP_ID: "",
-      ENTRA_COWORK_CLIENT_APP_ID: "cowork-app-id",
+      ENTRA_COPILOT_CLIENT_APP_ID: "copilot-app-id",
     });
     expect(result.status).toBe(0);
 
     const calls = result.calls.map((args) => args.join(" "));
-    expect(calls).toContain("ad sp delete --id cowork-app-id");
-    expect(calls).toContain("ad app delete --id cowork-app-id");
+    expect(calls).toContain("ad sp delete --id copilot-app-id");
+    expect(calls).toContain("ad app delete --id copilot-app-id");
     expect(calls).not.toContain("ad app delete --id api-app-id");
+  });
+
+  it("does not fall back to the removed Cowork output", () => {
+    const result = runHook(runner, "active", {
+      ENTRA_API_APP_ID: "",
+      ENTRA_COWORK_CLIENT_APP_ID: "legacy-client-id",
+    });
+    expect(result.status).toBe(0);
+    expect(result.calls).toEqual([]);
+    expect(result.stdout).toContain("client app: skipped (no app id)");
+  });
+
+  it.each([
+    "CREATE_ENTRA_APP_REGISTRATIONS",
+    "ENTRA_PURGE_ON_DOWN",
+  ])("skips cleanup when disabled: %s", (key) => {
+    const result = runHook(runner, "active", {
+      ENTRA_COPILOT_CLIENT_APP_ID: "copilot-app-id",
+      [key]: "false",
+    });
+    expect(result.status).toBe(0);
+    expect(result.calls).toEqual([]);
   });
 
   it("purges the owned service principal before its application", () => {

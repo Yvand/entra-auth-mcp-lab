@@ -1,0 +1,33 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.30/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.30",
+  "version": "1.0.0",
+  "id": "${{TEAMS_APP_ID}}",
+  "developer": {
+    "name": "Yvand",
+    "websiteUrl": "https://github.com/Yvand/entra-oauth-mcp-server",
+    "privacyUrl": "https://github.com/Yvand/entra-oauth-mcp-server",
+    "termsOfUseUrl": "https://github.com/Yvand/entra-oauth-mcp-server"
+  },
+  "name": {
+    "short": "Entra MCP Agent${{APP_NAME_SUFFIX}}",
+    "full": "Entra MCP Demo for Microsoft 365 Copilot"
+  },
+  "description": {
+    "short": "Test delegated MCP authentication with identity and echo tools.",
+    "full": "A learning demo declarative agent that calls whoami and echo on an Entra-protected remote MCP server."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#2563EB",
+  "copilotAgents": {
+    "declarativeAgents": [
+      {
+        "id": "entraMcpAgent",
+        "file": "declarativeAgent.json"
+      }
+    ]
+  }
+}

@@ -13,7 +13,7 @@
 | Field | Value |
 | --- | --- |
 | `agentConnectors[0].toolSource.remoteMcpServer.mcpServerUrl` | Your HTTPS endpoint ending in `/mcp`, without credentials, query, or fragment |
-| `agentConnectors[0].toolSource.remoteMcpServer.authorization.referenceId` | OAuth client registration ID from the developer portal, not `ENTRA_COWORK_CLIENT_APP_ID` or the API app ID |
+| `agentConnectors[0].toolSource.remoteMcpServer.authorization.referenceId` | OAuth client registration ID from the developer portal, not `ENTRA_COPILOT_CLIENT_APP_ID` or the API app ID |
 
 **Note:** You may optionally update the manifest's `developer` section with your own publisher details.
 

@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://aka.ms/m365-agents-toolkits/v1.9/yaml.schema.json
+version: v1.9
+environmentFolderPath: ./env
+
+provision:
+  - uses: teamsApp/create
+    with:
+      name: Entra MCP Agent${{APP_NAME_SUFFIX}}
+    writeToEnvironmentFile:
+      teamsAppId: TEAMS_APP_ID
+  - uses: teamsApp/zipAppPackage
+    with:
+      manifestPath: ./appPackage/manifest.json
+      outputZipPath: ./build/appPackage.${{TEAMSFX_ENV}}.zip
+      outputFolder: ./build
+  - uses: teamsApp/validateAppPackage
+    with:
+      appPackagePath: ./build/appPackage.${{TEAMSFX_ENV}}.zip
+  - uses: teamsApp/update
+    with:
+      appPackagePath: ./build/appPackage.${{TEAMSFX_ENV}}.zip
+  - uses: teamsApp/extendToM365
+    with:
+      appPackagePath: ./build/appPackage.${{TEAMSFX_ENV}}.zip
+    writeToEnvironmentFile:
+      titleId: M365_TITLE_ID
+      appId: M365_APP_ID
+projectId: a188146f-6708-428d-b802-3e0fc054c2b3

@@ -10,7 +10,7 @@
 
 - A Microsoft 365 work tenant with **Copilot Cowork** available and permission to install custom plugins (or an administrator who can upload them).
 - An externally reachable HTTPS [server deployment](../../server/docs/azure-deployment.md), its tenant ID, and its full delegated API scope.
-- Permission to create a secret on the generated Entra Cowork client and register its OAuth credentials in the [Teams developer portal](https://dev.teams.microsoft.com/tools). Without an automatically generated client, use the [manual Web-client alternative](docs/manual-web-client.md) first.
+- Permission to create/reuse a secret on the generated shared Copilot Web client and register its OAuth credentials in the [Teams developer portal](https://dev.teams.microsoft.com/tools). Without an automatically generated client, use the [manual Web-client alternative](docs/manual-web-client.md) first.
 - A text editor and ZIP tools: `unzip`/`zip` in Bash or `Expand-Archive`/`Compress-Archive` in PowerShell.
 
 **No repository clone, Node.js, or npm is needed to edit and repackage a download.** Tenant policy, licensing, availability, and upload restrictions are covered in [installation prerequisites](docs/install-and-test.md#prerequisites).
@@ -27,15 +27,15 @@ The commands below use `1.2.3` as an example; substitute your downloaded version
 
 **Goal:** identify the server and permission this plugin will use.
 
-Record the **HTTPS MCP endpoint**, **tenant ID**, **full requested scope**, and **Cowork client ID** (`ENTRA_COWORK_CLIENT_APP_ID`) from [server deployment step 4](../../server/docs/azure-deployment.md#4-collect-the-client-connection-values). With an independently managed API, use the actual scope shown in **Expose an API** and your existing or [manually created Web client](docs/manual-web-client.md).
+Record the **HTTPS MCP endpoint**, **tenant ID**, **full requested scope**, and **shared Web-client ID** (`ENTRA_COPILOT_CLIENT_APP_ID`) from [server deployment step 4](../../server/docs/azure-deployment.md#4-collect-the-client-connection-values). With an independently managed API, use the actual scope shown in **Expose an API** and your existing or [manually created Web client](docs/manual-web-client.md).
 
 ## 3. Complete the OAuth prerequisites
 
 **Goal:** allow Microsoft 365 to sign users into your API and store credentials outside the package.
 
-Follow **[Set up the Cowork OAuth client](docs/oauth-setup.md)**. Reuse the generated **Web client** (named `simple-mcp-server-client-cowork` by default), create its secret manually, and register it in the **Teams developer portal**. Bicep has already configured its callback and API permission/consent; do not create a second app.
+Follow **[Set up the Cowork OAuth client](docs/oauth-setup.md)**. Reuse the generated **shared Web client** (named `simple-mcp-server-client-copilot` by default), create/reuse its secret manually, and create Cowork's auth config in the **Teams developer portal**. Bicep has already configured its callback and API permission/consent; do not create a second Entra app. This also works without installing the declarative agent.
 
-Return here with the resulting **OAuth client registration ID** (auth config ID). This is not the API ID or `ENTRA_COWORK_CLIENT_APP_ID`: only the portal's auth config ID goes in the manifest.
+Return here with the resulting **OAuth client registration ID** (auth config ID). This is not the API ID or `ENTRA_COPILOT_CLIENT_APP_ID`: only the portal's auth config ID goes in the manifest.
 
 ## 4. Extract and customize the template
 

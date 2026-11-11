@@ -18,16 +18,16 @@ param entraAudience string = '00000000-0000-0000-0000-000000000000'
 @description('Delegated scope a caller must hold to invoke MCP tools.')
 param mcpRequiredScope string = 'mcp.invoke'
 
-@description('Create and configure the API and Cowork Web-client Entra app registrations during provisioning (default). Requires permission to create registrations and grant tenant-wide admin consent. Create the client secret and developer-portal OAuth registration manually. Set false to use existing registrations.')
+@description('Create and configure the API and shared Copilot Web-client Entra app registrations during provisioning (default). Requires permission to create registrations and grant tenant-wide admin consent. Create the client secret and developer-portal OAuth registration manually. Set false to use existing registrations.')
 param createEntraAppRegistrations bool = true
 
 @description('Display name for the API app registration. Only used when createEntraAppRegistrations is true.')
 param entraApiDisplayName string = 'simple-mcp-server-api'
 
-@description('Display name for the Cowork Web-client app registration. Only used when createEntraAppRegistrations is true.')
-param entraClientDisplayName string = 'simple-mcp-server-client-cowork'
+@description('Display name for the shared Copilot Web-client app registration. Only used when createEntraAppRegistrations is true.')
+param entraClientDisplayName string = 'simple-mcp-server-client-copilot'
 
-@description('Web redirect URI for the Cowork authorization code flow. Defaults to the Microsoft Teams OAuth callback. Only used when createEntraAppRegistrations is true.')
+@description('Web redirect URI for the Copilot authorization code flow. Defaults to the Microsoft Teams OAuth callback. Only used when createEntraAppRegistrations is true.')
 param entraClientRedirectUri string = 'https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect'
 
 @description('Also pre-authorize the well-known Microsoft Azure CLI first-party app for the mcp.invoke scope, so `az` can call the API without a consent prompt. Only used when createEntraAppRegistrations is true.')
@@ -319,7 +319,7 @@ output ENTRA_AUDIENCE string = effectiveEntraAudience
 output CREATE_ENTRA_APP_REGISTRATIONS string = createEntraAppRegistrations ? 'true' : 'false'
 output MCP_REQUIRED_SCOPE string = mcpRequiredScope
 output ENTRA_API_APP_ID string = createEntraAppRegistrations ? entraAppRegistrations!.outputs.API_APP_ID : ''
-output ENTRA_COWORK_CLIENT_APP_ID string = createEntraAppRegistrations ? entraAppRegistrations!.outputs.CLIENT_APP_ID : ''
+output ENTRA_COPILOT_CLIENT_APP_ID string = createEntraAppRegistrations ? entraAppRegistrations!.outputs.CLIENT_APP_ID : ''
 output ENTRA_APP_OWNERSHIP_TAG string = createEntraAppRegistrations ? entraAppRegistrations!.outputs.APP_OWNERSHIP_TAG : ''
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.outputs.name

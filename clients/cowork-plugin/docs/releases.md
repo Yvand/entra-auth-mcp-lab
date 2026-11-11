@@ -29,7 +29,7 @@ Substitute an unused version. [The workflow](../../../.github/workflows/release-
 
 **Goal:** confirm visitors can download the expected template.
 
-Wait for the workflow to succeed and inspect the GitHub Release asset `entra-mcp-cowork-plugin-template-<version>.zip`. Check its [four-file layout](manifest-configuration.md#3-check-the-package-layout), manifest version, and intentional placeholders.
+Wait for the workflow to succeed and inspect the **draft** GitHub Release asset `entra-mcp-cowork-plugin-template-<version>.zip`. Check its [four-file layout](manifest-configuration.md#3-check-the-package-layout), manifest version, and intentional placeholders, then publish the draft when ready.
 
 The workflow runs tests/validation and stamps the release version into the packaged manifest **in memory**. It does not edit the source manifest, plugin package metadata, or server version. The built-in GitHub token has `contents: write` only in the publish job; no Azure/Entra secrets or deployment-specific variables are needed. An existing release makes publication fail rather than replacing assets.
 

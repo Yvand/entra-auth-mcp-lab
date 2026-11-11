@@ -7,3 +7,9 @@ dist/
 *.log
 coverage/
 clients/cowork-plugin/build/
+clients/declarative-agent/build/
+clients/declarative-agent/env/.env.*
+!clients/declarative-agent/env/.env.*.example
+clients/declarative-agent/.localConfigs
+clients/declarative-agent/.env.*
+clients/declarative-agent/.vscode/*.user

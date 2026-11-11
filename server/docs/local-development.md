@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) | [App registrations](entra-app-registrations.md) | [Testing](testing.md) | [Operations and cleanup](operations.md)
 
-**Goal:** run and develop the server on your machine, without azd. For an HTTPS endpoint ready for Cowork, prefer the [recommended Azure deployment](azure-deployment.md).
+**Goal:** run and develop the server on your machine, without azd. For an HTTPS endpoint ready for either Copilot demo, prefer the [recommended Azure deployment](azure-deployment.md).
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ Reuse an existing API registration or follow [manual portal setup](entra-app-reg
 
 Record the [tenant, API ID, and full scope](entra-app-registrations.md#understand-the-values). Complete [Azure CLI authorization](entra-app-registrations.md#optional-azure-cli-authorization-for-smoke-tests) for live checks; it uses Azure CLI's existing registration, so no additional client registration is needed.
 
-For Cowork with a local HTTPS tunnel, use the [manual Web-client alternative](../../clients/cowork-plugin/docs/manual-web-client.md).
+For Cowork or the declarative agent with a local HTTPS tunnel, use the [manual Web-client alternative](../../clients/docs/manual-web-client.md), then [shared OAuth setup](../../clients/docs/oauth-setup.md).
 
 ## 2. Configure the server
 
