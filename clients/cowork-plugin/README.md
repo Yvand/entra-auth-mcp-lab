@@ -6,6 +6,10 @@
 
 The installed app's short name is **Entra MCP Lab - Cowork**, with full name **Entra MCP Identity Lab - Cowork**. These follow the shared [project naming conventions](../../server/docs/operations.md#project-and-deployment-names).
 
+![Entra MCP Identity Lab Cowork logo: linked teal identity tiles and their white outline variant.](docs/images/branding-preview.png)
+
+Color icon (left) and enlarged outline artwork (right).
+
 **The release ZIP is a configuration template, not an install-ready app.** You must replace its endpoint and OAuth registration reference, then create a new ZIP. No server or credentials are included.
 
 ## Prerequisites

@@ -6,6 +6,10 @@
 
 The installed app/agent's short name is **Entra MCP Lab - Chat**, with full app name **Entra MCP Identity Lab - Chat**. ATK appends its environment suffix, normally `-dev`; see the shared [naming conventions](../../server/docs/operations.md#project-and-deployment-names).
 
+![Entra MCP Identity Lab Chat logo: a violet identity speech bubble and its white outline variant.](docs/images/branding-preview.png)
+
+Color icon (left) and enlarged outline artwork (right).
+
 **The release ZIP is a configuration template, not an install-ready app.** It contains the app manifest, agent definition, MCP plugin definition, and icons. It includes no server, credentials, or ATK executable.
 
 ## Prerequisites

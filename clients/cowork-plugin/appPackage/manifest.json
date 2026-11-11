@@ -21,7 +21,7 @@
     "color": "color.png",
     "outline": "outline.png"
   },
-  "accentColor": "#2563EB",
+  "accentColor": "#2DD4BF",
   "agentSkills": [
     { "folder": "./skills/entra-mcp-identity-lab" }
   ],
