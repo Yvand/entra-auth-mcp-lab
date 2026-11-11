@@ -19,6 +19,8 @@
 
 Save valid JSON. Keep `OAuthPluginVault`, manifest/schema version **1.29**, the connector ID, and skill folder/name unchanged. This template has one skill and one remote connector; Cowork discovers tools dynamically, so no static tool catalog is needed.
 
+The short app name is `Entra MCP Lab - Cowork`; its full name is `Entra MCP Identity Lab - Cowork`. The skill uses the `entra-mcp-identity-lab` connector, displayed as `Entra MCP Identity Lab - Server`. Keep those references aligned when customizing names.
+
 ## 2. Choose a stable app identity
 
 **Goal:** allow installed copies to be updated rather than treated as unrelated apps.
@@ -39,7 +41,7 @@ Include only:
 manifest.json
 color.png
 outline.png
-skills/entra-mcp-demo/SKILL.md
+skills/entra-mcp-identity-lab/SKILL.md
 ```
 
 `manifest.json` and the icons must be at ZIP root, not inside a containing directory. Preserve the nested skill path. Do not add tokens, secrets, `.env`, editor backups, or documentation.

@@ -21,10 +21,10 @@
       "value": "${CREATE_ENTRA_APP_REGISTRATIONS=true}"
     },
     "entraApiDisplayName": {
-      "value": "${ENTRA_API_DISPLAY_NAME=simple-mcp-server-api}"
+      "value": "${ENTRA_API_DISPLAY_NAME=}"
     },
     "entraClientDisplayName": {
-      "value": "${ENTRA_CLIENT_DISPLAY_NAME=simple-mcp-server-client-copilot}"
+      "value": "${ENTRA_CLIENT_DISPLAY_NAME=}"
     },
     "entraClientRedirectUri": {
       "value": "${ENTRA_CLIENT_REDIRECT_URI=https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect}"

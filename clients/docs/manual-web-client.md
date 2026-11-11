@@ -13,7 +13,7 @@ An API exposing the [full delegated scope](../../server/docs/entra-app-registrat
 **Goal:** identify the application Microsoft 365 will use to sign users into your API.
 
 1. In [Entra admin center](https://entra.microsoft.com), open **App registrations > New registration**.
-2. Name it, for example, `simple-mcp-server-client-copilot` and select **Accounts in this organizational directory only**.
+2. Name it, for example, `Entra MCP Identity Lab - Copilot Client - dev` and select **Accounts in this organizational directory only**. Replace `dev` with your deployment label; see the [shared naming conventions](../../server/docs/operations.md#project-and-deployment-names).
 3. Record its **Application (client) ID** separately from the API ID.
 4. Open **Authentication > Add a platform > Web** and add:
 
@@ -35,6 +35,6 @@ Return to [secret creation](oauth-setup.md#2-create-or-reuse-a-valid-client-secr
 
 ## When to use a dedicated client
 
-Reuse is the default for this small demo because the API, scope, and callback match. Create a separate Web client with the same steps only when you need independent credentials, policy, sign-in attribution, or lifecycle. Give it a distinct name, for example `simple-mcp-server-client-agent`, and use its ID/secret in the agent's own auth config.
+Reuse is the default for this small demo because the API, scope, and callback match. Create a separate Web client with the same steps only when you need independent credentials, policy, sign-in attribution, or lifecycle. Give it a distinct name, for example `Entra MCP Identity Lab - Chat Client - dev`, and use its ID/secret in the agent's own auth config.
 
 Do not create a second API, change `ENTRA_AUDIENCE`, or toggle the deployment's registration mode to isolate a client. This manually managed registration is not owned by the azd environment and is not deleted by its cleanup hook. Remove it [separately](../../server/docs/operations.md#independently-managed-registrations) when no client uses it.

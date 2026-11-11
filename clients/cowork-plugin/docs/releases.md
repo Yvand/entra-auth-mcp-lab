@@ -8,6 +8,8 @@ This guide is for maintainers. Users configuring an existing release do not need
 
 A tested, committed source template, permission to push tags, and GitHub Actions permission to create repository releases. Do not customize the public template with a tenant endpoint or credentials.
 
+Coordinate new publication after the GitHub repository has been renamed to `Yvand/entra-mcp-identity-lab`. Older releases keep their original assets; this guide describes newly built project-prefixed ZIPs, not a rewrite of historical releases.
+
 ## 1. Validate the template
 
 **Goal:** ensure the release packages the intended reusable files.
@@ -29,7 +31,7 @@ Substitute an unused version. [The workflow](../../../.github/workflows/release-
 
 **Goal:** confirm visitors can download the expected template.
 
-Wait for the workflow to succeed and inspect the **draft** GitHub Release asset `entra-mcp-cowork-plugin-template-<version>.zip`. Check its [four-file layout](manifest-configuration.md#3-check-the-package-layout), manifest version, and intentional placeholders, then publish the draft when ready.
+Wait for the workflow to succeed and inspect the **draft** GitHub Release asset `entra-mcp-identity-lab-cowork-plugin-template-<version>.zip`. Check its [four-file layout](manifest-configuration.md#3-check-the-package-layout), manifest version, and intentional placeholders, then publish the draft when ready.
 
 The workflow runs tests/validation and stamps the release version into the packaged manifest **in memory**. It does not edit the source manifest, plugin package metadata, or server version. The built-in GitHub token has `contents: write` only in the publish job; no Azure/Entra secrets or deployment-specific variables are needed. An existing release makes publication fail rather than replacing assets.
 

@@ -112,7 +112,10 @@ describe("public endpoints", () => {
   it("serves health without a token", async () => {
     const response = await fetch(`${baseUrl}/healthz`);
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toMatchObject({ status: "ok" });
+    await expect(response.json()).resolves.toMatchObject({
+      status: "ok",
+      server: "entra-mcp-identity-lab",
+    });
   });
 
   it("serves protected-resource metadata", async () => {
@@ -163,6 +166,9 @@ describe("authenticated MCP session", () => {
 
     const initResponse = await mcpRequest(initializeRequest, token);
     expect(initResponse.status).toBe(200);
+    await expect(initResponse.json()).resolves.toMatchObject({
+      result: { serverInfo: { name: "entra-mcp-identity-lab" } },
+    });
 
     const listResponse = await mcpRequest(
       { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },

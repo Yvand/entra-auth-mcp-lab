@@ -5,17 +5,17 @@
   "id": "${{TEAMS_APP_ID}}",
   "developer": {
     "name": "Yvand",
-    "websiteUrl": "https://github.com/Yvand/entra-oauth-mcp-server",
-    "privacyUrl": "https://github.com/Yvand/entra-oauth-mcp-server",
-    "termsOfUseUrl": "https://github.com/Yvand/entra-oauth-mcp-server"
+    "websiteUrl": "https://github.com/Yvand/entra-mcp-identity-lab",
+    "privacyUrl": "https://github.com/Yvand/entra-mcp-identity-lab",
+    "termsOfUseUrl": "https://github.com/Yvand/entra-mcp-identity-lab"
   },
   "name": {
-    "short": "Entra MCP Agent${{APP_NAME_SUFFIX}}",
-    "full": "Entra MCP Demo for Microsoft 365 Copilot"
+    "short": "Entra MCP Lab - Chat${{APP_NAME_SUFFIX}}",
+    "full": "Entra MCP Identity Lab - Chat${{APP_NAME_SUFFIX}}"
   },
   "description": {
     "short": "Test delegated MCP authentication with identity and echo tools.",
-    "full": "A learning demo declarative agent that calls whoami and echo on an Entra-protected remote MCP server."
+    "full": "Entra MCP Identity Lab for Microsoft 365 Copilot Chat: a learning demo declarative agent that calls whoami and echo on an Entra-protected remote MCP server."
   },
   "icons": {
     "color": "color.png",
@@ -25,7 +25,7 @@
   "copilotAgents": {
     "declarativeAgents": [
       {
-        "id": "entraMcpAgent",
+        "id": "entraMcpIdentityLabAgent",
         "file": "declarativeAgent.json"
       }
     ]

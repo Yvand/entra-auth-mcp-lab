@@ -69,7 +69,7 @@ $REQUESTED_SCOPE = "api://<api-application-client-id>/mcp.invoke"
 For Azure, select the correct environment and read its values. Bash:
 
 ```bash
-azd env select mcp-dev || exit 1
+azd env select dev || exit 1
 BASE_URL=$(azd env get-value SERVICE_MCP_URI) || exit 1
 ENTRA_TENANT_ID=$(azd env get-value ENTRA_TENANT_ID) || exit 1
 # Default Application ID URI only; replace for a manual custom URI.
@@ -81,7 +81,7 @@ REQUESTED_SCOPE="api://$API_APP_ID/$SCOPE_NAME"
 PowerShell:
 
 ```powershell
-azd env select mcp-dev
+azd env select dev
 if ($LASTEXITCODE -ne 0) { throw "Cannot select azd environment" }
 $BASE_URL = azd env get-value SERVICE_MCP_URI
 if ($LASTEXITCODE -ne 0) { throw "Cannot read base URL" }

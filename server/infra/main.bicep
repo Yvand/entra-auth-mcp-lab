@@ -21,11 +21,11 @@ param mcpRequiredScope string = 'mcp.invoke'
 @description('Create and configure the API and shared Copilot Web-client Entra app registrations during provisioning (default). Requires permission to create registrations and grant tenant-wide admin consent. Create the client secret and developer-portal OAuth registration manually. Set false to use existing registrations.')
 param createEntraAppRegistrations bool = true
 
-@description('Display name for the API app registration. Only used when createEntraAppRegistrations is true.')
-param entraApiDisplayName string = 'simple-mcp-server-api'
+@description('Optional exact API app display name. Empty uses Entra MCP Identity Lab - API - <environment>. Only used when createEntraAppRegistrations is true.')
+param entraApiDisplayName string = ''
 
-@description('Display name for the shared Copilot Web-client app registration. Only used when createEntraAppRegistrations is true.')
-param entraClientDisplayName string = 'simple-mcp-server-client-copilot'
+@description('Optional exact shared Copilot Web-client display name. Empty uses Entra MCP Identity Lab - Copilot Client - <environment>. Only used when createEntraAppRegistrations is true.')
+param entraClientDisplayName string = ''
 
 @description('Web redirect URI for the Copilot authorization code flow. Defaults to the Microsoft Teams OAuth callback. Only used when createEntraAppRegistrations is true.')
 param entraClientRedirectUri string = 'https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect'
@@ -76,14 +76,17 @@ var abbrs = {
   managedIdentity: 'id'
 }
 
+var projectName = 'entra-mcp-identity-lab'
+var containerAppProjectName = 'entra-mcp-idlab'
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = {
   'azd-env-name': environmentName
+  project: projectName
 }
 
 var serviceName = 'mcp'
-var resourceGroupName = '${abbrs.resourceGroup}-${environmentName}'
-var containerAppName = '${abbrs.containerApp}-${serviceName}-${resourceToken}'
+var resourceGroupName = '${abbrs.resourceGroup}-${projectName}-${environmentName}'
+var containerAppName = '${abbrs.containerApp}-${containerAppProjectName}-${resourceToken}'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
@@ -96,7 +99,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // Graph objects aren't Azure resources, so the module runs at the same subscription scope
 // as this file, independent of the resource group above.
 module entraAppRegistrations 'entra/app-registrations.bicep' = if (createEntraAppRegistrations) {
-  name: 'entra-apps-${resourceToken}'
+  name: '${projectName}-entra-apps-${resourceToken}'
   params: {
     environmentName: environmentName
     apiDisplayName: entraApiDisplayName
@@ -112,10 +115,10 @@ var effectiveEntraTenantId = createEntraAppRegistrations ? entraAppRegistrations
 var effectiveEntraAudience = createEntraAppRegistrations ? entraAppRegistrations!.outputs.ENTRA_AUDIENCE : entraAudience
 
 module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.16.1' = {
-  name: 'log-${resourceToken}'
+  name: 'log-${projectName}-${resourceToken}'
   scope: rg
   params: {
-    name: '${abbrs.logAnalytics}-${resourceToken}'
+    name: '${abbrs.logAnalytics}-${projectName}-${resourceToken}'
     location: location
     tags: tags
     skuName: 'PerGB2018'
@@ -125,10 +128,10 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.16.1' = 
 }
 
 module containerRegistry 'br/public:avm/res/container-registry/registry:0.13.0' = {
-  name: 'cr-${resourceToken}'
+  name: 'cr-${projectName}-${resourceToken}'
   scope: rg
   params: {
-    name: '${abbrs.containerRegistry}${resourceToken}'
+    name: '${abbrs.containerRegistry}${replace(projectName, '-', '')}${resourceToken}'
     location: location
     tags: tags
     acrSku: 'Basic'
@@ -145,10 +148,10 @@ module containerRegistry 'br/public:avm/res/container-registry/registry:0.13.0' 
 }
 
 module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.16.0' = {
-  name: 'cae-${resourceToken}'
+  name: 'cae-${projectName}-${resourceToken}'
   scope: rg
   params: {
-    name: '${abbrs.containerAppsEnvironment}-${resourceToken}'
+    name: '${abbrs.containerAppsEnvironment}-${projectName}-${resourceToken}'
     location: location
     tags: tags
     appLogsConfiguration: {
@@ -177,10 +180,10 @@ var effectiveBaseUrl = empty(publicBaseUrl) ? derivedBaseUrl : publicBaseUrl
 // instead of depending on the container app's system-assigned identity (whose
 // principal ID only exists once that resource has already been created).
 module containerAppIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.6.0' = {
-  name: 'id-${resourceToken}'
+  name: 'id-${projectName}-${resourceToken}'
   scope: rg
   params: {
-    name: '${abbrs.managedIdentity}-${serviceName}-${resourceToken}'
+    name: '${abbrs.managedIdentity}-${projectName}-${resourceToken}'
     location: location
     tags: tags
   }
@@ -191,7 +194,7 @@ module containerAppIdentity 'br/public:avm/res/managed-identity/user-assigned-id
 // happens when Container Apps validates a not-yet-granted pull credential during
 // revision creation. It also means the registry can be wired up unconditionally below.
 module acrPullRole 'modules/acr-pull-role.bicep' = {
-  name: 'acr-pull-${resourceToken}'
+  name: '${projectName}-acr-pull-${resourceToken}'
   scope: rg
   params: {
     registryName: containerRegistry.outputs.name
@@ -202,7 +205,7 @@ module acrPullRole 'modules/acr-pull-role.bicep' = {
 // On the very first provision no image has been pushed yet, so a public
 // placeholder is used; `azd deploy` replaces it immediately afterwards.
 module fetchLatestImage 'modules/fetch-container-image.bicep' = {
-  name: 'fetch-image-${serviceName}'
+  name: '${projectName}-fetch-image-${resourceToken}'
   scope: rg
   params: {
     exists: mcpExists
@@ -214,7 +217,7 @@ var placeholderImage = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:lat
 var containerImage = mcpExists ? fetchLatestImage.outputs.containerImage : placeholderImage
 
 module containerApp 'br/public:avm/res/app/container-app:0.23.0' = {
-  name: 'ca-${serviceName}-${resourceToken}'
+  name: 'ca-${projectName}-${resourceToken}'
   scope: rg
   params: {
     name: containerAppName

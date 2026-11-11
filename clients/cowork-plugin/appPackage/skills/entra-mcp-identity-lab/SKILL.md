@@ -1,11 +1,11 @@
 ---
-name: entra-mcp-demo
-description: Demonstrate the Entra MCP server by checking the signed-in identity and echoing a message. Use when the user asks to "run the Entra MCP demo", "check my MCP identity and echo hello", or "test the Entra MCP connection".
+name: entra-mcp-identity-lab
+description: Demonstrate Entra MCP Identity Lab by checking the signed-in identity and echoing a message. Use when the user asks to "run the Entra MCP Identity Lab", "check my MCP identity and echo hello", or "test the Entra MCP connection".
 ---
 
-# Entra MCP demo
+# Entra MCP Identity Lab
 
-Use the **Entra MCP Demo Server** connector (`entra-mcp`). This skill calls
+Use the **Entra MCP Identity Lab - Server** connector (`entra-mcp-identity-lab`). This skill calls
 both of its tools; it does not authenticate by running scripts or accepting tokens.
 
 1. Find this connector's `whoami` and `echo` tools through the host's tool

@@ -5,7 +5,7 @@ import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const ownershipTag = "azd-entra-oauth-mcp-test";
+const ownershipTag = "azd-entra-mcp-identity-lab-test";
 
 const azMock = `#!/usr/bin/env node
 const fs = require("node:fs");

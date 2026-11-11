@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { TokenIdentity } from "./auth.js";
 
-export const SERVER_NAME = "entra-oauth-mcp-server";
+export const SERVER_NAME = "entra-mcp-identity-lab";
 export const SERVER_VERSION = "1.0.0";
 
 /**

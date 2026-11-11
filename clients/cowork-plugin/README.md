@@ -4,6 +4,8 @@
 
 **Goal:** download a template, connect it to your Entra-protected MCP server, and install it in **Microsoft 365 Copilot Cowork**. Its single skill calls both `whoami` and `echo`. This is not a Copilot Chat declarative agent or a GitHub Copilot CLI plugin.
 
+The installed app's short name is **Entra MCP Lab - Cowork**, with full name **Entra MCP Identity Lab - Cowork**. These follow the shared [project naming conventions](../../server/docs/operations.md#project-and-deployment-names).
+
 **The release ZIP is a configuration template, not an install-ready app.** You must replace its endpoint and OAuth registration reference, then create a new ZIP. No server or credentials are included.
 
 ## Prerequisites
@@ -19,7 +21,7 @@
 
 **Goal:** start with the packaged plugin rather than building from source.
 
-Open **[GitHub Releases](https://github.com/Yvand/entra-oauth-mcp-server/releases)**, select a Cowork plugin release, and download **`entra-mcp-cowork-plugin-template-<version>.zip`** from its assets. Do not download the automatically generated "Source code" archives.
+Open **[GitHub Releases](https://github.com/Yvand/entra-mcp-identity-lab/releases)**, select a Cowork plugin release, and download **`entra-mcp-identity-lab-cowork-plugin-template-<version>.zip`** from its assets. Do not download the automatically generated "Source code" archives.
 
 The commands below use `1.2.3` as an example; substitute your downloaded version.
 
@@ -33,7 +35,7 @@ Record the **HTTPS MCP endpoint**, **tenant ID**, **full requested scope**, and 
 
 **Goal:** allow Microsoft 365 to sign users into your API and store credentials outside the package.
 
-Follow **[Set up the Cowork OAuth client](docs/oauth-setup.md)**. Reuse the generated **shared Web client** (named `simple-mcp-server-client-copilot` by default), create/reuse its secret manually, and create Cowork's auth config in the **Teams developer portal**. Bicep has already configured its callback and API permission/consent; do not create a second Entra app. This also works without installing the declarative agent.
+Follow **[Set up the Cowork OAuth client](docs/oauth-setup.md)**. Reuse the generated **shared Web client** (named `Entra MCP Identity Lab - Copilot Client - <environment>` by default), create/reuse its secret manually, and create Cowork's auth config in the **Teams developer portal**. Bicep has already configured its callback and API permission/consent; do not create a second Entra app. This also works without installing the declarative agent.
 
 Return here with the resulting **OAuth client registration ID** (auth config ID). This is not the API ID or `ENTRA_COPILOT_CLIENT_APP_ID`: only the portal's auth config ID goes in the manifest.
 
@@ -44,14 +46,14 @@ Return here with the resulting **OAuth client registration ID** (auth config ID)
 From the folder containing the downloaded ZIP, extract it. Bash:
 
 ```bash
-unzip entra-mcp-cowork-plugin-template-1.2.3.zip -d configured-plugin
+unzip entra-mcp-identity-lab-cowork-plugin-template-1.2.3.zip -d configured-plugin
 cd configured-plugin
 ```
 
 PowerShell:
 
 ```powershell
-Expand-Archive ./entra-mcp-cowork-plugin-template-1.2.3.zip ./configured-plugin
+Expand-Archive ./entra-mcp-identity-lab-cowork-plugin-template-1.2.3.zip ./configured-plugin
 Set-Location ./configured-plugin
 ```
 
@@ -64,13 +66,13 @@ Open **`manifest.json`** in a text editor. Apply the **[manifest field checklist
 Stay in `configured-plugin/`. Use a **new destination ZIP** to avoid retaining old entries. Bash:
 
 ```bash
-zip ../entra-mcp-cowork-plugin-configured-1.2.3.zip manifest.json color.png outline.png skills/entra-mcp-demo/SKILL.md
+zip ../entra-mcp-identity-lab-cowork-plugin-configured-1.2.3.zip manifest.json color.png outline.png skills/entra-mcp-identity-lab/SKILL.md
 ```
 
 PowerShell:
 
 ```powershell
-Compress-Archive -Path manifest.json,color.png,outline.png,skills -DestinationPath ../entra-mcp-cowork-plugin-configured-1.2.3.zip
+Compress-Archive -Path manifest.json,color.png,outline.png,skills -DestinationPath ../entra-mcp-identity-lab-cowork-plugin-configured-1.2.3.zip
 ```
 
 Open the resulting ZIP and check the [required layout](docs/manifest-configuration.md#3-check-the-package-layout): `manifest.json`, both icons, and the skill path, without an enclosing `configured-plugin/` folder. Standard ZIP tools do not validate schema or placeholders; review the field checklist before uploading.
@@ -82,7 +84,7 @@ Open the resulting ZIP and check the [required layout](docs/manifest-configurati
 Follow **[Install and test](docs/install-and-test.md)** with your configured ZIP. It covers tenant upload/personal installation, enabling the plugin, sign-in, and this test prompt:
 
 ```text
-Run the Entra MCP demo and echo "hello from my plugin".
+Run the Entra MCP Identity Lab and echo "hello from my plugin".
 ```
 
 Success means both tools ran, the identity is the consenting account, and the echo contains your message. Upload success alone is not an authenticated end-to-end check.

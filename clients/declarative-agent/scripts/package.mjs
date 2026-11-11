@@ -107,16 +107,16 @@ export async function buildPackage({
   }
   const agents = manifest.copilotAgents?.declarativeAgents;
   if (manifest.manifestVersion !== "1.30" || agents?.length !== 1
-    || agents[0].id !== "entraMcpAgent" || agents[0].file !== "declarativeAgent.json"
+    || agents[0].id !== "entraMcpIdentityLabAgent" || agents[0].file !== "declarativeAgent.json"
     || manifest.agentConnectors !== undefined || manifest.agentSkills !== undefined
     || agent.version !== "v1.9" || agent.actions?.length !== 1
-    || agent.actions[0].id !== "entraMcp" || agent.actions[0].file !== "ai-plugin.json"
+    || agent.actions[0].id !== "entraMcpIdentityLab" || agent.actions[0].file !== "ai-plugin.json"
     || !agent.instructions?.trim()
     || agent.capabilities !== undefined || agent.agent_skills !== undefined) {
     throw new Error("Expected one declarative agent referencing one MCP action, with no extra capabilities.");
   }
   const runtime = plugin.runtimes?.[0];
-  if (plugin.schema_version !== "v2.4" || plugin.namespace !== "EntraMcp"
+  if (plugin.schema_version !== "v2.4" || plugin.namespace !== "EntraMcpIdentityLab"
     || plugin.functions?.length !== 0 || plugin.runtimes?.length !== 1
     || runtime?.type !== "RemoteMCPServer"
     || runtime.auth?.type !== "OAuthPluginVault" || !runtime.auth.reference_id?.trim()
@@ -153,7 +153,7 @@ export async function buildPackage({
     manifest,
     agent,
     plugin,
-    fileName: `entra-mcp-declarative-agent-${configured ? "configured" : "template"}-${manifest.version}.zip`,
+    fileName: `entra-mcp-identity-lab-declarative-agent-${configured ? "configured" : "template"}-${manifest.version}.zip`,
     bytes: zipSync(zippedEntries),
   };
 }
