@@ -28,13 +28,20 @@ Azure resources, Entra applications and enterprise applications, and both client
 | Run or develop the server locally | [Local development](server/docs/local-development.md) |
 | Understand the server, configuration, or tests | [Server overview](server/README.md) |
 
-### Client
+### Clients
+
+#### Cowork plugin
 
 | Goal | Guide |
 | --- | --- |
 | Build the Cowork plugin from source | [Cowork source packaging](clients/cowork-plugin/docs/from-source.md) |
-| Develop the declarative agent with ATK | [Agent source workflow](clients/declarative-agent/docs/from-source.md) |
 | Publish a Cowork template release | [Cowork release guide](clients/cowork-plugin/docs/releases.md) |
+
+#### Copilot Chat declarative agent
+
+| Goal | Guide |
+| --- | --- |
+| Develop the declarative agent with ATK | [Agent source workflow](clients/declarative-agent/docs/from-source.md) |
 | Publish an agent template release | [Agent release guide](clients/declarative-agent/docs/releases.md) |
 
 The server and both clients have independent setup and versioning. Run server commands from `server/`, and each client's source commands from its own directory; each guide states its starting directory.
