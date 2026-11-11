@@ -25,3 +25,4 @@ provision:
     writeToEnvironmentFile:
       titleId: M365_TITLE_ID
       appId: M365_APP_ID
+projectId: a188146f-6708-428d-b802-3e0fc054c2b3
