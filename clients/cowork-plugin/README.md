@@ -61,7 +61,7 @@ Expand-Archive ./entra-auth-mcp-lab-cowork-plugin-template-1.2.3.zip ./configure
 Set-Location ./configured-plugin
 ```
 
-Open **`manifest.json`** in a text editor. Apply the **[manifest field checklist](docs/manifest-configuration.md#1-replace-the-connection)** and save valid JSON. It also explains choosing your app GUID and retaining it for updates. Leave the icons and skill files in place; never add credentials.
+Open **`manifest.json`** in a text editor. Apply the **[manifest field checklist](docs/manifest-configuration.md#1-replace-the-connection-fields)** and save valid JSON. It also explains choosing your app GUID and retaining it for updates. Leave the icons and skill files in place; never add credentials.
 
 ## 5. Create a configured ZIP
 
