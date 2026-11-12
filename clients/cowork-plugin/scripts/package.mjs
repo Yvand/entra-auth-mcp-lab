@@ -9,7 +9,7 @@ import schema from "../schema/MicrosoftTeams.v1.29.schema.json" with { type: "js
 
 const pluginDirectory = fileURLToPath(new URL("../", import.meta.url));
 const appDirectory = resolve(pluginDirectory, "appPackage");
-const skillFolder = "skills/entra-mcp-identity-lab";
+const skillFolder = "skills/entra-auth-mcp-lab";
 export const packageFiles = [
   "color.png",
   "manifest.json",
@@ -73,15 +73,15 @@ export async function buildPackage({
     || manifest.agentSkills?.length !== 1
     || manifest.agentSkills[0].folder !== `./${skillFolder}`
     || manifest.agentConnectors?.length !== 1) {
-    throw new Error("Expected manifest v1.29, one entra-mcp-identity-lab skill, and one connector.");
+    throw new Error("Expected manifest v1.29, one entra-auth-mcp-lab skill, and one connector.");
   }
   const connector = manifest.agentConnectors[0];
   const remote = connector.toolSource?.remoteMcpServer;
-  if (connector.id !== "entra-mcp-identity-lab"
+  if (connector.id !== "entra-auth-mcp-lab"
     || remote?.authorization?.type !== "OAuthPluginVault"
     || !remote.authorization.referenceId?.trim()
     || remote.mcpToolDescription !== undefined) {
-    throw new Error("Expected the entra-mcp-identity-lab OAuthPluginVault connector with a referenceId and dynamic tool discovery.");
+    throw new Error("Expected the entra-auth-mcp-lab OAuthPluginVault connector with a referenceId and dynamic tool discovery.");
   }
   const endpoint = new URL(remote.mcpServerUrl);
   if (endpoint.protocol !== "https:" || endpoint.pathname !== "/mcp"
@@ -93,9 +93,9 @@ export async function buildPackage({
   }
   const skill = entries[`${skillFolder}/SKILL.md`].toString("utf8");
   const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(skill)?.[1];
-  if (!frontmatter || !/^name: entra-mcp-identity-lab\r?$/m.test(frontmatter)
+  if (!frontmatter || !/^name: entra-auth-mcp-lab\r?$/m.test(frontmatter)
     || !/^description: \S.+$/m.test(frontmatter)) {
-    throw new Error("Skill frontmatter must name entra-mcp-identity-lab and include a description.");
+    throw new Error("Skill frontmatter must name entra-auth-mcp-lab and include a description.");
   }
   validateIcon(entries["color.png"], 192, "color.png");
   validateIcon(entries["outline.png"], 32, "outline.png");
@@ -115,7 +115,7 @@ export async function buildPackage({
   const kind = configured ? "configured" : "template";
   return {
     manifest,
-    fileName: `entra-mcp-identity-lab-cowork-plugin-${kind}-${manifest.version}.zip`,
+    fileName: `entra-auth-mcp-lab-cowork-plugin-${kind}-${manifest.version}.zip`,
     bytes: zipSync(zippedEntries),
   };
 }

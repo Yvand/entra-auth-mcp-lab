@@ -23,7 +23,7 @@ npm test
 npm run package
 ```
 
-The output is `build/entra-mcp-identity-lab-declarative-agent-template-1.0.0.zip`: a **configuration template**, not a configured app. It has no unresolved ATK variables. The [release workflow](../../../.github/workflows/release-agent.yml) uses this same packager.
+The output is `build/entra-auth-mcp-lab-declarative-agent-template-1.0.0.zip`: a **configuration template**, not a configured app. It has no unresolved ATK variables. The [release workflow](../../../.github/workflows/release-agent.yml) uses this same packager.
 
 ## 2. Configure the ATK environment
 
@@ -48,7 +48,7 @@ Edit `env/.env.dev`:
 | `MCP_ENDPOINT` | Actual public HTTPS URL ending in `/mcp` |
 | `MCP_AUTH_CONFIG_ID` | Manually created agent-specific developer-portal auth config ID |
 | `TEAMS_APP_ID` | Leave empty for Toolkit's first app creation; preserve its generated value for updates |
-| `APP_NAME_SUFFIX` | `-dev`, or your preferred suffix of at most 10 characters |
+| `APP_NAME_SUFFIX` | `-dev`, or your preferred suffix of at most 5 characters, including punctuation |
 | `TEAMSFX_ENV` | Keep `dev` for this environment |
 
 Review publisher/privacy/terms details in `appPackage/manifest.json` as described in the [manifest checklist](manifest-configuration.md#1-configure-the-downloaded-files).
@@ -71,7 +71,7 @@ This source workflow uses an app entry in **[Teams Developer Portal > Apps](http
 
 The lifecycle then renders/packages the files, validates the package, updates the app, and extends it to Microsoft 365. Creating the Developer Portal entry alone does not install or publish the agent; the separate `atk install` step personally sideloads the package. Keep the generated app ID and returned installation identifiers.
 
-Toolkit creates the app as `Entra MCP Lab - Chat-dev` by default, matching the packaged short app/agent name. The full app name is `Entra MCP Identity Lab - Chat-dev`.
+Toolkit creates the app as `Entra Auth MCP Lab - Chat-dev` by default, matching the packaged short app/agent name. The full app name is `Entra Auth MCP Lab - Chat-dev`.
 
 By contrast, the [recommended download + admin-upload path](../README.md#choose-the-app-identity-workflow) needs no pre-existing Developer Portal app entry: you generate a GUID in the manifest, and uploading the configured ZIP creates the tenant's app/agent catalog entry using that ID. A Toolkit-built package can also be uploaded by an administrator without changing its manifest ID. Admin upload does not imply creation of a developer-owned entry under Developer Portal > Apps.
 
@@ -93,7 +93,7 @@ For another non-secret connection file:
 npm run package -- --configured --connection-file /path/to/connection.env
 ```
 
-The output is `build/entra-mcp-identity-lab-declarative-agent-configured-1.0.0.zip`. Missing variables, template IDs, unresolved expressions, and connection placeholders fail packaging. The offline build and Toolkit use the same manifest files.
+The output is `build/entra-auth-mcp-lab-declarative-agent-configured-1.0.0.zip`. Missing variables, template IDs, unresolved expressions, and connection placeholders fail packaging. The offline build and Toolkit use the same manifest files.
 
 Alternatively, run Toolkit's native packaging without provisioning:
 

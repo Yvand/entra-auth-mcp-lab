@@ -114,7 +114,7 @@ describe("public endpoints", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       status: "ok",
-      server: "entra-mcp-identity-lab",
+      server: "entra-auth-mcp-lab",
     });
   });
 
@@ -167,7 +167,7 @@ describe("authenticated MCP session", () => {
     const initResponse = await mcpRequest(initializeRequest, token);
     expect(initResponse.status).toBe(200);
     await expect(initResponse.json()).resolves.toMatchObject({
-      result: { serverInfo: { name: "entra-mcp-identity-lab" } },
+      result: { serverInfo: { name: "entra-auth-mcp-lab" } },
     });
 
     const listResponse = await mcpRequest(

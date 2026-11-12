@@ -17,10 +17,10 @@ extension microsoftGraphV1
 
 param environmentName string
 
-@description('Optional exact API app display name. Empty uses Entra MCP Identity Lab - API - <environment>.')
+@description('Optional exact API app display name. Empty uses Entra Auth MCP Lab - API - <environment>.')
 param apiDisplayName string = ''
 
-@description('Optional exact shared Copilot Web-client display name. Empty uses Entra MCP Identity Lab - Copilot Client - <environment>.')
+@description('Optional exact shared Copilot Web-client display name. Empty uses Entra Auth MCP Lab - Copilot Client - <environment>.')
 param clientDisplayName string = ''
 
 @description('Web redirect URI for the Copilot authorization code flow. The default is the Microsoft Teams OAuth callback.')
@@ -41,13 +41,13 @@ param authorizeAzureCliClient bool = true
 @description('App ID of the well-known Microsoft Azure CLI first-party application. Only used when authorizeAzureCliClient is true.')
 param azureCliAppId string = '04b07795-8ddb-461a-bbee-02f9e1bf7b46'
 
-var effectiveApiDisplayName = empty(apiDisplayName) ? 'Entra MCP Identity Lab - API - ${environmentName}' : apiDisplayName
-var effectiveClientDisplayName = empty(clientDisplayName) ? 'Entra MCP Identity Lab - Copilot Client - ${environmentName}' : clientDisplayName
+var effectiveApiDisplayName = empty(apiDisplayName) ? 'Entra Auth MCP Lab - API - ${environmentName}' : apiDisplayName
+var effectiveClientDisplayName = empty(clientDisplayName) ? 'Entra Auth MCP Lab - Copilot Client - ${environmentName}' : clientDisplayName
 var scopeId = guid(subscription().id, effectiveApiDisplayName, scopeName)
 var ownershipSuffix = uniqueString(subscription().id, environmentName)
-var ownershipTag = 'azd-entra-mcp-identity-lab-${ownershipSuffix}'
-var apiUniqueName = 'entra-mcp-identity-lab-api-${ownershipSuffix}'
-var clientUniqueName = 'entra-mcp-identity-lab-copilot-client-${ownershipSuffix}'
+var ownershipTag = 'azd-entra-auth-mcp-lab-${ownershipSuffix}'
+var apiUniqueName = 'entra-auth-mcp-lab-api-${ownershipSuffix}'
+var clientUniqueName = 'entra-auth-mcp-lab-copilot-client-${ownershipSuffix}'
 
 resource apiApp 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: apiUniqueName
@@ -63,10 +63,10 @@ resource apiApp 'Microsoft.Graph/applications@v1.0' = {
         value: scopeName
         type: 'User'
         isEnabled: true
-        adminConsentDisplayName: 'Invoke Entra MCP Identity Lab tools'
-        adminConsentDescription: 'Allows the app to invoke Entra MCP Identity Lab tools on behalf of the signed-in user.'
-        userConsentDisplayName: 'Invoke Entra MCP Identity Lab tools'
-        userConsentDescription: 'Allows the app to invoke Entra MCP Identity Lab tools on your behalf.'
+        adminConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        adminConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on behalf of the signed-in user.'
+        userConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        userConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on your behalf.'
       }
     ]
   }
@@ -138,10 +138,10 @@ resource apiAppAuthorizeClient 'Microsoft.Graph/applications@v1.0' = {
         value: scopeName
         type: 'User'
         isEnabled: true
-        adminConsentDisplayName: 'Invoke Entra MCP Identity Lab tools'
-        adminConsentDescription: 'Allows the app to invoke Entra MCP Identity Lab tools on behalf of the signed-in user.'
-        userConsentDisplayName: 'Invoke Entra MCP Identity Lab tools'
-        userConsentDescription: 'Allows the app to invoke Entra MCP Identity Lab tools on your behalf.'
+        adminConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        adminConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on behalf of the signed-in user.'
+        userConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        userConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on your behalf.'
       }
     ]
     preAuthorizedApplications: concat(

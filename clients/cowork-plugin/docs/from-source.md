@@ -42,7 +42,7 @@ Edit **`appPackage/manifest.json`** using the shared [manifest checklist](manife
 npm run package -- --configured
 ```
 
-This creates `build/entra-mcp-identity-lab-cowork-plugin-configured-<manifest-version>.zip`. To change only the packaged version, without rewriting the source manifest:
+This creates `build/entra-auth-mcp-lab-cowork-plugin-configured-<manifest-version>.zip`. To change only the packaged version, without rewriting the source manifest:
 
 ```bash
 npm run package -- --configured --version 1.0.1
@@ -67,4 +67,4 @@ npm run package
 npm run package -- --tag releases/cowork-plugin/v1.2.3
 ```
 
-These produce `build/entra-mcp-identity-lab-cowork-plugin-template-<version>.zip`. For GitHub publication, follow the separate [maintainer release guide](releases.md).
+These produce `build/entra-auth-mcp-lab-cowork-plugin-template-<version>.zip`. For GitHub publication, follow the separate [maintainer release guide](releases.md).

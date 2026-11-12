@@ -6,39 +6,41 @@ This is reference material for an already configured server. New users should st
 
 ## Project and deployment names
 
-The public name is **Entra MCP Identity Lab**; the repository, azd project, MCP server identity, and server npm package use **`entra-mcp-identity-lab`**. These conventions apply to fresh deployments, not migration of previously created objects.
+The public name is **Entra Auth MCP Lab**; the repository, azd project, MCP server identity, and server npm package use **`entra-auth-mcp-lab`**. These conventions apply to fresh deployments, not migration of previously created objects.
 
 `<environment>` is your azd environment (the guides use `dev`). `<token>` is the existing 13-character hash of subscription, environment, and location; `<owner>` is the subscription/environment hash used for Graph identity and ownership. Hashes distinguish deployments but do not replace application-ID and ownership checks.
 
 | Asset or object | Default name |
 | --- | --- |
-| Azure resource group | `rg-entra-mcp-identity-lab-<environment>` |
-| Container App | `ca-entra-mcp-idlab-<token>` |
-| Container Apps environment | `cae-entra-mcp-identity-lab-<token>` |
-| Container Apps platform-managed infrastructure group (when created) | `ME_cae-entra-mcp-identity-lab-<token>` |
-| Container Registry | `crentramcpidentitylab<token>` |
-| Log Analytics workspace | `log-entra-mcp-identity-lab-<token>` |
-| User-assigned managed identity | `id-entra-mcp-identity-lab-<token>` |
-| Entra API application and enterprise application | `Entra MCP Identity Lab - API - <environment>` |
-| Shared Entra Copilot application and enterprise application | `Entra MCP Identity Lab - Copilot Client - <environment>` |
-| Graph API / client `uniqueName` | `entra-mcp-identity-lab-api-<owner>` / `entra-mcp-identity-lab-copilot-client-<owner>` |
-| Graph ownership tag | `azd-entra-mcp-identity-lab-<owner>` |
-| Cowork short / full app name | `Entra MCP Lab - Cowork` / `Entra MCP Identity Lab - Cowork` |
-| Chat short / full app name | `Entra MCP Lab - Chat` / `Entra MCP Identity Lab - Chat` |
-| Cowork connector ID / display name | `entra-mcp-identity-lab` / `Entra MCP Identity Lab - Server` |
-| Cowork skill folder / name | `skills/entra-mcp-identity-lab` / `entra-mcp-identity-lab` |
-| Declarative agent ID | `entraMcpIdentityLabAgent` |
-| Declarative action ID / plugin namespace | `entraMcpIdentityLab` / `EntraMcpIdentityLab` |
-| Plugin human-readable name | `Entra MCP Lab` |
-| Client npm packages | `entra-mcp-identity-lab-cowork-plugin` / `entra-mcp-identity-lab-declarative-agent` |
-| Client archives | `entra-mcp-identity-lab-<cowork-plugin or declarative-agent>-<template or configured>-<version>.zip` |
-| Suggested manual Cowork / Chat auth-config names | `entra-mcp-identity-lab-cowork-oauth-<environment>` / `entra-mcp-identity-lab-chat-oauth-<environment>` |
-| Suggested shared-client secret description | `entra-mcp-identity-lab-copilot-<environment>` |
-| Local Docker image / container | `entra-mcp-identity-lab:local` / `entra-mcp-identity-lab-local` |
+| Azure resource group | `rg-entra-auth-mcp-lab-<environment>` |
+| Container App | `ca-entra-auth-mcp-<token>` |
+| Container Apps environment | `cae-entra-auth-mcp-lab-<token>` |
+| Container Apps platform-managed infrastructure group (when created) | `ME_cae-entra-auth-mcp-lab-<token>` |
+| Container Registry | `crentraauthmcplab<token>` |
+| Log Analytics workspace | `log-entra-auth-mcp-lab-<token>` |
+| User-assigned managed identity | `id-entra-auth-mcp-lab-<token>` |
+| Entra API application and enterprise application | `Entra Auth MCP Lab - API - <environment>` |
+| Shared Entra Copilot application and enterprise application | `Entra Auth MCP Lab - Copilot Client - <environment>` |
+| Graph API / client `uniqueName` | `entra-auth-mcp-lab-api-<owner>` / `entra-auth-mcp-lab-copilot-client-<owner>` |
+| Graph ownership tag | `azd-entra-auth-mcp-lab-<owner>` |
+| Cowork short / full app name | `Entra Auth MCP Lab - Cowork` / `Entra Auth MCP Lab - Cowork` |
+| Chat short / full app name | `Entra Auth MCP Lab - Chat` / `Entra Auth MCP Lab - Chat` |
+| Cowork connector ID / display name | `entra-auth-mcp-lab` / `Entra Auth MCP Lab - Server` |
+| Cowork skill folder / name | `skills/entra-auth-mcp-lab` / `entra-auth-mcp-lab` |
+| Declarative agent ID | `entraAuthMcpLabAgent` |
+| Declarative action ID / plugin namespace | `entraAuthMcpLab` / `EntraAuthMcpLab` |
+| Plugin human-readable name | `Entra Auth MCP Lab` |
+| Client npm packages | `entra-auth-mcp-lab-cowork-plugin` / `entra-auth-mcp-lab-declarative-agent` |
+| Client archives | `entra-auth-mcp-lab-<cowork-plugin or declarative-agent>-<template or configured>-<version>.zip` |
+| Suggested manual Cowork / Chat auth-config names | `entra-auth-mcp-lab-cowork-oauth-<environment>` / `entra-auth-mcp-lab-chat-oauth-<environment>` |
+| Suggested shared-client secret description | `entra-auth-mcp-lab-copilot-<environment>` |
+| Local Docker image / container | `entra-auth-mcp-lab:local` / `entra-auth-mcp-lab-local` |
 
-Azure resources also carry `project: entra-mcp-identity-lab` alongside `azd-env-name`; the Container App retains `azd-service-name: mcp`. ARM module deployment names include the project slug. The `mcp` service/container role, generated output keys, `mcp.invoke` scope, and `api://<api-app-id>` URI convention are unchanged.
+Azure resources also carry `project: entra-auth-mcp-lab` alongside `azd-env-name`; the Container App retains `azd-service-name: mcp`. ARM module deployment names include the project slug. The `mcp` service/container role, generated output keys, `mcp.invoke` scope, and `api://<api-app-id>` URI convention are unchanged.
 
-The compact Container App prefix fits its 32-character limit without shortening the uniqueness hash; ACR names omit hyphens because only alphanumerics are allowed. Microsoft 365 short names fit the 30-character limit. ATK app creation and the Chat agent use the same short name, with `APP_NAME_SUFFIX` appended (normally `-dev`, at most 10 characters). The full Chat name also includes the suffix. Plugin human-readable names use the compact form because hosts may ignore characters beyond 20.
+The Container App uses `entra-auth-mcp` rather than the full project slug: `ca-entra-auth-mcp-<token>` is 31 characters, while `ca-entra-auth-mcp-lab-<token>` would exceed its 32-character limit at 35. The type prefix and full 13-character uniqueness hash are retained. Other project-prefixed Azure resources use the full slug; ACR names omit hyphens because only alphanumerics are allowed.
+
+Microsoft 365 short names fit the 30-character limit: Cowork's name is 27 characters and Chat's is 25 before its suffix. ATK app creation, the short/full Chat app name, and the Chat agent use the same name with `APP_NAME_SUFFIX` appended (normally `-dev`, at most 5 characters including punctuation). Longer suffixes are rejected, not truncated. The plugin human-readable name uses the full 18-character brand, within the 20-character host guidance.
 
 Applications and their service principals (shown under **Enterprise applications**) share the same effective display name. Empty/unset display-name overrides select the environment-aware defaults; explicit nonempty overrides are used exactly, without appending a suffix. Graph upsert keys and ownership tags do not depend on these display-name overrides. Continue identifying objects by their generated IDs, not names alone.
 
@@ -50,7 +52,7 @@ The [azd service definition](../azure.yaml) uses ACR remote builds (`docker.remo
 
 | Resource | Configuration |
 | --- | --- |
-| Resource group | `rg-entra-mcp-identity-lab-<environment>` |
+| Resource group | `rg-entra-auth-mcp-lab-<environment>` |
 | Container App | External HTTPS ingress; 0.5 vCPU/1 GiB; min 0/max 3 replicas |
 | Container Apps environment | Consumption hosting |
 | Container Registry | Basic; admin credentials disabled |
@@ -72,8 +74,8 @@ Optional overrides are set with `azd env set <name> <value>` before provisioning
 | Setting | Default/purpose |
 | --- | --- |
 | `MCP_REQUIRED_SCOPE` | `mcp.invoke`; short scope exposed and enforced by the API |
-| `ENTRA_API_DISPLAY_NAME` | `Entra MCP Identity Lab - API - <environment>` |
-| `ENTRA_CLIENT_DISPLAY_NAME` | `Entra MCP Identity Lab - Copilot Client - <environment>`; custom display names remain supported |
+| `ENTRA_API_DISPLAY_NAME` | `Entra Auth MCP Lab - API - <environment>` |
+| `ENTRA_CLIENT_DISPLAY_NAME` | `Entra Auth MCP Lab - Copilot Client - <environment>`; custom display names remain supported |
 | `ENTRA_CLIENT_REDIRECT_URI` | `https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect`; the shared Copilot Web callback, not a localhost/API URL |
 | `ENTRA_AUTHORIZE_AZURE_CLI_CLIENT` | `true`; set `false` to disable Azure CLI preauthorization |
 | `ENTRA_AZURE_CLI_APP_ID` | `04b07795-8ddb-461a-bbee-02f9e1bf7b46`; Azure CLI's well-known app ID |
@@ -194,7 +196,7 @@ Inspect Azure logs in the Container App's **Log stream** and Log Analytics. Conf
 
 ### Local teardown
 
-Stop a foreground Node.js/watch process with **Ctrl+C**. For the named container from the local guide, run `docker stop entra-mcp-identity-lab-local`; its `--rm` option removes the container. Optionally remove the exact image with `docker image rm entra-mcp-identity-lab:local`.
+Stop a foreground Node.js/watch process with **Ctrl+C**. For the named container from the local guide, run `docker stop entra-auth-mcp-lab-local`; its `--rm` option removes the container. Optionally remove the exact image with `docker image rm entra-auth-mcp-lab:local`.
 
 Stopping the server does not delete registrations. Retain them if reused, or follow [independent registration cleanup](#independently-managed-registrations). Remove only the local `.env` file when you no longer need that configuration; do not assume removal revokes tokens or deletes Entra objects.
 

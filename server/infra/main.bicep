@@ -21,10 +21,10 @@ param mcpRequiredScope string = 'mcp.invoke'
 @description('Create and configure the API and shared Copilot Web-client Entra app registrations during provisioning (default). Requires permission to create registrations and grant tenant-wide admin consent. Create the client secret and developer-portal OAuth registration manually. Set false to use existing registrations.')
 param createEntraAppRegistrations bool = true
 
-@description('Optional exact API app display name. Empty uses Entra MCP Identity Lab - API - <environment>. Only used when createEntraAppRegistrations is true.')
+@description('Optional exact API app display name. Empty uses Entra Auth MCP Lab - API - <environment>. Only used when createEntraAppRegistrations is true.')
 param entraApiDisplayName string = ''
 
-@description('Optional exact shared Copilot Web-client display name. Empty uses Entra MCP Identity Lab - Copilot Client - <environment>. Only used when createEntraAppRegistrations is true.')
+@description('Optional exact shared Copilot Web-client display name. Empty uses Entra Auth MCP Lab - Copilot Client - <environment>. Only used when createEntraAppRegistrations is true.')
 param entraClientDisplayName string = ''
 
 @description('Web redirect URI for the Copilot authorization code flow. Defaults to the Microsoft Teams OAuth callback. Only used when createEntraAppRegistrations is true.')
@@ -76,8 +76,8 @@ var abbrs = {
   managedIdentity: 'id'
 }
 
-var projectName = 'entra-mcp-identity-lab'
-var containerAppProjectName = 'entra-mcp-idlab'
+var projectName = 'entra-auth-mcp-lab'
+var containerAppProjectName = 'entra-auth-mcp'
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = {
   'azd-env-name': environmentName

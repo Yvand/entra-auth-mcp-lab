@@ -85,9 +85,9 @@ test("configured rendering resolves the same source without including unrelated 
     values: { ...configuredValues, UNUSED_LOCAL_VALUE: "must-not-be-packaged" },
   });
   assert.equal(result.manifest.id, configuredValues.TEAMS_APP_ID);
-  assert.equal(result.agent.name, "Entra MCP Lab - Chat-dev");
+  assert.equal(result.agent.name, "Entra Auth MCP Lab - Chat-dev");
   assert.equal(result.manifest.name.short, result.agent.name);
-  assert.equal(result.manifest.name.full, "Entra MCP Identity Lab - Chat-dev");
+  assert.equal(result.manifest.name.full, "Entra Auth MCP Lab - Chat-dev");
   assert.equal(result.plugin.runtimes[0].spec.url, configuredValues.MCP_ENDPOINT);
   assert.equal(result.plugin.runtimes[0].auth.reference_id, configuredValues.MCP_AUTH_CONFIG_ID);
   const entries = unzipSync(result.bytes);
@@ -106,11 +106,11 @@ test("ATK creates the app with the same name used by both source manifests", asy
 });
 
 test("configured suffixes fit the 30-character short name without truncation", async () => {
-  const suffix = "-123456789";
+  const suffix = "-1234";
   const result = await buildPackage({
     configured: true, values: { ...configuredValues, APP_NAME_SUFFIX: suffix },
   });
-  assert.equal(result.manifest.name.short, `Entra MCP Lab - Chat${suffix}`);
+  assert.equal(result.manifest.name.short, `Entra Auth MCP Lab - Chat${suffix}`);
   assert.equal(result.agent.name, result.manifest.name.short);
   await assert.rejects(buildPackage({
     configured: true, values: { ...configuredValues, APP_NAME_SUFFIX: `${suffix}0` },
@@ -208,7 +208,7 @@ test("release stamp changes the ZIP only and leaves other client/server versions
   ];
   const originals = await Promise.all(paths.map((path) => readFile(path)));
   const result = await buildPackage({ version: versionFromTag("releases/declarative-agent/v2.3.4") });
-  assert.equal(result.fileName, "entra-mcp-identity-lab-declarative-agent-template-2.3.4.zip");
+  assert.equal(result.fileName, "entra-auth-mcp-lab-declarative-agent-template-2.3.4.zip");
   assert.equal(JSON.parse(strFromU8(unzipSync(result.bytes)["manifest.json"])).version, "2.3.4");
   assert.deepEqual(await Promise.all(paths.map((path) => readFile(path))), originals);
   assert.deepEqual((await buildPackage({ version: "2.3.4" })).bytes, result.bytes);
@@ -235,8 +235,8 @@ test("CLI rejects bad tags and conflicting options, and does not read ambient co
 });
 
 test("CLI packages a tag and configured env file without modifying either", async () => {
-  const output = join(clientDirectory, "build/entra-mcp-identity-lab-declarative-agent-template-9.8.7.zip");
-  const configuredOutput = join(clientDirectory, "build/entra-mcp-identity-lab-declarative-agent-configured-1.0.0.zip");
+  const output = join(clientDirectory, "build/entra-auth-mcp-lab-declarative-agent-template-9.8.7.zip");
+  const configuredOutput = join(clientDirectory, "build/entra-auth-mcp-lab-declarative-agent-configured-1.0.0.zip");
   const temporary = await mkdtemp(join(tmpdir(), "agent-env-"));
   const envFile = join(temporary, "connection.env");
   const envText = Object.entries(configuredValues).map(([key, value]) => `${key}=${value}`).join("\n");

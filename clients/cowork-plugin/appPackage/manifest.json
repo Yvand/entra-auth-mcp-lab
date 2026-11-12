@@ -5,17 +5,17 @@
   "id": "62c65ced-35ae-47c3-af55-1753d48a701b",
   "developer": {
     "name": "Yvand",
-    "websiteUrl": "https://github.com/Yvand/entra-mcp-identity-lab",
-    "privacyUrl": "https://github.com/Yvand/entra-mcp-identity-lab",
-    "termsOfUseUrl": "https://github.com/Yvand/entra-mcp-identity-lab"
+    "websiteUrl": "https://github.com/Yvand/entra-auth-mcp-lab",
+    "privacyUrl": "https://github.com/Yvand/entra-auth-mcp-lab",
+    "termsOfUseUrl": "https://github.com/Yvand/entra-auth-mcp-lab"
   },
   "name": {
-    "short": "Entra MCP Lab - Cowork",
-    "full": "Entra MCP Identity Lab - Cowork"
+    "short": "Entra Auth MCP Lab - Cowork",
+    "full": "Entra Auth MCP Lab - Cowork"
   },
   "description": {
     "short": "Learn delegated MCP authentication with identity and echo tools.",
-    "full": "Entra MCP Identity Lab for Copilot Cowork: a learning demo with one skill that calls whoami and echo on an Entra-protected remote MCP server."
+    "full": "Entra Auth MCP Lab for Copilot Cowork: a learning demo with one skill that calls whoami and echo on an Entra-protected remote MCP server."
   },
   "icons": {
     "color": "color.png",
@@ -23,12 +23,12 @@
   },
   "accentColor": "#2DD4BF",
   "agentSkills": [
-    { "folder": "./skills/entra-mcp-identity-lab" }
+    { "folder": "./skills/entra-auth-mcp-lab" }
   ],
   "agentConnectors": [
     {
-      "id": "entra-mcp-identity-lab",
-      "displayName": "Entra MCP Identity Lab - Server",
+      "id": "entra-auth-mcp-lab",
+      "displayName": "Entra Auth MCP Lab - Server",
       "description": "The demo's Entra-protected whoami and echo tools.",
       "toolSource": {
         "remoteMcpServer": {

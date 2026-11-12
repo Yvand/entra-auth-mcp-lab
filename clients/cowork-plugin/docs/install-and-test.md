@@ -18,7 +18,7 @@ See Microsoft's [Cowork plugin guide](https://learn.microsoft.com/en-us/copilot/
 
 For administrator upload, open **Microsoft 365 admin center > Manage apps > Upload custom app**, then the ellipsis (**...**) > **Add agent** and select your configured ZIP. Follow the [current tenant-upload instructions](https://learn.microsoft.com/en-us/copilot/cowork/cowork-plugin-development#step-8-publish-to-your-tenant) if the UI changes.
 
-After approval/availability, find **Entra MCP Lab - Cowork** under **Cowork > Sources & Skills > Plugins > Discover** (or your chosen display name).
+After approval/availability, find **Entra Auth MCP Lab - Cowork** under **Cowork > Sources & Skills > Plugins > Discover** (or your chosen display name).
 
 ### Alternative: personal testing with Agents Toolkit CLI
 
@@ -41,7 +41,7 @@ Enable the plugin in Cowork, then complete connector sign-in and consent when pr
 
 **Goal:** check that real tool calls use the consenting identity.
 
-Ask Cowork to run the Entra MCP Identity Lab and echo a short message. The skill calls `whoami` with `{}`, then `echo` with your message. Confirm that both calls ran, the identity matches your account, and the returned echo is `<subject>: <your message>`.
+Ask Cowork to run the Entra Auth MCP Lab and echo a short message. The skill calls `whoami` with `{}`, then `echo` with your message. Confirm that both calls ran, the identity matches your account, and the returned echo is `<subject>: <your message>`.
 
 Without an explicit message the skill uses `Hello from Microsoft 365 Copilot`. Messages must contain 1-4000 characters; over-length input is reported, not truncated.
 

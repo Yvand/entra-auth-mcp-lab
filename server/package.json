@@ -1,8 +1,8 @@
 {
-  "name": "entra-mcp-identity-lab",
+  "name": "entra-auth-mcp-lab",
   "version": "1.0.0",
   "private": true,
-  "description": "Entra MCP Identity Lab: a Streamable HTTP MCP server secured with Microsoft Entra ID OAuth access tokens",
+  "description": "Entra Auth MCP Lab: a Streamable HTTP MCP server secured with Microsoft Entra ID OAuth access tokens",
   "type": "module",
   "engines": {
     "node": ">=24"

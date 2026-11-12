@@ -1,4 +1,4 @@
-# Entra MCP Identity Lab - Server
+# Entra Auth MCP Lab - Server
 
 [Repository overview](../README.md) | [Cowork plugin](../clients/cowork-plugin/README.md) | [Declarative agent](../clients/declarative-agent/README.md)
 
@@ -13,7 +13,7 @@ A small TypeScript [Model Context Protocol (MCP)](https://modelcontextprotocol.i
 
 **[Follow the Azure deployment walkthrough](docs/azure-deployment.md).** It creates the HTTPS server and Entra registrations with `azd up`. `CREATE_ENTRA_APP_REGISTRATIONS` defaults to `true`, so you do not need to register the API manually.
 
-After deployment, choose the [Cowork plugin](../clients/cowork-plugin/README.md) or [Copilot Chat declarative agent](../clients/declarative-agent/README.md). Reuse the generated **Copilot Web client** (`Entra MCP Identity Lab - Copilot Client - <environment>` by default), identified by `ENTRA_COPILOT_CLIENT_APP_ID`; manually create its secret and client-specific portal auth configs using [shared OAuth setup](../clients/docs/oauth-setup.md). No second Entra client registration is needed.
+After deployment, choose the [Cowork plugin](../clients/cowork-plugin/README.md) or [Copilot Chat declarative agent](../clients/declarative-agent/README.md). Reuse the generated **Copilot Web client** (`Entra Auth MCP Lab - Copilot Client - <environment>` by default), identified by `ENTRA_COPILOT_CLIENT_APP_ID`; manually create its secret and client-specific portal auth configs using [shared OAuth setup](../clients/docs/oauth-setup.md). No second Entra client registration is needed.
 
 ## Alternative setup paths
 
