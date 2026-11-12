@@ -20,6 +20,8 @@ Generate a GUID with `uuidgen` in Bash (if available) or `[guid]::NewGuid().ToSt
 
 Keep `copilotAgents.declarativeAgents[0].file` pointing to `declarativeAgent.json`, and that file's action pointing to `ai-plugin.json`. Keep `auth.type` as `OAuthPluginVault`. No client secret, client credential, or token belongs in any of these files.
 
+Keep the agent ID `entraAuthMcpLabAgent`, action ID `entraAuthMcpLab`, and plugin namespace `EntraAuthMcpLab` aligned with the supplied instructions and packaging checks. The short/full app and agent name is `Entra Auth MCP Lab - Chat`, before the environment suffix. The plugin's human-readable name is `Entra Auth MCP Lab`.
+
 The plugin uses dynamic discovery: `functions: []` and `run_for_functions: ["*"]`. The server currently exposes `whoami` and `echo`. This is not an authorization allowlist: future server tools can become discoverable.
 
 The agent instructions ask for `whoami`, then `echo`, with the same default message and length boundary as Cowork. Instructions and JSON validation cannot guarantee model execution; verify the actual calls.
@@ -47,7 +49,7 @@ In the ATK source, four variables are rendered into the same five-file package:
 | ATK variable | Destination |
 | --- | --- |
 | `TEAMS_APP_ID` | App manifest `id`; Toolkit fills it when creating the app |
-| `APP_NAME_SUFFIX` | App/agent display name, usually `-dev` for development |
+| `APP_NAME_SUFFIX` | Short/full app and agent display names, usually `-dev`; at most 5 characters, including punctuation, to fit the 30-character short app name |
 | `MCP_ENDPOINT` | Plugin runtime URL |
 | `MCP_AUTH_CONFIG_ID` | Plugin runtime OAuth auth-config reference |
 

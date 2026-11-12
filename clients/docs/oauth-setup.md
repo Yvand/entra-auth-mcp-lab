@@ -20,7 +20,9 @@ For a [local server](../../server/docs/local-development.md), use a public HTTPS
 
 **Goal:** use the right registration without creating a duplicate.
 
-Open [Entra admin center](https://entra.microsoft.com) in the API's tenant, then **App registrations > All applications**. Find the application by **`ENTRA_COPILOT_CLIENT_APP_ID`**, not by display name alone. Its default display name is `simple-mcp-server-client-copilot`.
+Open [Entra admin center](https://entra.microsoft.com) in the API's tenant, then **App registrations > All applications**. Find the application by **`ENTRA_COPILOT_CLIENT_APP_ID`**, not by display name alone. Its default display name is `Entra Auth MCP Lab - Copilot Client - <environment>`.
+
+For the guide's `dev` environment, this is `Entra Auth MCP Lab - Copilot Client - dev`, with the same name under **Enterprise applications**. Custom display-name overrides are exact and may differ; see the [naming conventions](../../server/docs/operations.md#project-and-deployment-names).
 
 The generated client already has delegated API permission/consent and a **Web** callback:
 
@@ -44,6 +46,8 @@ For independent credential rotation, policy, sign-in identity, or teardown, use 
 
 On the **Web client**, open **Certificates & secrets > Client secrets > New client secret** and choose an expiry appropriate to your tenant. Use its **Value**, not its Secret ID, in the portal's secure credential field below. Bicep does not create, output, or manage this secret.
 
+Use a recognizable description such as `entra-auth-mcp-lab-copilot-dev`, replacing `dev` with your deployment label. This is only the credential's label, not a value to put into a manifest.
+
 Reuse an existing valid secret where suitable; do not generate another on every provision. Track expiry and update the token-store registration when rotating it. The API registration needs no secret.
 
 Never put the secret in server configuration, an ATK environment file, a manifest, a skill, a ZIP, or release configuration. Only the portal receives it.
@@ -56,7 +60,7 @@ In the [Teams developer portal](https://dev.teams.microsoft.com/tools), select *
 
 | Field | Value |
 | --- | --- |
-| Registration name | A recognizable client-specific name |
+| Registration name | `entra-auth-mcp-lab-cowork-oauth-dev` for Cowork or `entra-auth-mcp-lab-chat-oauth-dev` for Chat; replace `dev` with your deployment label |
 | Base URL | The actual HTTPS MCP endpoint, matching the package's MCP URL; follow the portal's URL-matching requirements |
 | Client ID | `ENTRA_COPILOT_CLIENT_APP_ID`, or your independently managed Web-client ID; not the API ID |
 | Client secret | That Web client's secret **Value** |

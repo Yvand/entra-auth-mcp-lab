@@ -81,12 +81,12 @@ Stop foreground watch/production startup with **Ctrl+C**. Entra registrations re
 **Goal:** run the same server in Docker instead of Node.js directly. Complete steps 1 and 2, then use these commands from `server/` instead of step 3:
 
 ```bash
-docker build -t entra-oauth-mcp-server:local .
-docker run --rm --name entra-oauth-mcp-local \
+docker build -t entra-auth-mcp-lab:local .
+docker run --rm --name entra-auth-mcp-lab-local \
   -p 127.0.0.1:3000:3000 --env-file .env -e HOST=0.0.0.0 \
-  entra-oauth-mcp-server:local
+  entra-auth-mcp-lab:local
 ```
 
 Run the same Docker command on PowerShell as one line (Bash backslashes are not PowerShell continuations). The explicit `HOST` override is necessary because the copied `.env` uses loopback, which would otherwise bind only inside the container. The host port remains loopback-only. The image runs as a non-root user.
 
-Verify using step 4. To stop, use `docker stop entra-oauth-mcp-local`; `--rm` removes the stopped container, not its image or Entra registrations.
+Verify using step 4. To stop, use `docker stop entra-auth-mcp-lab-local`; `--rm` removes the stopped container, not its image or Entra registrations.

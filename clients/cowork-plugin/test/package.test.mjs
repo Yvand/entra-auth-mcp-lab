@@ -51,11 +51,13 @@ test("ZIP has only root manifest, icons, and one skill calling both tools", asyn
   const { bytes, fileName, manifest } = await buildPackage();
   const entries = unzipSync(bytes);
   assert.deepEqual(Object.keys(entries).sort(), packageFiles);
-  assert.equal(fileName, `entra-mcp-cowork-plugin-template-${manifest.version}.zip`);
+  assert.equal(fileName, `entra-auth-mcp-lab-cowork-plugin-template-${manifest.version}.zip`);
   assert.equal(manifest.agentSkills.length, 1);
   assert.equal(manifest.agentConnectors.length, 1);
-  const skill = strFromU8(entries["skills/entra-mcp-demo/SKILL.md"]);
-  assert.match(skill, /^name: entra-mcp-demo$/m);
+  const skill = strFromU8(entries["skills/entra-auth-mcp-lab/SKILL.md"]);
+  assert.match(skill, /^name: entra-auth-mcp-lab$/m);
+  const connector = manifest.agentConnectors[0];
+  assert.ok(skill.includes(`**${connector.displayName}** connector (\`${connector.id}\`)`));
   assert.match(skill, /Call `whoami` with `\{\}`/);
   assert.match(skill, /Call `echo` with/);
   assert.match(skill, /Hello from Microsoft 365 Copilot/);
@@ -72,7 +74,7 @@ test("release version changes the ZIP manifest only and is reproducible", async 
   const packaged = JSON.parse(strFromU8(entries["manifest.json"]));
   assert.equal(packaged.version, "1.2.3");
   assert.equal(packaged.id, JSON.parse(original).id);
-  assert.equal(result.fileName, "entra-mcp-cowork-plugin-template-1.2.3.zip");
+  assert.equal(result.fileName, "entra-auth-mcp-lab-cowork-plugin-template-1.2.3.zip");
   assert.deepEqual(await readFile(manifestUrl), original);
   assert.deepEqual(await readFile(serverUrl), serverOriginal);
   assert.deepEqual((await buildPackage({ version })).bytes, result.bytes);
@@ -95,7 +97,7 @@ test("configured package accepts configured connection values", async () => {
     remote.authorization.referenceId = "demo-token-vault-registration";
     await saveManifest(directory, manifest);
     const result = await buildPackage({ directory, configured: true });
-    assert.equal(result.fileName, "entra-mcp-cowork-plugin-configured-1.0.0.zip");
+    assert.equal(result.fileName, "entra-auth-mcp-lab-cowork-plugin-configured-1.0.0.zip");
     assert.equal(result.manifest.agentConnectors[0].toolSource.remoteMcpServer.mcpServerUrl,
       "https://demo.contoso.com/mcp");
   });
@@ -129,6 +131,14 @@ test("exactly one matching skill and connector are required", async () => {
       await assert.rejects(buildPackage({ directory }), /one.*skill.*connector/);
     });
   }
+});
+
+test("a different connector ID cannot pass as this lab's connector", async () => {
+  await fixture(async (directory, manifest) => {
+    manifest.agentConnectors[0].id = "another-lab";
+    await saveManifest(directory, manifest);
+    await assert.rejects(buildPackage({ directory }), /Expected the entra-auth-mcp-lab/);
+  });
 });
 
 test("anonymous auth, missing OAuth reference, and static tool descriptions are rejected", async () => {
@@ -188,9 +198,9 @@ test("missing package files and wrong icon sizes fail validation", async () => {
 
 test("skill folder and frontmatter name must match", async () => {
   await fixture(async (directory) => {
-    const file = join(directory, "skills/entra-mcp-demo/SKILL.md");
+    const file = join(directory, "skills/entra-auth-mcp-lab/SKILL.md");
     const text = await readFile(file, "utf8");
-    await writeFile(file, text.replace("name: entra-mcp-demo", "name: wrong-name"));
+    await writeFile(file, text.replace("name: entra-auth-mcp-lab", "name: wrong-name"));
     await assert.rejects(buildPackage({ directory }), /Skill frontmatter/);
   });
 });
@@ -220,7 +230,7 @@ test("CLI rejects malformed tags, unreplaced placeholders, and conflicting optio
 });
 
 test("CLI produces the release asset with version-matched manifest", async () => {
-  const output = new URL("../build/entra-mcp-cowork-plugin-template-9.8.7.zip", import.meta.url);
+  const output = new URL("../build/entra-auth-mcp-lab-cowork-plugin-template-9.8.7.zip", import.meta.url);
   const result = spawnSync(process.execPath, [
     "scripts/package.mjs", "--tag", "releases/cowork-plugin/v9.8.7",
   ], {

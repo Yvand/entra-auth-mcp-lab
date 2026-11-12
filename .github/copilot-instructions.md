@@ -1,4 +1,4 @@
-# Copilot instructions for `entra-oauth-mcp-server`
+# Copilot instructions for `entra-auth-mcp-lab`
 
 ## Local setup and validation
 
@@ -52,7 +52,9 @@ Offline automated tests provide their own configuration and local signing keys; 
 
 ## Copilot Cowork plugin
 
-`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Automatic deployment creates the shared Copilot Web client (`simple-mcp-server-client-copilot` by default); both demos reuse `ENTRA_COPILOT_CLIENT_APP_ID`. Preserve the Graph identity key and cleanup ownership. Local/Azure live checks still use Azure CLI's own authorized registration.
+`clients/cowork-plugin/appPackage/` contains a unified app manifest v1.29, icons, one skill calling both `whoami` and `echo`, and an OAuthPluginVault MCP connector. It is a configuration template: never embed tokens or client secrets. Automatic deployment creates the shared Copilot Web client (`Entra Auth MCP Lab - Copilot Client - <environment>` by default); both demos reuse `ENTRA_COPILOT_CLIENT_APP_ID`. Preserve the Graph identity key and cleanup ownership. Local/Azure live checks still use Azure CLI's own authorized registration.
+
+Project naming is defined in `server/docs/operations.md#project-and-deployment-names`. Use `entra-auth-mcp-lab` for machine names, with documented short forms only for platform limits. Graph uniqueNames and ownership tags use the new project namespace for fresh deployments only; do not adopt or purge registrations from earlier namespaces. Display-name overrides are exact, while defaults include the azd environment.
 
 Run `npm ci`, `npm test`, and `npm run package` from `clients/cowork-plugin/` for offline validation and template packaging. Use `npm run package -- --configured` only after replacing placeholders. `.github/workflows/release-plugin.yml` releases template ZIPs for strict `releases/cowork-plugin/vX.Y.Z` tags; versions are stamped in memory, not into the source manifest or server.
 

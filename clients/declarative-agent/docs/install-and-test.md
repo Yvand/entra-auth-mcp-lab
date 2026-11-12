@@ -35,12 +35,12 @@ Use the correct Microsoft 365 tenant/account and retain returned installation id
 
 **Goal:** confirm actual MCP calls use delegated authentication.
 
-Open [Microsoft 365 Copilot](https://m365.cloud.microsoft/chat), find **Entra MCP Agent** (or your chosen name, with `-dev` for the default ATK environment) under **Agents**, and open it. This is not Cowork's Sources & Skills interface.
+Open [Microsoft 365 Copilot](https://m365.cloud.microsoft/chat), find **Entra Auth MCP Lab - Chat** (or your chosen name, with `-dev` for the default ATK environment) under **Agents**, and open it. This is not Cowork's Sources & Skills interface.
 
 Ask:
 
 ```text
-Run the Entra MCP demo and echo "hello from my agent".
+Run the Entra Auth MCP Lab and echo "hello from my agent".
 ```
 
 Complete sign-in/consent when prompted. Confirm `whoami` and `echo` both ran, the identity is your consenting account, and the echo is `<subject>: hello from my agent`.

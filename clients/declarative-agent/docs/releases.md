@@ -4,6 +4,8 @@
 
 This is a maintainer guide. Users configuring a download do not need to publish a release.
 
+Coordinate new publication after the GitHub repository has been renamed to `Yvand/entra-auth-mcp-lab`. Older releases keep their original assets; this guide describes newly built project-prefixed ZIPs, not a rewrite of historical releases.
+
 ## 1. Validate the source template
 
 **Goal:** publish reusable files, not a tenant's configured app.
@@ -35,7 +37,7 @@ Choose an unused numeric version. [The workflow](../../../.github/workflows/rele
 
 **Goal:** make the intended template asset available to demo users.
 
-Wait for the workflow to succeed and inspect its **draft** GitHub Release. Check `entra-mcp-declarative-agent-template-<version>.zip`, the version stamped in `manifest.json`, the five-file layout, and setup/release notes. Publish the draft when ready.
+Wait for the workflow to succeed and inspect its **draft** GitHub Release. Check `entra-auth-mcp-lab-declarative-agent-template-<version>.zip`, the version stamped in `manifest.json`, the five-file layout, and setup/release notes. Publish the draft when ready.
 
 The audience is users configuring a demo without a clone or ATK development setup. The asset is an **app-package configuration template**, not a ZIP of the ATK project, a running server, or an install-ready tenant app. Developers use the source checkout.
 

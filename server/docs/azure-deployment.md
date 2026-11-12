@@ -20,8 +20,8 @@ The image builds remotely in Azure Container Registry: local Node.js, npm, and D
 **Goal:** run deployment commands from the directory containing `azure.yaml`.
 
 ```bash
-git clone https://github.com/Yvand/entra-oauth-mcp-server.git
-cd entra-oauth-mcp-server/server
+git clone https://github.com/Yvand/entra-auth-mcp-lab.git
+cd entra-auth-mcp-lab/server
 ```
 
 Already cloned? Open a terminal in its `server/` directory. Run all remaining commands there.
@@ -35,12 +35,14 @@ Replace the placeholders; these commands work in Bash and PowerShell:
 ```bash
 azd auth login --tenant-id "<tenant-id>"
 az login --tenant "<tenant-id>"
-azd env new mcp-dev
+azd env new dev
 azd env set AZURE_SUBSCRIPTION_ID "<subscription-id>"
 azd env set AZURE_LOCATION "<azure-region>"
 ```
 
-The two tools have separate sign-ins. Use the tenant associated with your subscription. For an existing environment, use `azd env select mcp-dev` instead of creating it; check the selection with `azd env list`.
+The two tools have separate sign-ins. Use the tenant associated with your subscription. For an existing environment, use `azd env select dev` instead of creating it; check the selection with `azd env list`.
+
+Fresh deployments use the [project naming conventions](operations.md#project-and-deployment-names): for example, `rg-entra-auth-mcp-lab-dev`, `Entra Auth MCP Lab - API - dev`, and `Entra Auth MCP Lab - Copilot Client - dev`. Explicit display-name overrides are preserved exactly. This naming scheme does not migrate objects created under earlier project names; use a fresh environment for a new deployment.
 
 If reusing an environment that explicitly sets `CREATE_ENTRA_APP_REGISTRATIONS=false`, it keeps that setting. Do not switch a deployed environment's identity setup just to follow this guide; use the [existing-registration path](azure-existing-registrations.md).
 

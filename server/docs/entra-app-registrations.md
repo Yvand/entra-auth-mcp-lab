@@ -44,11 +44,11 @@ Local and Azure smoke tests use Azure CLI's own registration, not the shared Cop
 
 **Goal:** identify the protected server and expose the delegated permission clients request.
 
-1. In the [Entra admin center](https://entra.microsoft.com), open **App registrations > New registration**. Name it `simple-mcp-server-api` and select **Accounts in this organizational directory only**.
+1. In the [Entra admin center](https://entra.microsoft.com), open **App registrations > New registration**. Name it, for example, `Entra Auth MCP Lab - API - dev` and select **Accounts in this organizational directory only**. Use your deployment label instead of `dev`, following the [naming conventions](operations.md#project-and-deployment-names).
 2. Record its **Application (client) ID** and **Directory (tenant) ID**.
 3. In **Manifest**, set `api.requestedAccessTokenVersion` to `2` and save. The API controls token version; a v2 authorization URL alone is insufficient.
 4. In **Expose an API**, set the **Application ID URI** to `api://<api-app-id>` or your supported custom URI.
-5. Add an enabled scope named `mcp.invoke`, with consent labels such as "Invoke MCP tools". Choose **Admins and users**, or admins only according to policy. Record the **full scope**.
+5. Add an enabled scope named `mcp.invoke`, with the consent label "Invoke Entra Auth MCP Lab tools". Use descriptions such as "Allows the app to invoke Entra Auth MCP Lab tools on behalf of the signed-in user" (admin) and "Allows the app to invoke Entra Auth MCP Lab tools on your behalf" (user). Choose **Admins and users**, or admins only according to policy. Record the **full scope**.
 
 ### 2. Configure your chosen approach
 

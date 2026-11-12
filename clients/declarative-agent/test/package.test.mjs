@@ -63,6 +63,8 @@ test("offline template links app to agent to authenticated dynamic MCP action", 
   assert.deepEqual(Object.keys(entries).sort(), packageFiles);
   assert.equal(manifest.copilotAgents.declarativeAgents[0].file, "declarativeAgent.json");
   assert.equal(agent.actions[0].file, "ai-plugin.json");
+  assert.ok(agent.instructions.includes(`from the ${plugin.namespace} action`));
+  assert.equal(agent.name, manifest.name.short);
   assert.equal(plugin.runtimes[0].auth.type, "OAuthPluginVault");
   assert.equal(plugin.runtimes[0].auth.reference_id, templateValues.MCP_AUTH_CONFIG_ID);
   assert.equal(plugin.runtimes[0].spec.url, templateValues.MCP_ENDPOINT);
@@ -83,13 +85,36 @@ test("configured rendering resolves the same source without including unrelated 
     values: { ...configuredValues, UNUSED_LOCAL_VALUE: "must-not-be-packaged" },
   });
   assert.equal(result.manifest.id, configuredValues.TEAMS_APP_ID);
-  assert.equal(result.agent.name, "Entra MCP Agent-dev");
+  assert.equal(result.agent.name, "Entra Auth MCP Lab - Chat-dev");
+  assert.equal(result.manifest.name.short, result.agent.name);
+  assert.equal(result.manifest.name.full, "Entra Auth MCP Lab - Chat-dev");
   assert.equal(result.plugin.runtimes[0].spec.url, configuredValues.MCP_ENDPOINT);
   assert.equal(result.plugin.runtimes[0].auth.reference_id, configuredValues.MCP_AUTH_CONFIG_ID);
   const entries = unzipSync(result.bytes);
   assert.doesNotMatch(Object.values(entries).map(strFromU8).join(""), /must-not-be-packaged/);
   const template = await buildPackage();
   assert.equal(result.agent.instructions, template.agent.instructions);
+});
+
+test("ATK creates the app with the same name used by both source manifests", async () => {
+  const lifecycle = await readFile(new URL("../m365agents.yml", import.meta.url), "utf8");
+  const manifest = JSON.parse(await readFile(new URL("manifest.json", source), "utf8"));
+  const agent = JSON.parse(await readFile(new URL("declarativeAgent.json", source), "utf8"));
+  const creationName = /^\s+name: (.+)$/m.exec(lifecycle)?.[1];
+  assert.equal(creationName, manifest.name.short);
+  assert.equal(creationName, agent.name);
+});
+
+test("configured suffixes fit the 30-character short name without truncation", async () => {
+  const suffix = "-1234";
+  const result = await buildPackage({
+    configured: true, values: { ...configuredValues, APP_NAME_SUFFIX: suffix },
+  });
+  assert.equal(result.manifest.name.short, `Entra Auth MCP Lab - Chat${suffix}`);
+  assert.equal(result.agent.name, result.manifest.name.short);
+  await assert.rejects(buildPackage({
+    configured: true, values: { ...configuredValues, APP_NAME_SUFFIX: `${suffix}0` },
+  }), /Invalid app manifest.*30 characters/);
 });
 
 test("missing, unknown, and recursively unresolved ATK variables are rejected", async () => {
@@ -128,9 +153,12 @@ test("all three schemas and cross-file references are validated", async () => {
     ["declarativeAgent.json", (a) => { delete a.instructions; }],
     ["ai-plugin.json", (p) => { p.runtimes[0].auth.type = "Invalid"; }],
     ["manifest.json", (m) => { m.copilotAgents.declarativeAgents[0].file = "../outside.json"; }],
+    ["manifest.json", (m) => { m.copilotAgents.declarativeAgents[0].id = "anotherAgent"; }],
     ["declarativeAgent.json", (a) => { a.actions[0].file = "missing.json"; }],
+    ["declarativeAgent.json", (a) => { a.actions[0].id = "anotherAction"; }],
     ["declarativeAgent.json", (a) => { a.actions.push({ id: "another", file: "ai-plugin.json" }); }],
     ["ai-plugin.json", (p) => { p.runtimes[0].auth.type = "None"; }],
+    ["ai-plugin.json", (p) => { p.namespace = "AnotherLab"; }],
     ["ai-plugin.json", (p) => { p.runtimes[0].run_for_functions = ["whoami"]; }],
     ["ai-plugin.json", (p) => { p.runtimes[0].spec.mcp_tool_description = { file: "tools.json" }; }],
   ].entries()) {
@@ -180,7 +208,7 @@ test("release stamp changes the ZIP only and leaves other client/server versions
   ];
   const originals = await Promise.all(paths.map((path) => readFile(path)));
   const result = await buildPackage({ version: versionFromTag("releases/declarative-agent/v2.3.4") });
-  assert.equal(result.fileName, "entra-mcp-declarative-agent-template-2.3.4.zip");
+  assert.equal(result.fileName, "entra-auth-mcp-lab-declarative-agent-template-2.3.4.zip");
   assert.equal(JSON.parse(strFromU8(unzipSync(result.bytes)["manifest.json"])).version, "2.3.4");
   assert.deepEqual(await Promise.all(paths.map((path) => readFile(path))), originals);
   assert.deepEqual((await buildPackage({ version: "2.3.4" })).bytes, result.bytes);
@@ -207,8 +235,8 @@ test("CLI rejects bad tags and conflicting options, and does not read ambient co
 });
 
 test("CLI packages a tag and configured env file without modifying either", async () => {
-  const output = join(clientDirectory, "build/entra-mcp-declarative-agent-template-9.8.7.zip");
-  const configuredOutput = join(clientDirectory, "build/entra-mcp-declarative-agent-configured-1.0.0.zip");
+  const output = join(clientDirectory, "build/entra-auth-mcp-lab-declarative-agent-template-9.8.7.zip");
+  const configuredOutput = join(clientDirectory, "build/entra-auth-mcp-lab-declarative-agent-configured-1.0.0.zip");
   const temporary = await mkdtemp(join(tmpdir(), "agent-env-"));
   const envFile = join(temporary, "connection.env");
   const envText = Object.entries(configuredValues).map(([key, value]) => `${key}=${value}`).join("\n");

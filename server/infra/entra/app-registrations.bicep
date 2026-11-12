@@ -17,11 +17,11 @@ extension microsoftGraphV1
 
 param environmentName string
 
-@description('Display name for the API app registration (this server).')
-param apiDisplayName string = 'simple-mcp-server-api'
+@description('Optional exact API app display name. Empty uses Entra Auth MCP Lab - API - <environment>.')
+param apiDisplayName string = ''
 
-@description('Display name for the shared Copilot Web-client app registration.')
-param clientDisplayName string = 'simple-mcp-server-client-copilot'
+@description('Optional exact shared Copilot Web-client display name. Empty uses Entra Auth MCP Lab - Copilot Client - <environment>.')
+param clientDisplayName string = ''
 
 @description('Web redirect URI for the Copilot authorization code flow. The default is the Microsoft Teams OAuth callback.')
 param redirectUri string = 'https://teams.microsoft.com/api/platform/v1.0/oAuthRedirect'
@@ -41,16 +41,18 @@ param authorizeAzureCliClient bool = true
 @description('App ID of the well-known Microsoft Azure CLI first-party application. Only used when authorizeAzureCliClient is true.')
 param azureCliAppId string = '04b07795-8ddb-461a-bbee-02f9e1bf7b46'
 
-var scopeId = guid(subscription().id, apiDisplayName, scopeName)
+var effectiveApiDisplayName = empty(apiDisplayName) ? 'Entra Auth MCP Lab - API - ${environmentName}' : apiDisplayName
+var effectiveClientDisplayName = empty(clientDisplayName) ? 'Entra Auth MCP Lab - Copilot Client - ${environmentName}' : clientDisplayName
+var scopeId = guid(subscription().id, effectiveApiDisplayName, scopeName)
 var ownershipSuffix = uniqueString(subscription().id, environmentName)
-var ownershipTag = 'azd-entra-oauth-mcp-${ownershipSuffix}'
-var apiUniqueName = 'entra-oauth-mcp-api-${ownershipSuffix}'
-var clientUniqueName = 'entra-oauth-mcp-client-${ownershipSuffix}'
+var ownershipTag = 'azd-entra-auth-mcp-lab-${ownershipSuffix}'
+var apiUniqueName = 'entra-auth-mcp-lab-api-${ownershipSuffix}'
+var clientUniqueName = 'entra-auth-mcp-lab-copilot-client-${ownershipSuffix}'
 
 resource apiApp 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: apiUniqueName
   tags: [ownershipTag]
-  displayName: apiDisplayName
+  displayName: effectiveApiDisplayName
   signInAudience: 'AzureADMyOrg'
   identifierUris: empty(apiIdentifierUri) ? [] : [apiIdentifierUri]
   api: {
@@ -61,10 +63,10 @@ resource apiApp 'Microsoft.Graph/applications@v1.0' = {
         value: scopeName
         type: 'User'
         isEnabled: true
-        adminConsentDisplayName: 'Invoke MCP tools'
-        adminConsentDescription: 'Allows the app to invoke MCP tools on behalf of the signed-in user.'
-        userConsentDisplayName: 'Invoke MCP tools'
-        userConsentDescription: 'Allows the app to invoke MCP tools on your behalf.'
+        adminConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        adminConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on behalf of the signed-in user.'
+        userConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        userConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on your behalf.'
       }
     ]
   }
@@ -73,13 +75,14 @@ resource apiApp 'Microsoft.Graph/applications@v1.0' = {
 // No client secret or certificate: this server only validates tokens, it never requests them.
 resource apiServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   appId: apiApp.appId
+  displayName: effectiveApiDisplayName
   tags: [ownershipTag]
 }
 
 resource clientApp 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: clientUniqueName
   tags: [ownershipTag]
-  displayName: clientDisplayName
+  displayName: effectiveClientDisplayName
   signInAudience: 'AzureADMyOrg'
   isFallbackPublicClient: false
   // Clear the former desktop platform when updating an existing registration.
@@ -104,6 +107,7 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
 
 resource clientServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   appId: clientApp.appId
+  displayName: effectiveClientDisplayName
   tags: [ownershipTag]
 }
 
@@ -123,7 +127,7 @@ resource clientServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
 resource apiAppAuthorizeClient 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: apiUniqueName
   tags: [ownershipTag]
-  displayName: apiDisplayName
+  displayName: effectiveApiDisplayName
   signInAudience: 'AzureADMyOrg'
   identifierUris: [empty(apiIdentifierUri) ? 'api://${apiApp.appId}' : apiIdentifierUri]
   api: {
@@ -134,10 +138,10 @@ resource apiAppAuthorizeClient 'Microsoft.Graph/applications@v1.0' = {
         value: scopeName
         type: 'User'
         isEnabled: true
-        adminConsentDisplayName: 'Invoke MCP tools'
-        adminConsentDescription: 'Allows the app to invoke MCP tools on behalf of the signed-in user.'
-        userConsentDisplayName: 'Invoke MCP tools'
-        userConsentDescription: 'Allows the app to invoke MCP tools on your behalf.'
+        adminConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        adminConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on behalf of the signed-in user.'
+        userConsentDisplayName: 'Invoke Entra Auth MCP Lab tools'
+        userConsentDescription: 'Allows the app to invoke Entra Auth MCP Lab tools on your behalf.'
       }
     ]
     preAuthorizedApplications: concat(

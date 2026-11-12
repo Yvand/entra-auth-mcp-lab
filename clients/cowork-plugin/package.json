@@ -1,5 +1,5 @@
 {
-  "name": "entra-mcp-cowork-plugin",
+  "name": "entra-auth-mcp-lab-cowork-plugin",
   "version": "1.0.0",
   "private": true,
   "type": "module",

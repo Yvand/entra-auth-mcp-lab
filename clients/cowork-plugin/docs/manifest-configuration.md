@@ -6,7 +6,7 @@
 
 **Prerequisites:** HTTPS MCP endpoint and [OAuth registration ID](oauth-setup.md). Developer details have demo defaults; customizing them is optional for demo packaging.
 
-## 1. Replace the connection and developer fields
+## 1. Replace the connection fields
 
 **Goal:** connect the package to your server and review its publisher details. Replace the connection fields and optionally customize the developer defaults; do not add OAuth credentials.
 
@@ -18,6 +18,8 @@
 **Note:** You may optionally update the manifest's `developer` section with your own publisher details.
 
 Save valid JSON. Keep `OAuthPluginVault`, manifest/schema version **1.29**, the connector ID, and skill folder/name unchanged. This template has one skill and one remote connector; Cowork discovers tools dynamically, so no static tool catalog is needed.
+
+The short app name is `Entra Auth MCP Lab - Cowork`; its full name is `Entra Auth MCP Lab - Cowork`. The skill uses the `entra-auth-mcp-lab` connector, displayed as `Entra Auth MCP Lab - Server`. Keep those references aligned when customizing names.
 
 ## 2. Choose a stable app identity
 
@@ -39,7 +41,7 @@ Include only:
 manifest.json
 color.png
 outline.png
-skills/entra-mcp-demo/SKILL.md
+skills/entra-auth-mcp-lab/SKILL.md
 ```
 
 `manifest.json` and the icons must be at ZIP root, not inside a containing directory. Preserve the nested skill path. Do not add tokens, secrets, `.env`, editor backups, or documentation.

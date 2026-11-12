@@ -14,7 +14,7 @@ Follow [shared connection requirements](../../docs/oauth-setup.md#prerequisites-
 
 ## 1. Find the generated Cowork Web client
 
-The Web client is now shared with the declarative-agent demo and named `simple-mcp-server-client-copilot` by default. Follow [find the shared Web client](../../docs/oauth-setup.md#1-find-the-shared-web-client), using its ID rather than its name.
+The Web client is now shared with the declarative-agent demo and named `Entra Auth MCP Lab - Copilot Client - <environment>` by default. Follow [find the shared Web client](../../docs/oauth-setup.md#1-find-the-shared-web-client), using its ID rather than its name.
 
 ## 2. Create the client secret
 

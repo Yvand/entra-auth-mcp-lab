@@ -4,6 +4,12 @@
 
 **Goal:** download a template, connect it to your Entra-protected MCP server, and install it as a **Microsoft 365 Copilot Chat declarative agent**. It calls `whoami` and `echo`. This is not a Cowork plugin or a GitHub Copilot agent.
 
+The installed app/agent's short name is **Entra Auth MCP Lab - Chat**, with full app name **Entra Auth MCP Lab - Chat**. ATK appends its environment suffix, normally `-dev`; see the shared [naming conventions](../../server/docs/operations.md#project-and-deployment-names).
+
+![Entra Auth MCP Lab Chat logo: a violet identity speech bubble and its white outline variant.](docs/images/branding-preview.png)
+
+Color icon (left) and enlarged outline artwork (right).
+
 **The release ZIP is a configuration template, not an install-ready app.** It contains the app manifest, agent definition, MCP plugin definition, and icons. It includes no server, credentials, or ATK executable.
 
 ## Prerequisites
@@ -30,7 +36,7 @@ This app identity is not an Entra app registration or an OAuth auth config. Both
 
 **Goal:** use the packaged agent rather than build from source.
 
-Open [GitHub Releases](https://github.com/Yvand/entra-oauth-mcp-server/releases), choose a **declarative-agent** release, and download **`entra-mcp-declarative-agent-template-<version>.zip`**. Do not select the Cowork asset or GitHub's automatic source archives.
+Open [GitHub Releases](https://github.com/Yvand/entra-auth-mcp-lab/releases), choose a **declarative-agent** release, and download **`entra-auth-mcp-lab-declarative-agent-template-<version>.zip`**. Do not select the Cowork asset or GitHub's automatic source archives.
 
 The commands below use `1.2.3` as an example; substitute your downloaded version.
 
@@ -40,7 +46,7 @@ The commands below use `1.2.3` as an example; substitute your downloaded version
 
 Record the **HTTPS MCP endpoint**, **tenant ID**, **full requested API scope**, and **Web-client ID** from [Azure deployment step 4](../../server/docs/azure-deployment.md#4-collect-the-client-connection-values).
 
-Reuse **`ENTRA_COPILOT_CLIENT_APP_ID`** (`simple-mcp-server-client-copilot` by default), even if you have not installed Cowork. It is an Entra Web-client ID, not an agent app GUID or auth config ID. With independently managed registrations, use your existing suitable client or the [manual alternative](../docs/manual-web-client.md).
+Reuse **`ENTRA_COPILOT_CLIENT_APP_ID`** (`Entra Auth MCP Lab - Copilot Client - <environment>` by default), even if you have not installed Cowork. It is an Entra Web-client ID, not an agent app GUID or auth config ID. With independently managed registrations, use your existing suitable client or the [manual alternative](../docs/manual-web-client.md).
 
 ## 3. Complete manual OAuth setup
 
@@ -57,14 +63,14 @@ Do not create another Entra client by default. A [dedicated client](../docs/manu
 From the folder containing the download, Bash:
 
 ```bash
-unzip entra-mcp-declarative-agent-template-1.2.3.zip -d configured-agent
+unzip entra-auth-mcp-lab-declarative-agent-template-1.2.3.zip -d configured-agent
 cd configured-agent
 ```
 
 PowerShell:
 
 ```powershell
-Expand-Archive ./entra-mcp-declarative-agent-template-1.2.3.zip ./configured-agent
+Expand-Archive ./entra-auth-mcp-lab-declarative-agent-template-1.2.3.zip ./configured-agent
 Set-Location ./configured-agent
 ```
 
@@ -77,13 +83,13 @@ Apply the [manifest checklist](docs/manifest-configuration.md#1-configure-the-do
 Stay in `configured-agent/` and use a **new destination ZIP**. Bash:
 
 ```bash
-zip ../entra-mcp-declarative-agent-configured-1.2.3.zip manifest.json declarativeAgent.json ai-plugin.json color.png outline.png
+zip ../entra-auth-mcp-lab-declarative-agent-configured-1.2.3.zip manifest.json declarativeAgent.json ai-plugin.json color.png outline.png
 ```
 
 PowerShell:
 
 ```powershell
-Compress-Archive -Path manifest.json,declarativeAgent.json,ai-plugin.json,color.png,outline.png -DestinationPath ../entra-mcp-declarative-agent-configured-1.2.3.zip
+Compress-Archive -Path manifest.json,declarativeAgent.json,ai-plugin.json,color.png,outline.png -DestinationPath ../entra-auth-mcp-lab-declarative-agent-configured-1.2.3.zip
 ```
 
 Inspect the [five-file layout](docs/manifest-configuration.md#2-check-the-zip-layout). Standard ZIP tools do not validate schemas or placeholders; complete the checklist before uploading.
@@ -95,7 +101,7 @@ Inspect the [five-file layout](docs/manifest-configuration.md#2-check-the-zip-la
 Follow [Install and test](docs/install-and-test.md). Open the agent in Microsoft 365 Copilot and ask:
 
 ```text
-Run the Entra MCP demo and echo "hello from my agent".
+Run the Entra Auth MCP Lab and echo "hello from my agent".
 ```
 
 Success means both tools ran, the identity is the consenting account, and the echo contains your message. Upload success and `/healthz` do not establish this.

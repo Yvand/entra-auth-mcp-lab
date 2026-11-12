@@ -5,7 +5,7 @@ environmentFolderPath: ./env
 provision:
   - uses: teamsApp/create
     with:
-      name: Entra MCP Agent${{APP_NAME_SUFFIX}}
+      name: Entra Auth MCP Lab - Chat${{APP_NAME_SUFFIX}}
     writeToEnvironmentFile:
       teamsAppId: TEAMS_APP_ID
   - uses: teamsApp/zipAppPackage
