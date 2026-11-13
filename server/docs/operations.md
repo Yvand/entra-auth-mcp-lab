@@ -10,6 +10,10 @@ The public name is **Entra Auth MCP Lab**; the repository, azd project, MCP serv
 
 `<environment>` is your azd environment (the guides use `dev`). `<token>` is the existing 13-character hash of subscription, environment, and location; `<owner>` is the subscription/environment hash used for Graph identity and ownership. Hashes distinguish deployments but do not replace application-ID and ownership checks.
 
+### Server
+
+#### Azure resources
+
 | Asset or object | Default name |
 | --- | --- |
 | Azure resource group | `rg-entra-auth-mcp-lab-<environment>` |
@@ -19,10 +23,34 @@ The public name is **Entra Auth MCP Lab**; the repository, azd project, MCP serv
 | Container Registry | `crentraauthmcplab<token>` |
 | Log Analytics workspace | `log-entra-auth-mcp-lab-<token>` |
 | User-assigned managed identity | `id-entra-auth-mcp-lab-<token>` |
+
+#### Entra API registration
+
+| Asset or object | Default name |
+| --- | --- |
 | Entra API application and enterprise application | `Entra Auth MCP Lab - API - <environment>` |
+| Graph API `uniqueName` | `entra-auth-mcp-lab-api-<owner>` |
+
+#### Local runtime
+
+| Asset or object | Default name |
+| --- | --- |
+| Local Docker image / container | `entra-auth-mcp-lab:local` / `entra-auth-mcp-lab-local` |
+
+### Clients
+
+#### Shared Entra client registration
+
+| Asset or object | Default name |
+| --- | --- |
 | Shared Entra Copilot application and enterprise application | `Entra Auth MCP Lab - Copilot Client - <environment>` |
-| Graph API / client `uniqueName` | `entra-auth-mcp-lab-api-<owner>` / `entra-auth-mcp-lab-copilot-client-<owner>` |
-| Graph ownership tag | `azd-entra-auth-mcp-lab-<owner>` |
+| Graph client `uniqueName` | `entra-auth-mcp-lab-copilot-client-<owner>` |
+| Suggested shared-client secret description | `entra-auth-mcp-lab-copilot-<environment>` |
+
+#### Microsoft 365 apps and configuration
+
+| Asset or object | Default name |
+| --- | --- |
 | Cowork short / full app name | `Entra Auth MCP Lab - Cowork` / `Entra Auth MCP Lab - Cowork` |
 | Chat short / full app name | `Entra Auth MCP Lab - Chat` / `Entra Auth MCP Lab - Chat` |
 | Cowork connector ID / display name | `entra-auth-mcp-lab` / `Entra Auth MCP Lab - Server` |
@@ -30,11 +58,18 @@ The public name is **Entra Auth MCP Lab**; the repository, azd project, MCP serv
 | Declarative agent ID | `entraAuthMcpLabAgent` |
 | Declarative action ID / plugin namespace | `entraAuthMcpLab` / `EntraAuthMcpLab` |
 | Plugin human-readable name | `Entra Auth MCP Lab` |
+| Suggested manual Cowork / Chat auth-config names | `entra-auth-mcp-lab-cowork-oauth-<environment>` / `entra-auth-mcp-lab-chat-oauth-<environment>` |
+
+#### Local packages and archives
+
+| Asset or object | Default name |
+| --- | --- |
 | Client npm packages | `entra-auth-mcp-lab-cowork-plugin` / `entra-auth-mcp-lab-declarative-agent` |
 | Client archives | `entra-auth-mcp-lab-<cowork-plugin or declarative-agent>-<template or configured>-<version>.zip` |
-| Suggested manual Cowork / Chat auth-config names | `entra-auth-mcp-lab-cowork-oauth-<environment>` / `entra-auth-mcp-lab-chat-oauth-<environment>` |
-| Suggested shared-client secret description | `entra-auth-mcp-lab-copilot-<environment>` |
-| Local Docker image / container | `entra-auth-mcp-lab:local` / `entra-auth-mcp-lab-local` |
+
+### Shared naming conventions
+
+Both Entra registrations use the Graph ownership tag `azd-entra-auth-mcp-lab-<owner>`.
 
 Azure resources also carry `project: entra-auth-mcp-lab` alongside `azd-env-name`; the Container App retains `azd-service-name: mcp`. ARM module deployment names include the project slug. The `mcp` service/container role, generated output keys, `mcp.invoke` scope, and `api://<api-app-id>` URI convention are unchanged.
 

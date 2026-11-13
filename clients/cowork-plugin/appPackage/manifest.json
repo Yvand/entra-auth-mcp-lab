@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.29/MicrosoftTeams.schema.json",
   "manifestVersion": "1.29",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "id": "62c65ced-35ae-47c3-af55-1753d48a701b",
   "developer": {
     "name": "Yvand",
@@ -14,7 +14,7 @@
     "full": "Entra Auth MCP Lab - Cowork"
   },
   "description": {
-    "short": "Learn delegated MCP authentication with identity and echo tools.",
+    "short": "Test delegated MCP authentication with identity and echo tools.",
     "full": "Entra Auth MCP Lab for Copilot Cowork: a learning demo with one skill that calls whoami and echo on an Entra-protected remote MCP server."
   },
   "icons": {
