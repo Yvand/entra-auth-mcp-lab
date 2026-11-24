@@ -106,11 +106,11 @@ Run the Entra Auth MCP Lab and echo "hello from my agent".
 
 Success means both tools ran, the identity is the consenting account, and the echo contains your message. Upload success and `/healthz` do not establish this.
 
-### Try a simulated write
+### Throw lab bots into orbit
 
-After connecting, ask: **In Entra Auth MCP Lab, simulate launching TIN-CAN-7 into orbit.**
+After connecting, ask **“throw 10 bots in orbit”** for a 10-bot receipt, or **“throw bots”** for a one-bot receipt without a follow-up.
 
-Decline the tool confirmation. Expect no launch receipt and, if tool activity is visible, no invocation. Ask again and approve the action. Expect a receipt for TIN-CAN-7 in simulated low Earth orbit. Nothing is launched or saved.
+Decline the tool confirmation. Expect no launch receipt and, if tool activity is visible, no invocation. Ask again and approve the action. If tool activity is visible, check that `launch_bots` ran once with `count` set to 10 or 1, as shown above. Nothing is actually launched or saved.
 
 ## Alternatives and maintainer tasks
 

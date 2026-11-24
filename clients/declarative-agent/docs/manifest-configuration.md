@@ -22,7 +22,7 @@ Keep `copilotAgents.declarativeAgents[0].file` pointing to `declarativeAgent.jso
 
 Keep the agent ID `entraAuthMcpLabAgent`, action ID `entraAuthMcpLab`, and plugin namespace `EntraAuthMcpLab` aligned with the supplied instructions and packaging checks. The short/full app and agent name is `Entra Auth MCP Lab - Chat`, before the environment suffix. The plugin's human-readable name is `Entra Auth MCP Lab`.
 
-The plugin uses dynamic discovery: `functions: []` and `run_for_functions: ["*"]`. The server exposes `whoami`, `echo`, and `simulate_launch_bot`. This is not an authorization allowlist: future server tools can become discoverable.
+The plugin uses dynamic discovery: `functions: []` and `run_for_functions: ["*"]`. The server exposes `whoami`, `echo`, and `launch_bots`. This is not an authorization allowlist: future server tools can become discoverable.
 
 The agent instructions ask for `whoami`, then `echo`, with the same default message and length boundary as Cowork. Instructions and JSON validation cannot guarantee model execution; verify the actual calls.
 

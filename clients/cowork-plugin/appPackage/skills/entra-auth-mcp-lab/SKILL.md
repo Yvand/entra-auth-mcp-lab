@@ -1,6 +1,6 @@
 ---
 name: entra-auth-mcp-lab
-description: Demonstrate Entra Auth MCP Lab by checking the signed-in identity and echoing a message, or by simulating a bot launch into orbit on explicit request.
+description: Check the signed-in identity and echo a message, or launch lab bots into orbit. Use for launch requests such as "throw 10 bots in orbit" or "throw bots".
 ---
 
 # Entra Auth MCP Lab
@@ -8,12 +8,14 @@ description: Demonstrate Entra Auth MCP Lab by checking the signed-in identity a
 Use the **Entra Auth MCP Lab - Server** connector (`entra-auth-mcp-lab`). This skill
 does not authenticate by running scripts or accepting tokens.
 
-## Simulated launch
+## Lab launch
 
-Only when the user explicitly asks for a simulated bot launch, find this connector's
-`simulate_launch_bot` tool and call it with `{"botName": "<the user's bot name>"}`.
-Ask for the name if missing. The name must contain 1-60 characters after trimming.
-Let the host handle confirmation. Report a returned launch as simulated, never real.
+For an explicit request to throw or launch lab bots, find this connector's
+`launch_bots` tool. For "throw 10 bots in orbit", call it once with `{"count":10}`.
+For "throw bots" or another launch request with no count, call it once with
+`{"count":1}` without asking a follow-up. Pass the requested count if it is a whole
+number from 1 to 100; otherwise explain the limit without changing it.
+Let the host handle confirmation. Report the receipt as a lab result, not a real launch.
 If the launch is canceled or fails, do not claim success or retry automatically.
 
 ## Connection check

@@ -1,6 +1,6 @@
 # Entra Auth MCP Lab
 
-A learning demo with an Entra-protected MCP server and two **Microsoft 365 Copilot** clients: a **Cowork plugin** and an **ATK declarative agent for Copilot Chat**. Both can check the signed-in identity with `whoami`, return a message with `echo`, or try a simulated bot launch with `simulate_launch_bot`.
+A learning demo with an Entra-protected MCP server and two **Microsoft 365 Copilot** clients: a **Cowork plugin** and an **ATK declarative agent for Copilot Chat**. Both can check the signed-in identity with `whoami`, return a message with `echo`, or send imaginary lab bots into orbit with `launch_bots`.
 
 ## Recommended: deploy the server, then choose a client
 
