@@ -15,7 +15,7 @@
   },
   "description": {
     "short": "Test delegated MCP authentication with identity and echo tools.",
-    "full": "Entra Auth MCP Lab for Copilot Cowork: a learning demo with one skill that calls whoami and echo on an Entra-protected remote MCP server."
+    "full": "Entra Auth MCP Lab for Copilot Cowork: check your identity, echo a message, or try a simulated bot launch on an Entra-protected remote MCP server."
   },
   "icons": {
     "color": "color.png",
@@ -29,7 +29,7 @@
     {
       "id": "entra-auth-mcp-lab",
       "displayName": "Entra Auth MCP Lab - Server",
-      "description": "The demo's Entra-protected whoami and echo tools.",
+      "description": "The demo's Entra-protected identity, echo, and simulated bot launch tools.",
       "toolSource": {
         "remoteMcpServer": {
           "mcpServerUrl": "https://mcp.example.com/mcp",

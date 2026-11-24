@@ -64,5 +64,34 @@ export function createMcpServer(identity: TokenIdentity): McpServer {
     }),
   );
 
+  server.registerTool(
+    "simulate_launch_bot",
+    {
+      title: "Simulate a bot launch",
+      description:
+        "Simulate launching the named lab bot into low Earth orbit. Nothing is launched or saved.",
+      inputSchema: { botName: z.string().trim().min(1).max(60) },
+      outputSchema: {
+        botName: z.string(),
+        orbit: z.literal("low Earth orbit"),
+        simulated: z.literal(true),
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        openWorldHint: false,
+      },
+    },
+    async ({ botName }) => ({
+      content: [
+        {
+          type: "text" as const,
+          text: `Mission Control: ${botName} reached low Earth orbit (simulated). The only thing we burned was imaginary fuel.`,
+        },
+      ],
+      structuredContent: { botName, orbit: "low Earth orbit", simulated: true },
+    }),
+  );
+
   return server;
 }

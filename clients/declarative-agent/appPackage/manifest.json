@@ -15,7 +15,7 @@
   },
   "description": {
     "short": "Test delegated MCP authentication with identity and echo tools.",
-    "full": "Entra Auth MCP Lab for Microsoft 365 Copilot Chat: a learning demo declarative agent that calls whoami and echo on an Entra-protected remote MCP server."
+    "full": "Entra Auth MCP Lab for Microsoft 365 Copilot Chat: check your identity, echo a message, or try a simulated bot launch on an Entra-protected remote MCP server."
   },
   "icons": {
     "color": "color.png",

@@ -1,12 +1,22 @@
 ---
 name: entra-auth-mcp-lab
-description: Demonstrate Entra Auth MCP Lab by checking the signed-in identity and echoing a message. Use when the user asks to "run the Entra Auth MCP Lab", "check my MCP identity and echo hello", or "test the Entra MCP connection".
+description: Demonstrate Entra Auth MCP Lab by checking the signed-in identity and echoing a message, or by simulating a bot launch into orbit on explicit request.
 ---
 
 # Entra Auth MCP Lab
 
-Use the **Entra Auth MCP Lab - Server** connector (`entra-auth-mcp-lab`). This skill calls
-both of its tools; it does not authenticate by running scripts or accepting tokens.
+Use the **Entra Auth MCP Lab - Server** connector (`entra-auth-mcp-lab`). This skill
+does not authenticate by running scripts or accepting tokens.
+
+## Simulated launch
+
+Only when the user explicitly asks for a simulated bot launch, find this connector's
+`simulate_launch_bot` tool and call it with `{"botName": "<the user's bot name>"}`.
+Ask for the name if missing. The name must contain 1-60 characters after trimming.
+Let the host handle confirmation. Report a returned launch as simulated, never real.
+If the launch is canceled or fails, do not claim success or retry automatically.
+
+## Connection check
 
 1. Find this connector's `whoami` and `echo` tools through the host's tool
    discovery. Hosts may qualify the tool names. Do not substitute similarly named

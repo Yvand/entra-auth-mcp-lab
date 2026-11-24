@@ -81,9 +81,9 @@ Compress-Archive -Path manifest.json,color.png,outline.png,skills -DestinationPa
 
 Open the resulting ZIP and check the [required layout](docs/manifest-configuration.md#3-check-the-package-layout): `manifest.json`, both icons, and the skill path, without an enclosing `configured-plugin/` folder. Standard ZIP tools do not validate schema or placeholders; review the field checklist before uploading.
 
-## 6. Install and try both tools
+## 6. Install and check the connection
 
-**Goal:** confirm the plugin can authenticate and run both server tools.
+**Goal:** confirm the plugin can authenticate and run `whoami` and `echo`.
 
 Follow **[Install and test](docs/install-and-test.md)** with your configured ZIP. It covers tenant upload/personal installation, enabling the plugin, sign-in, and this test prompt:
 
@@ -92,6 +92,12 @@ Run the Entra Auth MCP Lab and echo "hello from my plugin".
 ```
 
 Success means both tools ran, the identity is the consenting account, and the echo contains your message. Upload success alone is not an authenticated end-to-end check.
+
+### Try a simulated write
+
+After connecting, ask: **In Entra Auth MCP Lab, simulate launching TIN-CAN-7 into orbit.**
+
+Start without a prior Cowork session approval and decline the tool confirmation. Expect no launch receipt and, if tool activity is visible, no invocation. Ask again and approve this one action. Expect a receipt for TIN-CAN-7 in simulated low Earth orbit. Nothing is launched or saved.
 
 ## Alternatives and maintainer tasks
 

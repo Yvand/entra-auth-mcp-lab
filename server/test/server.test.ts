@@ -79,6 +79,15 @@ const initializeRequest = {
   },
 };
 
+function launchRequest(botName: string) {
+  return {
+    jsonrpc: "2.0",
+    id: 4,
+    method: "tools/call",
+    params: { name: "simulate_launch_bot", arguments: { botName } },
+  };
+}
+
 describe("unauthenticated access", () => {
   it("rejects requests without a token and advertises the resource metadata", async () => {
     const response = await mcpRequest(initializeRequest);
@@ -96,6 +105,11 @@ describe("unauthenticated access", () => {
     expect(response.headers.get("www-authenticate")).toContain(
       'error="invalid_token"',
     );
+  });
+
+  it("rejects simulated launches without a token", async () => {
+    const response = await mcpRequest(launchRequest("TIN-CAN-7"));
+    expect(response.status).toBe(401);
   });
 
   it("rejects a valid token missing mcp.invoke with 403", async () => {
@@ -179,8 +193,17 @@ describe("authenticated MCP session", () => {
     };
     expect(listed.result.tools.map((t) => t.name).sort()).toEqual([
       "echo",
+      "simulate_launch_bot",
       "whoami",
     ]);
+    expect(listed.result.tools).toContainEqual(expect.objectContaining({
+      name: "simulate_launch_bot",
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        openWorldHint: false,
+      },
+    }));
 
     const callResponse = await mcpRequest(
       {
@@ -201,6 +224,30 @@ describe("authenticated MCP session", () => {
       clientId: "client-id",
       username: "user@contoso.com",
       scopes: ["mcp.invoke"],
+    });
+  });
+
+  it("returns a simulated launch receipt for the named bot", async () => {
+    const token = await sign({ sub: "sub-1", scp: "mcp.invoke" });
+    const response = await mcpRequest(launchRequest(" TIN-CAN-7 "), token);
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      result: {
+        content: [{ type: "text", text: expect.stringContaining("TIN-CAN-7 reached low Earth orbit (simulated)") }],
+        structuredContent: {
+          botName: "TIN-CAN-7",
+          orbit: "low Earth orbit",
+          simulated: true,
+        },
+      },
+    });
+  });
+
+  it.each(["   ", "x".repeat(61)])("rejects invalid bot name %j", async (botName) => {
+    const token = await sign({ sub: "sub-1", scp: "mcp.invoke" });
+    const response = await mcpRequest(launchRequest(botName), token);
+    await expect(response.json()).resolves.toMatchObject({
+      result: { isError: true },
     });
   });
 });
