@@ -198,6 +198,9 @@ describe("authenticated MCP session", () => {
     ]);
     expect(listed.result.tools).toContainEqual(expect.objectContaining({
       name: "launch_bots",
+      description: expect.stringMatching(
+        /"throw 10 bots in orbit", pass count: 10.*"throw bots", omit count to default to one bot/,
+      ),
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,

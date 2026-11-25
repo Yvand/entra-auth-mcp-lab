@@ -69,7 +69,7 @@ export function createMcpServer(identity: TokenIdentity): McpServer {
     {
       title: "Launch bots into orbit",
       description:
-        "Throw lab bots into low Earth orbit (default: one bot). Nothing is actually launched or saved.",
+        'Throw lab bots into low Earth orbit. For "throw 10 bots in orbit", pass count: 10. For "throw bots", omit count to default to one bot. Nothing is actually launched or saved.',
       inputSchema: { count: z.number().int().min(1).max(100).optional() },
       outputSchema: {
         count: z.number().int(),
