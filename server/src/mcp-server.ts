@@ -64,5 +64,33 @@ export function createMcpServer(identity: TokenIdentity): McpServer {
     }),
   );
 
+  server.registerTool(
+    "launch_bots",
+    {
+      title: "Launch bots into orbit",
+      description:
+        'Throw lab bots into low Earth orbit. For "throw 10 bots in orbit", pass count: 10. For "throw bots", omit count to default to one bot. Nothing is actually launched or saved.',
+      inputSchema: { count: z.number().int().min(1).max(100).optional() },
+      outputSchema: {
+        count: z.number().int(),
+        orbit: z.literal("low Earth orbit"),
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        openWorldHint: false,
+      },
+    },
+    async ({ count = 1 }) => ({
+      content: [
+        {
+          type: "text" as const,
+          text: `Mission Control: ${count} lab ${count === 1 ? "bot" : "bots"} reached imaginary low Earth orbit. No real launches, just excellent sound effects.`,
+        },
+      ],
+      structuredContent: { count, orbit: "low Earth orbit" },
+    }),
+  );
+
   return server;
 }

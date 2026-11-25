@@ -223,7 +223,9 @@ Send-Mcp @{
 
 On Windows, use `curl.exe` if translating Bash curl examples; `curl` may resolve to a PowerShell alias in older shells, and Bash continuations are not valid PowerShell syntax.
 
-Expect HTTP 200 and a JSON-RPC `result` rather than `error`. Initialization returns protocol/server information. `tools/list` includes `echo` and `whoami`. `whoami` returns `result.structuredContent` with the caller's subject, scopes, issuer, audience, and available allow-listed identity claims. `echo` returns text `<subject>: hello`. Identity output can still contain personal data; do not post it publicly.
+Expect HTTP 200 and a JSON-RPC `result` rather than `error`. Initialization returns protocol/server information. `tools/list` includes `echo`, `launch_bots`, and `whoami`. `whoami` returns `result.structuredContent` with the caller's subject, scopes, issuer, audience, and available allow-listed identity claims. `echo` returns text `<subject>: hello`. Identity output can still contain personal data; do not post it publicly.
+
+`launch_bots` is a separate Copilot confirmation exercise. It uses the same delegated scope and returns a lab receipt without saving anything. Its optional `count` accepts whole numbers from 1 to 100 and defaults to 1. Direct MCP calls do not test Copilot's confirmation UI.
 
 A malformed or expired token should yield **401 `invalid_token`**. An otherwise valid token for this API that lacks the required delegated scope yields **403 `insufficient_scope`**, with the short required scope in the challenge. Obtaining that latter token may require a separate allowed scope/permission configuration; the offline suite provides a reproducible 403 check without altering your registrations. A Graph token is a wrong-audience 401 test, not a missing-scope 403 test.
 

@@ -79,6 +79,15 @@ const initializeRequest = {
   },
 };
 
+function launchRequest(count?: number) {
+  return {
+    jsonrpc: "2.0",
+    id: 4,
+    method: "tools/call",
+    params: { name: "launch_bots", arguments: count === undefined ? {} : { count } },
+  };
+}
+
 describe("unauthenticated access", () => {
   it("rejects requests without a token and advertises the resource metadata", async () => {
     const response = await mcpRequest(initializeRequest);
@@ -96,6 +105,11 @@ describe("unauthenticated access", () => {
     expect(response.headers.get("www-authenticate")).toContain(
       'error="invalid_token"',
     );
+  });
+
+  it("rejects lab launches without a token", async () => {
+    const response = await mcpRequest(launchRequest(10));
+    expect(response.status).toBe(401);
   });
 
   it("rejects a valid token missing mcp.invoke with 403", async () => {
@@ -179,8 +193,20 @@ describe("authenticated MCP session", () => {
     };
     expect(listed.result.tools.map((t) => t.name).sort()).toEqual([
       "echo",
+      "launch_bots",
       "whoami",
     ]);
+    expect(listed.result.tools).toContainEqual(expect.objectContaining({
+      name: "launch_bots",
+      description: expect.stringMatching(
+        /"throw 10 bots in orbit", pass count: 10.*"throw bots", omit count to default to one bot/,
+      ),
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        openWorldHint: false,
+      },
+    }));
 
     const callResponse = await mcpRequest(
       {
@@ -201,6 +227,32 @@ describe("authenticated MCP session", () => {
       clientId: "client-id",
       username: "user@contoso.com",
       scopes: ["mcp.invoke"],
+    });
+  });
+
+  it.each([
+    { requested: 10, count: 10, text: "10 lab bots reached" },
+    { requested: undefined, count: 1, text: "1 lab bot reached" },
+  ])("returns a lab launch receipt for $count bot(s)", async ({ requested, count, text }) => {
+    const token = await sign({ sub: "sub-1", scp: "mcp.invoke" });
+    const response = await mcpRequest(launchRequest(requested), token);
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      result: {
+        content: [{ type: "text", text: expect.stringContaining(`${text} imaginary low Earth orbit`) }],
+        structuredContent: {
+          count,
+          orbit: "low Earth orbit",
+        },
+      },
+    });
+  });
+
+  it.each([0, 101, 1.5])("rejects invalid bot count %j", async (count) => {
+    const token = await sign({ sub: "sub-1", scp: "mcp.invoke" });
+    const response = await mcpRequest(launchRequest(count), token);
+    await expect(response.json()).resolves.toMatchObject({
+      result: { isError: true },
     });
   });
 });

@@ -40,7 +40,7 @@ The API validates tokens; it does not sign users in, issue tokens, or handle OAu
 | --- | --- |
 | `src/config.ts` | Runtime configuration and tenant-derived issuer/JWKS URLs |
 | `src/auth.ts` | Token verification, delegated-scope enforcement, safe identity mapping |
-| `src/mcp-server.ts` | Request-scoped `whoami` and `echo` tools |
+| `src/mcp-server.ts` | Request-scoped `whoami`, `echo`, and `launch_bots` tools |
 | `src/app.ts`, `src/index.ts` | HTTP endpoints, transport, startup |
 | `test/` | Offline authentication, HTTP/MCP, and mocked cleanup-hook tests |
 | `.env.example`, `Dockerfile` | Local configuration template and container build |
