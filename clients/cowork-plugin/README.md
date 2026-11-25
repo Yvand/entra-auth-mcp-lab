@@ -81,9 +81,9 @@ Compress-Archive -Path manifest.json,color.png,outline.png,skills -DestinationPa
 
 Open the resulting ZIP and check the [required layout](docs/manifest-configuration.md#3-check-the-package-layout): `manifest.json`, both icons, and the skill path, without an enclosing `configured-plugin/` folder. Standard ZIP tools do not validate schema or placeholders; review the field checklist before uploading.
 
-## 6. Install and check the connection
+## 6. Install and try both tools
 
-**Goal:** confirm the plugin can authenticate and run `whoami` and `echo`.
+**Goal:** confirm the plugin can authenticate and run both server tools.
 
 Follow **[Install and test](docs/install-and-test.md)** with your configured ZIP. It covers tenant upload/personal installation, enabling the plugin, sign-in, and this test prompt:
 
@@ -92,12 +92,6 @@ Run the Entra Auth MCP Lab and echo "hello from my plugin".
 ```
 
 Success means both tools ran, the identity is the consenting account, and the echo contains your message. Upload success alone is not an authenticated end-to-end check.
-
-### Throw lab bots into orbit
-
-After connecting, ask **“throw 10 bots in orbit”** for a 10-bot receipt, or **“throw bots”** for a one-bot receipt without a follow-up.
-
-Start without a prior Cowork session approval and decline the tool confirmation. Expect no launch receipt and, if tool activity is visible, no invocation. Ask again and approve this one action. If tool activity is visible, check that `launch_bots` ran once with `count` set to 10 or 1, as shown above. Nothing is actually launched or saved.
 
 ## Alternatives and maintainer tasks
 

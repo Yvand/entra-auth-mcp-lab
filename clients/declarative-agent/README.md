@@ -94,7 +94,7 @@ Compress-Archive -Path manifest.json,declarativeAgent.json,ai-plugin.json,color.
 
 Inspect the [five-file layout](docs/manifest-configuration.md#2-check-the-zip-layout). Standard ZIP tools do not validate schemas or placeholders; complete the checklist before uploading.
 
-## 6. Install and check the connection
+## 6. Install and exercise both tools
 
 **Goal:** verify real delegated MCP calls, not just a successful upload.
 
@@ -105,12 +105,6 @@ Run the Entra Auth MCP Lab and echo "hello from my agent".
 ```
 
 Success means both tools ran, the identity is the consenting account, and the echo contains your message. Upload success and `/healthz` do not establish this.
-
-### Throw lab bots into orbit
-
-After connecting, ask **“throw 10 bots in orbit”** for a 10-bot receipt, or **“throw bots”** for a one-bot receipt without a follow-up.
-
-Decline the tool confirmation. Expect no launch receipt and, if tool activity is visible, no invocation. Ask again and approve the action. If tool activity is visible, check that `launch_bots` ran once with `count` set to 10 or 1, as shown above. Nothing is actually launched or saved.
 
 ## Alternatives and maintainer tasks
 
